@@ -4,11 +4,15 @@
 #include <string>
 #include <iostream>
 #include <stdexcept>
+#include <stdlib.h>
 #include "ClassTree.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
+
+  // Initialization
+  srand(time(NULL));
 
   // Flag parsing.
 
