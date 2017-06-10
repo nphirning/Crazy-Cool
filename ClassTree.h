@@ -11,17 +11,17 @@
 
 class ClassTree {
 public:
-  void generate_class_tree();
 
   // Constructor.
-  ClassTree(float probability_inherits = 0.5,
-            int num_classes = 10,
-            int class_name_length = 10,
-            std::string word_corpus = "");
+  ClassTree(int num_classes = 10,
+            std::string word_corpus = "",
+            int class_name_length = 10);
 
-  // Accessors and mutators.
-  void set_num_classes(int a) { num_classes = a; }
-  void set_word_corpus(std::string a) { word_corpus = a; }
+  // Populates data structures with information.
+  void generate_class_tree();
+
+  // Print method for debugging.
+  void print_class_tree();
 
   // Data structures for class tree information.
   std::vector<std::string> class_names;
@@ -29,14 +29,18 @@ public:
   std::map<std::string, std::set<std::string> > class_descendants;
 
 private:
-  float probability_inherits; // float in interval [0,1];
-  int num_classes; // Not including basic classes.
 
-  // Two options for class name generation
-  //  - random generation
-  //  - picking from a word corpus
-  int class_name_length;
-  std::string word_corpus; // path from source directory
+  // Internal methods used by generate_class_tree();
+  void generate_class_names();
+  void generate_inheritance();
+  void add_basic_classes();
+  void update_ancestor_vectors(std::string child, std::string parent);
+  void update_child_sets(std::string child, std::string parent);
+
+  // Parameters for class generation.
+  int num_classes;          // Not including basic classes.
+  int class_name_length;    // Length of randomly generated strings.
+  std::string word_corpus;  // Path to corpus for class name selection.
 
 };
 

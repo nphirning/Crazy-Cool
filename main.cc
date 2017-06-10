@@ -1,4 +1,4 @@
-// File : CrazyCool.cc
+// File         : main.cc
 
 #include <unistd.h>
 #include <string>
@@ -9,6 +9,8 @@
 
 using namespace std;
 
+bool DEBUG = true;
+
 int main(int argc, char* argv[]) {
 
   // Initialization
@@ -16,7 +18,7 @@ int main(int argc, char* argv[]) {
 
   // Flag parsing.
 
-  int num_classes = 10;
+  int num_classes = 5;
   string corpus_name = "";
 
   int c;
@@ -37,12 +39,11 @@ int main(int argc, char* argv[]) {
         corpus_name = optarg;
         break;
     }
-
-    // Construct class tree.
   }
 
-
-
-
+  // Construct class tree.
+  ClassTree tree = ClassTree(num_classes, corpus_name);
+  tree.generate_class_tree();
+  if (DEBUG) tree.print_class_tree();
 
 }
