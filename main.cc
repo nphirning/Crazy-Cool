@@ -11,6 +11,7 @@ using namespace std;
 
 bool DEBUG = true;
 
+// FUNCTION: main execution
 int main(int argc, char* argv[]) {
 
   // Initialization
@@ -42,8 +43,8 @@ int main(int argc, char* argv[]) {
   }
 
   // Construct class tree.
-  ClassTree tree = ClassTree(num_classes, corpus_name);
-  tree.generate_class_tree();
-  if (DEBUG) tree.print_class_tree();
+  ClassTree tree = ClassTree(num_classes);
+  //tree.generate_class_tree();
+  //if (DEBUG) tree.print_class_tree();
 
 }

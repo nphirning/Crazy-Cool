@@ -16,14 +16,31 @@
 using namespace std;
 
 // FUNCTION: Constructor.
-ClassTree::ClassTree(int num_classes, string word_corpus, int class_name_length) {
+ClassTree::ClassTree(   int num_classes,
+                        int num_attributes_per_class,
+                        int num_methods_per_class,
+                        float probability_repeat_method_name,
+                        std::string word_corpus,
+                        int class_name_length,
+                        int attribute_name_length,
+                        int method_name_length) {
+
+  if (probability_repeat_method_name > 1 || probability_repeat_method_name < 0) {
+    throw "Probability of repeating a method name must be in [0,1]";
+  }
+
+  this->probability_repeat_method_name = probability_repeat_method_name;
   this->num_classes = num_classes;
+  this->num_attributes_per_class = num_attributes_per_class;
+  this->num_methods_per_class = num_methods_per_class;
   this->class_name_length = class_name_length;
+  this->attribute_name_length = attribute_name_length;
+  this->method_name_length = method_name_length;
   this->word_corpus = word_corpus;
 }
 
 // FUNCTION: Print class tree for debugging.
-void ClassTree::print_class_tree() {
+void ClassTree::print_class_information() {
 
   // Print class names.
   cout << "Class Names: [ ";
@@ -62,7 +79,7 @@ void ClassTree::generate_class_names() {
   // Generate class names.
   for (int i = 0; i < num_classes; i++) {
     try {
-      string class_name = generate_class_name(class_name_length);
+      string class_name = generate_class_name(class_name_length, class_names);
       class_names.push_back(class_name);
     } catch (string e) {
       cout << "Error: " << e << endl;
@@ -193,4 +210,55 @@ void ClassTree::generate_class_tree() {
   // Add basic classes.
   add_basic_classes();
 
+}
+
+// FUNCTION: Generates class attributes.
+// NOTE: String, Int, and Bool classes are given no attributes.
+void ClassTree::generate_class_attributes() {
+
+  // Initialize data structures.
+  class_attributes = map<string, vector<pair<string, string> > >();
+
+  // Generate possible attribute types.
+  vector<string> possible_attribute_types = class_names;
+  possible_attribute_types.push_back("SELF_TYPE");
+
+  // Handle basic classes.
+  class_attributes["Object"] = vector<pair<string, string> >();
+  class_attributes["String"] = vector<pair<string, string> >();
+  class_attributes["Int"] = vector<pair<string, string> >();
+  class_attributes["Bool"] = vector<pair<string, string> >();
+  class_attributes["IO"] = vector<pair<string, string> >();
+
+  for (int i = 0; i < class_names.size(); i++) {
+
+    // Generate class name.
+    string current_class = class_names[i];
+    vector<string> current_class_attributes = vector<string>();
+    class_attributes[current_class] = vector<pair<string, string> >();
+
+    if (current_class == "Object" || current_class == "String" ||
+        current_class == "Int" || current_class == "Bool" || current_class == "IO") {
+      continue;
+    } else {
+      for (int j = 0; j < this->num_attributes_per_class; j++) {
+        // Choose attribute name.
+        string attribute_name = generate_attribute_name(this->attribute_name_length, current_class_attributes);
+        current_class_attributes.push_back(attribute_name);
+
+        // Choose attribute type.
+        string attribute_type = possible_attribute_types[rand() % possible_attribute_types.size()];
+
+        // Update data structures.
+        pair<string, string> current_attribute = pair<string, string>(attribute_name, attribute_type);
+        class_attributes[current_class].push_back(current_attribute);
+      }
+    }
+  }
+}
+
+// FUNCTION: Generates class information.
+void ClassTree::generate_class_information() {
+  generate_class_tree();
+  generate_class_attributes();
 }
