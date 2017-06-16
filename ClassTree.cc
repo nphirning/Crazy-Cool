@@ -70,6 +70,19 @@ void ClassTree::print_class_information() {
       }
       cout << "}" << endl;
   }
+
+  // Print attribute information.
+  cout << "Attribute Information" << endl;
+  for (map<string, vector<pair<string, string> > >::iterator it = class_attributes.begin();
+        it != class_attributes.end(); ++it) {
+		string current_class = it->first;
+		cout << "Class: " << current_class << endl;
+
+		for (int i = 0; i < class_attributes[current_class].size(); i++) {
+			cout << "\t" << class_attributes[current_class][i].first << " ";
+			cout << class_attributes[current_class][i].second << endl;
+		}
+  }
 }
 
 // FUNCTION: Populates class_names with random strings + Main (no basic classes).
@@ -257,8 +270,18 @@ void ClassTree::generate_class_attributes() {
   }
 }
 
+// FUNCTION: Generates class methods.
+void ClassTree::generate_class_methods() {
+
+	// Initialize data structures.
+	class_methods = map<string, map<string, vector<pair<string, string> > > >();
+
+	// TODO: continue working here
+}
+
 // FUNCTION: Generates class information.
 void ClassTree::generate_class_information() {
   generate_class_tree();
   generate_class_attributes();
+	generate_class_methods();
 }

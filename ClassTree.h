@@ -31,10 +31,19 @@ public:
   void print_class_information();
 
   // Data structures for class tree information.
+  // NOTE: Most maps are intuitive, but just for the record:
+  //    class_names       : vector of class names as strings
+  //    class_ancestors   : map from class name to ordered vector of ancestors
+  //    class_descendants : map from class name to set of all children
+  //    class_attributes  : map from class name to vector of (name, type) pairs
+  //    class_method_names: map from class name to vector of (name, type) pairs
+  //    class_method_args : map from class name to map of method name -> vector of (arg name, arg type)
   std::vector<std::string> class_names;
   std::map<std::string, std::vector<std::string> > class_ancestors;
   std::map<std::string, std::set<std::string> > class_descendants;
   std::map<std::string, std::vector<std::pair<std::string, std::string> > > class_attributes;
+  std::map<std::string, std::vector<std::pair<std::string, std::string> > > class_method_names;
+  std::map<std::string, std::map<std::string, std::vector<std::pair<std::string, std::string> > > > class_method_args;
 
 private:
 
