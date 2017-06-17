@@ -11,7 +11,7 @@
 
 using namespace std;
 
-bool DEBUG = false;
+bool DEBUG = true;
 
 // FUNCTION: main execution
 int main(int argc, char* argv[]) {
