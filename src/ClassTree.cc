@@ -7,6 +7,7 @@
 #include <map>
 #include <set>
 #include <stdlib.h>
+#include <algorithm>
 #include "ClassTree.h"
 #include "util.h"
 
