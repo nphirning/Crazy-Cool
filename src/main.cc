@@ -3,13 +3,15 @@
 #include <unistd.h>
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <stdexcept>
 #include <stdlib.h>
 #include "ClassTree.h"
+#include "CodeGenerator.h"
 
 using namespace std;
 
-bool DEBUG = true;
+bool DEBUG = false;
 
 // FUNCTION: main execution
 int main(int argc, char* argv[]) {
@@ -42,9 +44,13 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  // Construct class tree.
+  // Generate class information.
   ClassTree tree = ClassTree(num_classes);
   tree.generate_class_information();
   if (DEBUG) tree.print_class_information();
+
+  // Generate code.
+  CodeGenerator generator(tree);
+  generator.generate_code();
 
 }
