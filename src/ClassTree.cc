@@ -91,8 +91,8 @@ void ClassTree::print_class_information() {
 		cout << "\tClass: " << current_class << endl;
 
 		for (int j = 0; j < class_method_names[current_class].size(); j++) {
-      string current_method_name = class_method_names[current_class][j].first;
-      string current_method_type = class_method_names[current_class][j].second;
+      string current_method_name = class_method_names[current_class][j];
+      string current_method_type = class_method_types[current_class][current_method_name];
 			cout << "\t\t" << current_method_name << "(";
       for (int k = 0; k < class_method_args[current_class][current_method_name].size(); k++) {
         string arg_name = class_method_args[current_class][current_method_name][k].first;
@@ -286,20 +286,30 @@ void ClassTree::generate_class_attributes() {
 void ClassTree::add_basic_class_methods() {
 
   // Object: abort, type_name, copy.
-  class_method_names["Object"] = vector<pair<string, string> >();
-  class_method_names["Object"].push_back(pair<string, string>("abort", "Object"));
-  class_method_names["Object"].push_back(pair<string, string>("type_name", "String"));
-  class_method_names["Object"].push_back(pair<string, string>("copy", "SELF_TYPE"));
+  class_method_names["Object"] = vector<string>();
+  class_method_types["Object"] = map<string, string>();
+  class_method_names["Object"].push_back("abort");
+  class_method_types["Object"]["abort"] = "Object";
+  class_method_names["Object"].push_back("type_name");
+  class_method_types["Object"]["type_name"] = "String";
+  class_method_names["Object"].push_back("copy");
+  class_method_types["Object"]["copy"] = "SELF_TYPE";
+
   class_method_args["Object"] = map<string, vector<pair<string, string> > >();
   class_method_args["Object"]["abort"] = vector<pair<string, string> >();
   class_method_args["Object"]["type_name"] = vector<pair<string, string> >();
   class_method_args["Object"]["copy"] = vector<pair<string, string> >();
 
   // String: length, concat, substr.
-  class_method_names["String"] = vector<pair<string, string> >();
-  class_method_names["String"].push_back(pair<string, string>("length", "Int"));
-  class_method_names["String"].push_back(pair<string, string>("concat", "String"));
-  class_method_names["String"].push_back(pair<string, string>("substr", "String"));
+  class_method_names["String"] = vector<string>();
+  class_method_types["String"] = map<string, string>();
+  class_method_names["String"].push_back("length");
+  class_method_types["String"]["length"] = "Int";
+  class_method_names["String"].push_back("concat");
+  class_method_types["String"]["concat"] = "String";
+  class_method_names["String"].push_back("substr");
+  class_method_types["String"]["substr"] = "String";
+
   class_method_args["String"] = map<string, vector<pair<string, string> > >();
   class_method_args["String"]["length"] = vector<pair<string, string> >();
   class_method_args["String"]["concat"] = vector<pair<string, string> >();
@@ -309,19 +319,27 @@ void ClassTree::add_basic_class_methods() {
   class_method_args["String"]["substr"].push_back(pair<string, string>("l", "Int"));
 
   // Int.
-  class_method_names["Int"] = vector<pair<string, string> >();
+  class_method_names["Int"] = vector<string>();
+  class_method_types["Int"] = map<string, string>();
   class_method_args["Int"] = map<string, vector<pair<string, string> > >();
 
   // Bool.
-  class_method_names["Bool"] = vector<pair<string, string> >();
+  class_method_names["Bool"] = vector<string>();
+  class_method_types["Bool"] = map<string, string>();
   class_method_args["Bool"] = map<string, vector<pair<string, string> > >();
 
   // IO: out_string, out_int, in_string, in_int.
-  class_method_names["IO"] = vector<pair<string, string> >();
-  class_method_names["IO"].push_back(pair<string, string>("out_string", "SELF_TYPE"));
-  class_method_names["IO"].push_back(pair<string, string>("out_int", "SELF_TYPE"));
-  class_method_names["IO"].push_back(pair<string, string>("in_string", "String"));
-  class_method_names["IO"].push_back(pair<string, string>("in_int", "Int"));
+  class_method_names["IO"] = vector<string>();
+  class_method_types["IO"] = map<string, string>();
+  class_method_names["IO"].push_back("out_string");
+  class_method_types["IO"]["out_string"] = "SELF_TYPE";
+  class_method_names["IO"].push_back("out_int");
+  class_method_types["IO"]["out_int"] = "SELF_TYPE";
+  class_method_names["IO"].push_back("in_string");
+  class_method_types["IO"]["in_string"] = "String";
+  class_method_names["IO"].push_back("in_int");
+  class_method_types["IO"]["in_int"] = "Int";
+
   class_method_args["IO"] = map<string, vector<pair<string, string> > >();
   class_method_args["IO"]["out_string"] = vector<pair<string, string> >();
   class_method_args["String"]["out_string"].push_back(pair<string, string>("x", "String"));
@@ -335,9 +353,9 @@ void ClassTree::add_basic_class_methods() {
 void ClassTree::generate_class_methods() {
 
 	// Initialize data structures.
-  class_method_names = map<string, vector<pair<string, string> > >();
+  class_method_names = map<string, vector<string > >();
+  class_method_types = map<string, map<string, string> >();
 	class_method_args = map<string, map<string, vector<pair<string, string> > > >();
-  vector<string> all_class_method_names = vector<string>();
 
 	// Generate possible method types.
   vector<string> possible_types = class_names;
@@ -345,16 +363,6 @@ void ClassTree::generate_class_methods() {
 
   // Handle basic classes.
   this->add_basic_class_methods();
-  all_class_method_names.push_back("abort");
-  all_class_method_names.push_back("type_name");
-  all_class_method_names.push_back("copy");
-  all_class_method_names.push_back("length");
-  all_class_method_names.push_back("concat");
-  all_class_method_names.push_back("substr");
-  all_class_method_names.push_back("out_string");
-  all_class_method_names.push_back("out_int");
-  all_class_method_names.push_back("in_string");
-  all_class_method_names.push_back("in_int");
 
   // Generate methods for each class.
   for (int i = 0; i < class_names.size(); i++) {
@@ -363,48 +371,89 @@ void ClassTree::generate_class_methods() {
     string current_class = class_names[i];
     if (current_class == "Object" || current_class == "IO" ||
           current_class == "String" || current_class == "Int" ||
-          current_class == "Bool") {
-      continue;
-    }
-    class_method_names[current_class] = vector<pair<string, string> >();
-    vector<string> current_class_method_names = vector<string>();
+          current_class == "Bool") continue;
+    class_method_names[current_class] = vector<string>();
+    class_method_types[current_class] = map<string, string>();
     class_method_args[current_class] = map<string, vector<pair<string, string> > >();
+    vector<string> unavailable_names = vector<string>();
+
+    // Compute the methods which we can redefine.
+    // NOTE: We compute a list of pairs (method_name, class_name).
+    vector<pair<string, string> > redefinable_methods = vector<pair<string, string> >();
+    vector<string> ancestors = class_ancestors[current_class];
+    for (int k = 0; k < ancestors.size(); k++) {
+      string ancestor_class = ancestors[k];
+      vector<string> ancestor_methods = class_method_names[ancestor_class];
+      for (int l = 0; l < ancestor_methods.size(); l++) {
+        unavailable_names.push_back(ancestor_methods[l]);
+        pair<string, string> redefinable_method = pair<string, string>(ancestor_methods[l], current_class);
+        redefinable_methods.push_back(redefinable_method);
+      }
+    }
 
     for (int j = 0; j < this->num_methods_per_class; j++) {
 
-      // Generate method name (handling main case).
-      string method_name = "";
+      // Method generation.
+      // Case 1: main method inside Main class.
+      // Case 2: redefinition of method from some class.
+      // Case 3: creation of new method.
       if (j == 0 && current_class == "Main") {
-        method_name = "main";
+        string method_name = "main";
+
+        // Choose return type.
+        string method_type = possible_types[rand() % possible_types.size()];
+
+        // Update data structures.
+        unavailable_names.push_back(method_name);
+        class_method_names[current_class].push_back(method_name);
+        class_method_types[current_class][method_name] = method_type;
+        class_method_args[current_class][method_name] = vector<pair<string, string> >();
+
       } else {
-        // Choose whether or not to repeat an already used name.
         if ((double) rand() / (RAND_MAX) <= this->probability_repeat_method_name) {
-          method_name = all_class_method_names[rand() % all_class_method_names.size()];
+
+          // Choose method to redefine and extract information.
+          pair<string, string> method_to_redefine = redefinable_methods[rand() % redefinable_methods.size()];
+          string method_name = method_to_redefine.first;
+          string method_type = class_method_types[method_to_redefine.second][method_name];
+          vector<pair<string, string> > method_redef_args = class_method_args[method_to_redefine.second][method_name];
+
+          // Update data structures.
+          class_method_types[current_class][method_name] = method_type;
+
+          // Generate formals (keep return type the same as method_redef_args).
+          class_method_args[current_class][method_name] = vector<pair<string, string> >();
+          vector<string> method_args = vector<string>();
+          for (int k = 0; k < method_redef_args.size(); k++) {
+            string argument_type = method_redef_args[k].second;
+            string argument_name = generate_feature_name(this->method_arg_name_length, method_args);
+            class_method_args[current_class][method_name].push_back(pair<string, string>(argument_name, argument_type));
+            method_args.push_back(argument_name);
+          }
+
         } else {
-          method_name = generate_feature_name(this->method_name_length, current_class_method_names);
+
+          // Generate method name and type.
+          string method_name = generate_feature_name(this->method_name_length, unavailable_names);
+          string method_type = possible_types[rand() % possible_types.size()];
+
+          // Update data structures.
+          unavailable_names.push_back(method_name);
+          class_method_names[current_class].push_back(method_name);
+          class_method_types[current_class][method_name] = method_type;
+          class_method_args[current_class][method_name] = vector<pair<string, string> >();
+
+          // Generate arguments.
+          vector<string> method_args = vector<string>();
+          for (int k = 0; k < this->num_method_args; k++) {
+              string argument_name = generate_feature_name(this->method_arg_name_length, method_args);
+              method_args.push_back(argument_name);
+              string argument_type = class_names[rand() % class_names.size()];
+              class_method_args[current_class][method_name].push_back(pair<string, string>(argument_name, argument_type));
+          }
         }
       }
-
-      // Choose return type.
-      string method_type = possible_types[rand() % possible_types.size()];
-
-      // Update data structures.
-      current_class_method_names.push_back(method_name);
-      class_method_names[current_class].push_back(pair<string, string>(method_name, method_type));
-      class_method_args[current_class][method_name] = vector<pair<string, string> >();
-
-      // Generate arguments.
-      vector<string> method_args = vector<string>();
-      for (int k = 0; k < this->num_method_args; k++) {
-          string argument_name = generate_feature_name(this->method_arg_name_length, method_args);
-          method_args.push_back(argument_name);
-          string argument_type = possible_types[rand() % possible_types.size()];
-          class_method_args[current_class][method_name].push_back(pair<string, string>(argument_name, argument_type));
-      }
     }
-
-    // Update vector of all method names for reuse.
-    all_class_method_names.insert(all_class_method_names.begin(), current_class_method_names.begin(), current_class_method_names.end());
   }
 }
 

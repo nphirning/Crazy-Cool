@@ -48,14 +48,14 @@ void CodeGenerator::print_method(string class_name, string method_name, string m
   vector<pair<string, string> > args = tree.class_method_args[class_name][method_name];
   for (int i = 0; i < args.size(); i++) {
     if (i == args.size() - 1) {
-      writer << args[i].first << ": " << args[i].second << ") : ";
+      writer << args[i].first << ": " << args[i].second;
     } else {
       writer << args[i].first << ": " << args[i].second << ", ";
     }
   }
 
   // Print return type.
-  writer << method_type << " {" << endl;
+  writer << ") : " << method_type << " {" << endl;
   indentation_tabs++;
 
   print_tabs();
@@ -89,8 +89,8 @@ void CodeGenerator::print_class(string class_name) {
 
   // Print methods.
   for (int i = 0; i < tree.class_method_names[class_name].size(); i++) {
-    string method_name = tree.class_method_names[class_name][i].first;
-    string method_type = tree.class_method_names[class_name][i].second;
+    string method_name = tree.class_method_names[class_name][i];
+    string method_type = tree.class_method_types[class_name][method_name];
     print_method(class_name, method_name, method_type);
   }
 
