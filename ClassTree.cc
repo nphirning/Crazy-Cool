@@ -342,6 +342,7 @@ void ClassTree::generate_class_methods() {
 	// Initialize data structures.
   class_method_names = map<string, vector<pair<string, string> > >();
 	class_method_args = map<string, map<string, vector<pair<string, string> > > >();
+  vector<string> all_class_method_names = vector<string>();
 
 	// Generate possible method types.
   vector<string> possible_types = class_names;
@@ -349,6 +350,16 @@ void ClassTree::generate_class_methods() {
 
   // Handle basic classes.
   this->add_basic_class_methods();
+  all_class_method_names.push_back("abort");
+  all_class_method_names.push_back("type_name");
+  all_class_method_names.push_back("copy");
+  all_class_method_names.push_back("length");
+  all_class_method_names.push_back("concat");
+  all_class_method_names.push_back("substr");
+  all_class_method_names.push_back("out_string");
+  all_class_method_names.push_back("out_int");
+  all_class_method_names.push_back("in_string");
+  all_class_method_names.push_back("in_int");
 
   // Generate methods for each class.
   for (int i = 0; i < class_names.size(); i++) {
@@ -371,7 +382,12 @@ void ClassTree::generate_class_methods() {
       if (j == 0 && current_class == "Main") {
         method_name = "main";
       } else {
-        method_name = generate_feature_name(this->method_name_length, current_class_method_names);
+        // Choose whether or not to repeat an already used name.
+        if ((double) rand() / (RAND_MAX) <= this->probability_repeat_method_name) {
+          method_name = all_class_method_names[rand() % all_class_method_names.size()];
+        } else {
+          method_name = generate_feature_name(this->method_name_length, current_class_method_names);
+        }
       }
 
       // Choose return type.
@@ -391,6 +407,9 @@ void ClassTree::generate_class_methods() {
           class_method_args[current_class][method_name].push_back(pair<string, string>(argument_name, argument_type));
       }
     }
+
+    // Update vector of all method names for reuse.
+    all_class_method_names.insert(all_class_method_names.begin(), current_class_method_names.begin(), current_class_method_names.end());
   }
 }
 
