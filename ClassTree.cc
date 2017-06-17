@@ -19,11 +19,13 @@ using namespace std;
 ClassTree::ClassTree(   int num_classes,
                         int num_attributes_per_class,
                         int num_methods_per_class,
+                        int num_method_args,
                         float probability_repeat_method_name,
                         std::string word_corpus,
                         int class_name_length,
                         int attribute_name_length,
-                        int method_name_length) {
+                        int method_name_length,
+                        int method_arg_name_length) {
 
   if (probability_repeat_method_name > 1 || probability_repeat_method_name < 0) {
     throw "Probability of repeating a method name must be in [0,1]";
@@ -31,11 +33,13 @@ ClassTree::ClassTree(   int num_classes,
 
   this->probability_repeat_method_name = probability_repeat_method_name;
   this->num_classes = num_classes;
+  this->num_method_args = num_method_args;
   this->num_attributes_per_class = num_attributes_per_class;
   this->num_methods_per_class = num_methods_per_class;
   this->class_name_length = class_name_length;
   this->attribute_name_length = attribute_name_length;
   this->method_name_length = method_name_length;
+  this->method_arg_name_length = method_arg_name_length;
   this->word_corpus = word_corpus;
 }
 
@@ -53,16 +57,16 @@ void ClassTree::print_class_information() {
   cout << "Inheritance Data" << endl;
   for (int i = 0; i < class_names.size(); i++) {
       string current_class = class_names[i];
-      cout << "Class: " << current_class << endl;
+      cout << "\tClass: " << current_class << endl;
 
-      cout << "\t[ ";
+      cout << "\t\t[ ";
       for (int j = 0; j < class_ancestors[current_class].size(); j++) {
         string current_ancestor = class_ancestors[current_class][j];
         cout << current_ancestor << " ";
       }
       cout << "]" << endl;
 
-      cout << "\t{ ";
+      cout << "\t\t{ ";
       for (set<string>::iterator it = class_descendants[current_class].begin();
                       it != class_descendants[current_class].end(); ++it) {
         string current_descendant = *it;
@@ -73,14 +77,32 @@ void ClassTree::print_class_information() {
 
   // Print attribute information.
   cout << "Attribute Information" << endl;
-  for (map<string, vector<pair<string, string> > >::iterator it = class_attributes.begin();
-        it != class_attributes.end(); ++it) {
-		string current_class = it->first;
-		cout << "Class: " << current_class << endl;
+  for (int i = 0; i < class_names.size(); i++) {
+		string current_class = class_names[i];
+		cout << "\tClass: " << current_class << endl;
 
-		for (int i = 0; i < class_attributes[current_class].size(); i++) {
-			cout << "\t" << class_attributes[current_class][i].first << " ";
-			cout << class_attributes[current_class][i].second << endl;
+		for (int j = 0; j < class_attributes[current_class].size(); j++) {
+			cout << "\t\t" << class_attributes[current_class][j].first << " ";
+			cout << class_attributes[current_class][j].second << endl;
+		}
+  }
+
+  // Print method information.
+  cout << "Method Information" << endl;
+  for (int i = 0; i < class_names.size(); i++) {
+		string current_class = class_names[i];
+		cout << "\tClass: " << current_class << endl;
+
+		for (int j = 0; j < class_method_names[current_class].size(); j++) {
+      string current_method_name = class_method_names[current_class][j].first;
+      string current_method_type = class_method_names[current_class][j].second;
+			cout << "\t\t" << current_method_name << "(";
+      for (int k = 0; k < class_method_args[current_class][current_method_name].size(); k++) {
+        string arg_name = class_method_args[current_class][current_method_name][k].first;
+        string arg_type = class_method_args[current_class][current_method_name][k].second;
+        cout << arg_name << ": " << arg_type << ", ";
+      }
+      cout << "): " << current_method_type << endl;
 		}
   }
 }
@@ -236,47 +258,140 @@ void ClassTree::generate_class_attributes() {
   vector<string> possible_attribute_types = class_names;
   possible_attribute_types.push_back("SELF_TYPE");
 
-  // Handle basic classes.
-  class_attributes["Object"] = vector<pair<string, string> >();
-  class_attributes["String"] = vector<pair<string, string> >();
-  class_attributes["Int"] = vector<pair<string, string> >();
-  class_attributes["Bool"] = vector<pair<string, string> >();
-  class_attributes["IO"] = vector<pair<string, string> >();
-
+  // Generate attributes for each class.
   for (int i = 0; i < class_names.size(); i++) {
 
-    // Generate class name.
+    // Extract class and initialize data structures.
     string current_class = class_names[i];
     vector<string> current_class_attributes = vector<string>();
     class_attributes[current_class] = vector<pair<string, string> >();
 
+    // Basic classes should have no attributes.
     if (current_class == "Object" || current_class == "String" ||
         current_class == "Int" || current_class == "Bool" || current_class == "IO") {
       continue;
     } else {
       for (int j = 0; j < this->num_attributes_per_class; j++) {
         // Choose attribute name.
-        string attribute_name = generate_attribute_name(this->attribute_name_length, current_class_attributes);
+        string attribute_name = generate_feature_name(this->attribute_name_length, current_class_attributes);
         current_class_attributes.push_back(attribute_name);
 
         // Choose attribute type.
         string attribute_type = possible_attribute_types[rand() % possible_attribute_types.size()];
 
         // Update data structures.
-        pair<string, string> current_attribute = pair<string, string>(attribute_name, attribute_type);
-        class_attributes[current_class].push_back(current_attribute);
+        class_attributes[current_class].push_back(pair<string, string>(attribute_name, attribute_type));
       }
     }
   }
+}
+
+// FUNCTION: Adds basic classes to method data structures.
+// NOTE: Assumes top-level data structures have been initialized.
+void ClassTree::add_basic_class_methods() {
+
+  // Object: abort, type_name, copy.
+  class_method_names["Object"] = vector<pair<string, string> >();
+  class_method_names["Object"].push_back(pair<string, string>("abort", "Object"));
+  class_method_names["Object"].push_back(pair<string, string>("type_name", "String"));
+  class_method_names["Object"].push_back(pair<string, string>("copy", "SELF_TYPE"));
+  class_method_args["Object"] = map<string, vector<pair<string, string> > >();
+  class_method_args["Object"]["abort"] = vector<pair<string, string> >();
+  class_method_args["Object"]["type_name"] = vector<pair<string, string> >();
+  class_method_args["Object"]["copy"] = vector<pair<string, string> >();
+
+  // String: length, concat, substr.
+  class_method_names["String"] = vector<pair<string, string> >();
+  class_method_names["String"].push_back(pair<string, string>("length", "Int"));
+  class_method_names["String"].push_back(pair<string, string>("concat", "String"));
+  class_method_names["String"].push_back(pair<string, string>("substr", "String"));
+  class_method_args["String"] = map<string, vector<pair<string, string> > >();
+  class_method_args["String"]["length"] = vector<pair<string, string> >();
+  class_method_args["String"]["concat"] = vector<pair<string, string> >();
+  class_method_args["String"]["concat"].push_back(pair<string, string>("s", "String"));
+  class_method_args["String"]["substr"] = vector<pair<string, string> >();
+  class_method_args["String"]["substr"].push_back(pair<string, string>("i", "Int"));
+  class_method_args["String"]["substr"].push_back(pair<string, string>("l", "Int"));
+
+  // Int.
+  class_method_names["Int"] = vector<pair<string, string> >();
+  class_method_args["Int"] = map<string, vector<pair<string, string> > >();
+
+  // Bool.
+  class_method_names["Bool"] = vector<pair<string, string> >();
+  class_method_args["Bool"] = map<string, vector<pair<string, string> > >();
+
+  // IO: out_string, out_int, in_string, in_int.
+  class_method_names["IO"] = vector<pair<string, string> >();
+  class_method_names["IO"].push_back(pair<string, string>("out_string", "SELF_TYPE"));
+  class_method_names["IO"].push_back(pair<string, string>("out_int", "SELF_TYPE"));
+  class_method_names["IO"].push_back(pair<string, string>("in_string", "String"));
+  class_method_names["IO"].push_back(pair<string, string>("in_int", "Int"));
+  class_method_args["IO"] = map<string, vector<pair<string, string> > >();
+  class_method_args["IO"]["out_string"] = vector<pair<string, string> >();
+  class_method_args["String"]["out_string"].push_back(pair<string, string>("x", "String"));
+  class_method_args["IO"]["out_int"] = vector<pair<string, string> >();
+  class_method_args["String"]["out_int"].push_back(pair<string, string>("x", "Int"));
+  class_method_args["IO"]["in_string"] = vector<pair<string, string> >();
+  class_method_args["IO"]["in_int"] = vector<pair<string, string> >();
 }
 
 // FUNCTION: Generates class methods.
 void ClassTree::generate_class_methods() {
 
 	// Initialize data structures.
-	class_methods = map<string, map<string, vector<pair<string, string> > > >();
+  class_method_names = map<string, vector<pair<string, string> > >();
+	class_method_args = map<string, map<string, vector<pair<string, string> > > >();
 
-	// TODO: continue working here
+	// Generate possible method types.
+  vector<string> possible_types = class_names;
+  possible_types.push_back("SELF_TYPE");
+
+  // Handle basic classes.
+  this->add_basic_class_methods();
+
+  // Generate methods for each class.
+  for (int i = 0; i < class_names.size(); i++) {
+
+    // Extract class, initialize data structures, skip basic classes.
+    string current_class = class_names[i];
+    if (current_class == "Object" || current_class == "IO" ||
+          current_class == "String" || current_class == "Int" ||
+          current_class == "Bool") {
+      continue;
+    }
+    class_method_names[current_class] = vector<pair<string, string> >();
+    vector<string> current_class_method_names = vector<string>();
+    class_method_args[current_class] = map<string, vector<pair<string, string> > >();
+
+    for (int j = 0; j < this->num_methods_per_class; j++) {
+
+      // Generate method name (handling main case).
+      string method_name = "";
+      if (j == 0 && current_class == "Main") {
+        method_name = "main";
+      } else {
+        method_name = generate_feature_name(this->method_name_length, current_class_method_names);
+      }
+
+      // Choose return type.
+      string method_type = possible_types[rand() % possible_types.size()];
+
+      // Update data structures.
+      current_class_method_names.push_back(method_name);
+      class_method_names[current_class].push_back(pair<string, string>(method_name, method_type));
+      class_method_args[current_class][method_name] = vector<pair<string, string> >();
+
+      // Generate arguments.
+      vector<string> method_args = vector<string>();
+      for (int k = 0; k < this->num_method_args; k++) {
+          string argument_name = generate_feature_name(this->method_arg_name_length, method_args);
+          method_args.push_back(argument_name);
+          string argument_type = possible_types[rand() % possible_types.size()];
+          class_method_args[current_class][method_name].push_back(pair<string, string>(argument_name, argument_type));
+      }
+    }
+  }
 }
 
 // FUNCTION: Generates class information.

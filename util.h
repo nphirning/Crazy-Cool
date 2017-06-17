@@ -7,4 +7,4 @@
 using namespace std;
 
 string generate_class_name(int len, vector<string> illegal_words = vector<string>());
-string generate_attribute_name(int len, vector<string> illegal_words = vector<string>());
+string generate_feature_name(int len, vector<string> illegal_words = vector<string>());

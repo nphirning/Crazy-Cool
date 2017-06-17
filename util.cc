@@ -20,12 +20,12 @@ string class_keywords[] = {"class", "else", "fi", "if", "in",
                             "string", "bool", "main", "self_type"};
 vector<string> class_keyword_vec (class_keywords, class_keywords + 24);
 
-// Disallowed attribute keywords.
-string attribute_keywords[] = {"class", "else", "fi", "if", "in",
+// Disallowed feature keywords.
+string feature_keywords[] = {"class", "else", "fi", "if", "in",
                                 "inherits", "isvoid", "let", "loop", "pool",
                                 "then", "while", "case", "esac", "new",
                                 "of", "not", "true", "false", "self"};
-vector<string> attribute_keyword_vec (attribute_keywords, attribute_keywords + 20);
+vector<string> feature_keyword_vec (feature_keywords, feature_keywords + 20);
 
 
 // True if words are equal ignoring case.
@@ -74,28 +74,28 @@ string generate_class_name(int length, vector<string> illegal_words) {
   return class_name;
 }
 
-// Generates a valid COOL class attribute of length @length
+// Generates a valid COOL class feature of length @length
 // that is not inside the vector @illegal_words.
 // NOTE: This ignores the case of the strings in @illegal_words.
-string generate_attribute_name(int length, vector<string> illegal_words) {
+string generate_feature_name(int length, vector<string> illegal_words) {
   if (length <= 0) throw "Nonpositive name length";
-  string attribute_name = "";
+  string feature_name = "";
 
   while (true) {
     // Generate first character lowercase.
     char first = alphanum[(rand() % 26) + 26];
-    attribute_name += first;
+    feature_name += first;
 
     // Generate rest of class name.
     for (int i = 0; i < length - 1; i++) {
       char c = alphanum[rand() % 63];
-      attribute_name += c;
+      feature_name += c;
     }
 
     // Exit if class name is not a keyword and not in list of illegal words.
-    if (!(string_vector_contains(attribute_name, attribute_keyword_vec) &&
-                  string_vector_contains(attribute_name, illegal_words))) break;
+    if (!(string_vector_contains(feature_name, feature_keyword_vec) &&
+                  string_vector_contains(feature_name, illegal_words))) break;
   }
 
-  return attribute_name;
+  return feature_name;
 }
