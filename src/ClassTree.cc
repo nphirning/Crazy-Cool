@@ -7,12 +7,8 @@
 #include <map>
 #include <set>
 #include <stdlib.h>
-#include <algorithm>
 #include "ClassTree.h"
 #include "util.h"
-
-#include <thread>
-#include <chrono>
 
 using namespace std;
 
@@ -192,14 +188,11 @@ void ClassTree::generate_inheritance() {
     string parent_class = "";
 
     // Compute possible parents for current class.
-    set<string> current_possible_parents = set<string>(possible_parents.begin(), possible_parents.end());
     set<string> current_descendants = class_descendants[current_class];
-    set_difference( current_possible_parents.begin(),
-                      current_possible_parents.end(),
-                      current_descendants.begin(),
-                      current_descendants.end(),
-                      inserter(current_possible_parents,
-                        current_possible_parents.begin()));
+    set<string> current_possible_parents = set<string>(possible_parents.begin(), possible_parents.end());
+    for (set<string>::iterator it = current_descendants.begin(); it != current_descendants.end(); ++it) {
+      current_possible_parents.erase(*it);
+    }
     current_possible_parents.erase(current_class);
 
     // Choose parent randomly.
@@ -210,6 +203,7 @@ void ClassTree::generate_inheritance() {
     // Update data structures.
     update_ancestor_vectors(current_class, parent_class);
     update_child_sets(current_class, parent_class);
+
   }
 }
 

@@ -1,90 +1,90 @@
-class BYjVniwOdq inherits K8uSsElLRC {
-	aXp3k: V4cTTrTsE1 <- new V4cTTrTsE1;
-	soQDo: SELF_TYPE <- new SELF_TYPE;
-	asQD3: IO <- new IO;
-	epE4x(eMuu6: IO, db77a: V4cTTrTsE1, yg7sp: Object, zApkb: GuHVovpdAw, xefDj: K8uSsElLRC) : Main {
-		new Main
+class WuQafStvzl inherits EV9iCZq280 {
+	tB4OJ: EV9iCZq280 <- new EV9iCZq280;
+	j_gqV: Int <- new Int;
+	dbugF: TD3ddVtJGh <- new TD3ddVtJGh;
+	z0CyY(eVAf0: EV9iCZq280, kyGEP: Zp0qM3C3sA, oO_9x: String, mWtRv: Int, vxIrk: TD3ddVtJGh) : String {
+		new String
 	};
-	aiG82(fwSFw: Bool, lyzvi: IO, pOHGL: Bool, j3BV4: String, lUKIU: K8uSsElLRC) : Object {
-		new Object
+	pyOsn(vYe9o: Int, u0IYk: WuQafStvzl, v7Php: Zp0qM3C3sA, rZo07: EV9iCZq280, dL5R2: IO) : WuQafStvzl {
+		new WuQafStvzl
 	};
-	qycVk(sENWi: String, t0ZFX: String, qUSju: IO, orccE: Object, uAgpS: IO) : B5Ob3DP9ne {
-		new B5Ob3DP9ne
-	};
-};
-
-class GuHVovpdAw inherits BYjVniwOdq {
-	nZr0N: V4cTTrTsE1 <- new V4cTTrTsE1;
-	dZKnE: B5Ob3DP9ne <- new B5Ob3DP9ne;
-	zsxM7: B5Ob3DP9ne <- new B5Ob3DP9ne;
-	a0SU6(c21dd: B5Ob3DP9ne, fLuFv: Int, fK0uT: K8uSsElLRC, kuj_G: String, w8gvq: Bool) : B5Ob3DP9ne {
-		new B5Ob3DP9ne
-	};
-	m89nV(g_uzP: Int, vm4DI: String, yW4Mp: Object, r6h0B: B5Ob3DP9ne, bu4d5: String) : BYjVniwOdq {
-		new BYjVniwOdq
-	};
-	jf9YU(tyRR4: V4cTTrTsE1, gkfqD: String, tNiY6: BYjVniwOdq, wCitB: Bool, eg20e: IO) : Int {
-		new Int
-	};
-};
-
-class V4cTTrTsE1 inherits BYjVniwOdq {
-	aub7G: SELF_TYPE <- new SELF_TYPE;
-	cz9zH: Int <- new Int;
-	zlSmv: IO <- new IO;
-	tkdi9(whhdH: V4cTTrTsE1, qHGl8: B5Ob3DP9ne, qTOyW: V4cTTrTsE1, tmn6w: K8uSsElLRC, qFRqe: SELF_TYPE) : V4cTTrTsE1 {
-		new V4cTTrTsE1
-	};
-	jf9YU(lZOh0: BYjVniwOdq, f3jNY: B5Ob3DP9ne, t8ICA: V4cTTrTsE1, gJ6sv: Int, oHZC8: SELF_TYPE) : Main {
-		new Main
-	};
-	wYN7F(x_yZq: SELF_TYPE, b6NNZ: String, hDfC5: GuHVovpdAw, pEzeK: Int, bosAd: SELF_TYPE) : BYjVniwOdq {
-		new BYjVniwOdq
-	};
-};
-
-class K8uSsElLRC inherits B5Ob3DP9ne {
-	qD_5q: SELF_TYPE <- new SELF_TYPE;
-	otvRN: B5Ob3DP9ne <- new B5Ob3DP9ne;
-	iuSTd: Object <- new Object;
-	agvMb(qim5n: BYjVniwOdq, snAob: Object, xBQmW: Int, mOsWp: GuHVovpdAw, xDaeN: String) : V4cTTrTsE1 {
-		new V4cTTrTsE1
-	};
-	yjNZ3(i_KY4: String, lkTNl: V4cTTrTsE1, lP7Lo: GuHVovpdAw, s9Chs: BYjVniwOdq, bpI6P: String) : V4cTTrTsE1 {
-		new V4cTTrTsE1
-	};
-	out_string(qiVVv: K8uSsElLRC, jeRxz: Bool, iWukn: Int, iNdkC: B5Ob3DP9ne, oxlGt: Bool) : Object {
-		new Object
-	};
-};
-
-class B5Ob3DP9ne inherits V4cTTrTsE1 {
-	d9aJM: K8uSsElLRC <- new K8uSsElLRC;
-	h6iyu: String <- new String;
-	jCckw: Object <- new Object;
-	l37Q6(nyyvY: K8uSsElLRC, x9PVg: Object, xV3Ul: Main, mMbFq: SELF_TYPE, iZ54h: Object) : IO {
+	s4Euf(rSTf2: Bool, xwCMZ: EV9iCZq280, oyJLv: Main, d4Jev: WuQafStvzl, ogeJO: IO) : IO {
 		new IO
 	};
-	a0SU6(gX9Xm: B5Ob3DP9ne, wq698: String, o5SaG: Object, hhtfQ: SELF_TYPE, f0G0l: IO) : GuHVovpdAw {
-		new GuHVovpdAw
+};
+
+class EV9iCZq280 inherits IO {
+	ePZLF: EV9iCZq280 <- new EV9iCZq280;
+	ewKvC: TD3ddVtJGh <- new TD3ddVtJGh;
+	mN97Z: Object <- new Object;
+	bQpyF(a2csQ: IO, kBHNu: IO, qog2W: WuQafStvzl, o1kEE: Snnux5OgCK, tZuAM: TD3ddVtJGh) : Zp0qM3C3sA {
+		new Zp0qM3C3sA
 	};
-	mu0FV(p8baA: Int, j_23q: Object, fQRbV: IO, wWwDo: Main, t4N4q: String) : BYjVniwOdq {
-		new BYjVniwOdq
+	vq3W4(e46in: Zp0qM3C3sA, gOwxj: Zp0qM3C3sA, vZZvd: String, k0oJB: Int, hqEaA: Bool) : Object {
+		new Object
+	};
+	szH5a(rmGnK: Bool, ujSEB: Object, vzyUy: Int, pcQTc: SELF_TYPE, jxAnr: TD3ddVtJGh) : Snnux5OgCK {
+		new Snnux5OgCK
 	};
 };
 
-class Main {
-	wOyrj: String <- new String;
-	nAQ7O: SELF_TYPE <- new SELF_TYPE;
-	p2Ybg: Bool <- new Bool;
-	main(kY8yk: GuHVovpdAw, nLQS4: GuHVovpdAw, gGffc: SELF_TYPE, ldc5R: String, wvlme: IO) : Bool {
+class Snnux5OgCK inherits Main {
+	aoFfR: SELF_TYPE <- new SELF_TYPE;
+	dDzaj: String <- new String;
+	aqHW2: IO <- new IO;
+	u_EIK(otSdt: IO, whO9V: SELF_TYPE, wxqHM: SELF_TYPE, z9zOn: String, cIMQO: EV9iCZq280) : SELF_TYPE {
+		new SELF_TYPE
+	};
+	out_string(vEv6q: Bool, gojhc: EV9iCZq280, zjfCK: Object, bZDBj: String, nxVh_: Zp0qM3C3sA) : Snnux5OgCK {
+		new Snnux5OgCK
+	};
+	abort(eYqgf: Object, nBuXN: Object, cNcQA: Object, sCVZN: EV9iCZq280, rtHrQ: WuQafStvzl) : WuQafStvzl {
+		new WuQafStvzl
+	};
+};
+
+class TD3ddVtJGh inherits WuQafStvzl {
+	jA6jt: EV9iCZq280 <- new EV9iCZq280;
+	gxJdr: EV9iCZq280 <- new EV9iCZq280;
+	aqKnK: String <- new String;
+	s8UCa(ybTam: EV9iCZq280, lxBey: SELF_TYPE, uyJIA: Bool, arVh7: WuQafStvzl, od0gd: String) : Main {
+		new Main
+	};
+	boZ5P(wA9mw: IO, sj6dh: Object, aOfzI: SELF_TYPE, kjLeB: Int, rhE8b: Int) : Snnux5OgCK {
+		new Snnux5OgCK
+	};
+	cP4KA(sjh7G: Bool, wSJCa: WuQafStvzl, b_pe9: Int, ndH93: Bool, obmwk: Main) : IO {
+		new IO
+	};
+};
+
+class Zp0qM3C3sA {
+	o4f0T: Bool <- new Bool;
+	oOqwj: Bool <- new Bool;
+	n8dyg: WuQafStvzl <- new WuQafStvzl;
+	nJ79P(dfsN5: Main, a21s1: EV9iCZq280, jRArJ: EV9iCZq280, zj6UI: EV9iCZq280, cKrlH: Main) : Zp0qM3C3sA {
+		new Zp0qM3C3sA
+	};
+	gW3eQ(gG5Z5: Main, nLwyT: Main, y2Bq8: Object, dHL8M: Main, keY_8: SELF_TYPE) : IO {
+		new IO
+	};
+	zs4Dm(owc9E: Main, k6h93: WuQafStvzl, s8MOK: Main, bomTl: IO, fO4OR: EV9iCZq280) : IO {
+		new IO
+	};
+};
+
+class Main inherits Zp0qM3C3sA {
+	tA73c: WuQafStvzl <- new WuQafStvzl;
+	e9Tgl: Snnux5OgCK <- new Snnux5OgCK;
+	ymUaZ: Main <- new Main;
+	main(hQTYU: Object, fNTmF: Int, mBgJL: EV9iCZq280, hxTvV: Int, ajZPz: IO) : EV9iCZq280 {
+		new EV9iCZq280
+	};
+	lIYmb(lod2s: Zp0qM3C3sA, stS32: Main, goSF7: IO, aeLVS: IO, wgIzF: Snnux5OgCK) : Zp0qM3C3sA {
+		new Zp0qM3C3sA
+	};
+	sKcJ2(vkdwZ: Int, zCtK8: EV9iCZq280, cbpkt: String, pMyzR: SELF_TYPE, ijfMt: IO) : Bool {
 		new Bool
-	};
-	oAscP(eghUt: GuHVovpdAw, eMJW9: GuHVovpdAw, k3dqX: SELF_TYPE, cKeOW: SELF_TYPE, zaWzd: Object) : Object {
-		new Object
-	};
-	in_string(hFwW1: Bool, qM9y1: BYjVniwOdq, hBYZh: Main, dHgTT: IO, t3MAl: GuHVovpdAw) : BYjVniwOdq {
-		new BYjVniwOdq
 	};
 };
 
