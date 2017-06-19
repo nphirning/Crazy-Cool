@@ -6,6 +6,9 @@
 **Important Note:** 
 > This is the ***best*** COOL code generator on the market. 
 
+**Final Note:**
+> This code generator follows the [COOL manual](https://theory.stanford.edu/~aiken/software/cool/cool-manual.pdf) for instructions on how to generate correct COOL code. If you find any examples of incorrect code being produced, please report to "nphirning@gmail.com". You may be rewarded. 
+
 ## Setup Instructions
 
 The generator is written in C++ 11. So the instructions follow:
