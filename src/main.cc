@@ -1,4 +1,4 @@
-// File         : main.cc
+// File : main.cc
 
 #include <unistd.h>
 #include <string>

@@ -11,9 +11,11 @@
 using namespace std;
 
 int indentation_tabs = 0;
+int recursive_depth = 0;
 
 // FUNCTION: Constructor.
 CodeGenerator::CodeGenerator( ClassTree tree,
+                              vector<float> expression_weights,
                               string output_file,
                               float probability_initialized,
                               int max_recursion_depth):
@@ -22,8 +24,33 @@ CodeGenerator::CodeGenerator( ClassTree tree,
   this->output_file = output_file;
   this->max_recursion_depth = max_recursion_depth;
   this->probability_initialized = probability_initialized;
+
+  // Extract expression weights to map.
+  this->expression_weights = map<string, float>();
+  string keys[] = ["new"];
+  for (int i = 0; i < 1; i++) {
+    this->expression_weights[keys[i]] = expression_weights[i];
+  }
 }
 
+void CodeGenerator::generate_expression(string expression_type) {
+  
+  // Compute possible expansions and keep track of weights.
+  vector<string> possible_expansions = vector<string>();
+  float normalization_factor = 0.0;
+  vector<float> probability_cutoffs;
+
+  // New.
+  normalization_factor += expression_weights["new"];
+  possible_expansions.push_back("new");
+
+  // Choose expansion.
+  transform(probability_cutoffs.begin(), probability_cutoffs.end(), probability_cutoffs.begin(),
+            [normalization_factor](float i){return i / normalization_factor;});
+
+}
+
+// FUNCTION: Prints the number of tabs indicated by global indentation_tabs.
 void CodeGenerator::print_tabs() {
   writer << string(indentation_tabs, '\t');
 }
