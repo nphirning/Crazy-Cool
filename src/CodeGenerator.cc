@@ -25,28 +25,52 @@ CodeGenerator::CodeGenerator( ClassTree tree,
   this->max_recursion_depth = max_recursion_depth;
   this->probability_initialized = probability_initialized;
 
-  // Extract expression weights to map.
-  this->expression_weights = map<string, float>();
-  string keys[] = ["new"];
-  for (int i = 0; i < 1; i++) {
-    this->expression_weights[keys[i]] = expression_weights[i];
+  // Create map from name -> weights.
+  this->expression_map = map<string, float>();
+  for (int i = 0; i < expression_keys.size(); i++) {
+    this->expression_map[expression_keys[i]] = expression_weights[i];
   }
 }
 
+// FUNCTION: Generates an expression of the given type.
 void CodeGenerator::generate_expression(string expression_type) {
-  
+
   // Compute possible expansions and keep track of weights.
   vector<string> possible_expansions = vector<string>();
   float normalization_factor = 0.0;
   vector<float> probability_cutoffs;
 
   // New.
-  normalization_factor += expression_weights["new"];
+  normalization_factor += expression_map["new"];
   possible_expansions.push_back("new");
+  probability_cutoffs.push_back(expression_map["new"]);
+
+  // Bool constants (only valid if we are generating a Bool).
+  if (expression_type == "Bool") {
+    normalization_factor += expression_map["bool"];
+    possible_expansions.push_back("bool");
+    probability_cutoffs.push_back(expression_map["bool"]);
+  }
 
   // Choose expansion.
   transform(probability_cutoffs.begin(), probability_cutoffs.end(), probability_cutoffs.begin(),
             [normalization_factor](float i){return i / normalization_factor;});
+  double probability_cutoff = ((double) rand() / (RAND_MAX));
+  int expansion_index = 0;
+  while (expansion_index < probability_cutoffs.size() - 1 &&
+          probability_cutoff >= probability_cutoffs[expansion_index + 1]) {
+    expansion_index++;
+  }
+  string expansion = possible_expansions[expansion_index];
+
+  // Generate code corresponding to chosen expansion.
+  if (expansion == "new") {
+    generate_new(expression_type);
+  } else if (expansion == "bool") {
+    generate_bool();
+  } else {
+    throw "Internal error: chosen expression type not a possible expansion.";
+  }
 
 }
 
@@ -58,10 +82,17 @@ void CodeGenerator::print_tabs() {
 // FUNCTION: Prints one attribute.
 void CodeGenerator::print_attribute(string class_name, string attribute_name, string attribute_type) {
   print_tabs();
-  writer << attribute_name << ": " << attribute_type << " <- ";
+  writer << attribute_name << ": " << attribute_type;
 
-  // FOR TESTING
-  writer << "new " << attribute_type << ";" << endl;
+  // Generate initialization based on initialization probability.
+  double cutoff = ((double) rand() / (RAND_MAX));
+  if (cutoff >= probability_initialized) {
+    writer << ";" << endl;
+  } else {
+    writer << " <- ";
+    generate_expression(attribute_type);
+    writer << ";" << endl;
+  }
 }
 
 // FUNCTION: Prints one method.
@@ -85,8 +116,10 @@ void CodeGenerator::print_method(string class_name, string method_name, string m
   writer << ") : " << method_type << " {" << endl;
   indentation_tabs++;
 
+  // Generate body.
   print_tabs();
-  writer << "new " << method_type << endl;
+  generate_expression(method_type);
+  writer << endl;
 
   // End method declaration.
   indentation_tabs--;

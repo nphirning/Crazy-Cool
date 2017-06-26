@@ -1,5 +1,5 @@
 CC=g++
-SRC=main.cc ClassTree.cc util.cc CodeGenerator.cc
+SRC=main.cc ClassTree.cc util.cc CodeGenerator.cc ExpressionGenerator.cc
 CFLAGS=-std=c++11
 
 all: crazycool

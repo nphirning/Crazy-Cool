@@ -33,10 +33,14 @@ private:
   void print_method(std::string class_name, std::string method_name, std::string method_type);
   void print_tabs();
 
+  // Expression generation.
+  void generate_new(std::string type);
+  void generate_bool();
+
   std::string output_file;
   ClassTree tree;
-  std::string expression_keys[] = ["new"];
-  std::map<string, float> expression_weights;
+  std::vector<std::string> expression_keys = {"new", "bool"};
+  std::map<std::string, float> expression_map;
   int max_recursion_depth;
   float probability_initialized;
   std::ofstream writer;
