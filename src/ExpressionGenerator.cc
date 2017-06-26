@@ -107,6 +107,10 @@ bool CodeGenerator::assignment_possible(string type) {
   // NOTES: - We need an identifier of type SELF_TYPE.
   if (type == "SELF_TYPE") {
     for(int i = 0; i < identifiers.size(); i++) {
+
+      // Can't assign to self.
+      if (identifiers[i].first == "self") continue;
+
       string identifier_type = identifiers[i].second;
       if (identifier_type == "SELF_TYPE") {
         return true;
@@ -125,6 +129,10 @@ bool CodeGenerator::assignment_possible(string type) {
                             it != possible_assign_types.end(); ++it) {
     string possible_type = *it;
     for (int i = 0; i < identifiers.size(); i++) {
+
+      // Can't assign to self.
+      if (identifiers[i].first == "self") continue;
+
       string identifier_type = identifiers[i].second;
       if (identifier_type == "SELF_TYPE") {
         identifier_type = current_class;
@@ -149,6 +157,10 @@ void CodeGenerator::generate_assignment(string type) {
 
   if (type == "SELF_TYPE") {
     for (int i = 0; i < identifiers.size(); i++) {
+
+      // Can't assign to self.
+      if (identifiers[i].first == "self") continue;
+
       if (identifiers[i].second == "SELF_TYPE") {
         possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], "SELF_TYPE"));
       }
@@ -160,6 +172,10 @@ void CodeGenerator::generate_assignment(string type) {
                                it != possible_assign_types.end(); ++it) {
       string possible_assign_type = *it;
       for (int i = 0; i < identifiers.size(); i++) {
+
+        // Can't assign to self.
+        if (identifiers[i].first == "self") continue;
+
         string identifier_type = identifiers[i].second;
         if (identifier_type == "SELF_TYPE") {
           identifier_type = current_class;
