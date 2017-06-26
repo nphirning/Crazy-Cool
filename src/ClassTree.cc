@@ -12,6 +12,8 @@
 
 using namespace std;
 
+// MARK: - Functions required for ClassTree generation.
+
 // FUNCTION: Constructor.
 ClassTree::ClassTree(   int num_classes,
                         int num_attributes_per_class,
@@ -462,4 +464,16 @@ void ClassTree::generate_class_information() {
   generate_class_tree();
   generate_class_attributes();
 	generate_class_methods();
+}
+
+// MARK: - Helpers (not involved in class generation).
+
+// FUNCTION: Checks if child <= parent.
+bool ClassTree::is_child_of(string child, string parent) {
+  if (child == parent) return true;
+  for (int i = 0; i < class_ancestors[child].size(); i++) {
+    string ancestor = class_ancestors[child][i];
+    if (ancestor == parent) return true;
+  }
+  return false;
 }

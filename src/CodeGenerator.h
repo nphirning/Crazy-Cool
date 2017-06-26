@@ -38,10 +38,13 @@ private:
   void generate_bool();
   void generate_string();
   void generate_int();
+  bool identifiers_contains(std::string type);
+  void generate_identifier(std::string type);
 
   std::string output_file;
   ClassTree tree;
-  std::vector<std::string> expression_keys = {"new", "bool", "string", "int"};
+  std::vector<std::pair<std::string, std::string> > identifiers;
+  std::vector<std::string> expression_keys = {"new", "bool", "string", "int", "identifier"};
   std::map<std::string, float> expression_map;
   int max_recursion_depth;
   float probability_initialized;

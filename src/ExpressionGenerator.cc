@@ -37,3 +37,32 @@ void CodeGenerator::generate_string() {
 void CodeGenerator::generate_int() {
   writer << rand();
 }
+
+// FUNCTION: Checks if there exists an identifier with provided type.
+bool CodeGenerator::identifiers_contains(string type) {
+  for(int i = 0; i < identifiers.size(); i++) {
+      if (tree.is_child_of(identifiers[i].second, type)) {
+        return true;
+      }
+  }
+  return false;
+}
+
+// EXPRESSION: Identifier.
+void CodeGenerator::generate_identifier(string type) {
+
+  // Find possible identifiers.
+  vector<pair<string, string> > possible_identifiers = vector<pair<string, string> >();
+  for (int i = 0; i < identifiers.size(); i++) {
+    if (tree.is_child_of(identifiers[i].second, type)) {
+      possible_identifiers.push_back(identifiers[i]);
+    }
+  }
+  if (identifiers.size() == 0) {
+    throw "Internal Error: no identifiers match expression but generate_identifier was called.";
+  }
+
+  // Choose identifier at random and print out.
+  string identifier = possible_identifiers[rand() % possible_identifiers.size()].first;
+  writer << identifier;
+}

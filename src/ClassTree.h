@@ -49,6 +49,9 @@ public:
   std::map<std::string, std::map<std::string, std::string> > class_method_types;
   std::map<std::string, std::map<std::string, std::vector<std::pair<std::string, std::string> > > > class_method_args;
 
+  // Helper functions.
+  bool is_child_of(std::string child, std::string parent);
+
 private:
 
   // Internal methods for generate_class_information().

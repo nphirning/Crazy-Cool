@@ -41,6 +41,13 @@ void CodeGenerator::generate_expression(string expression_type) {
   float normalization_factor = 0.0;
   vector<float> probability_cutoffs;
 
+  // POSSIBLE EXPRESSION TYPES.
+  // 1. New.
+  // 2. Bool constants.
+  // 3. String constants.
+  // 4. Int constants.
+  // 5. Identifiers.
+
   // New.
   normalization_factor += expression_map["new"];
   possible_expansions.push_back("new");
@@ -67,6 +74,16 @@ void CodeGenerator::generate_expression(string expression_type) {
     probability_cutoffs.push_back(expression_map["int"]);
   }
 
+  // Identifiers.
+  if (identifiers_contains(expression_type)) {
+    normalization_factor += expression_map["identifier"];
+    possible_expansions.push_back("identifier");
+    probability_cutoffs.push_back(expression_map["identifier"]);
+  }
+
+
+  // EXPANSION CHOICE AND GENERATION.
+
   // Choose expansion.
   transform(probability_cutoffs.begin(), probability_cutoffs.end(), probability_cutoffs.begin(),
             [normalization_factor](float i){return i / normalization_factor;});
@@ -87,6 +104,8 @@ void CodeGenerator::generate_expression(string expression_type) {
     generate_string();
   } else if (expansion == "int") {
     generate_int();
+  } else if (expansion == "identifier") {
+    generate_identifier(expression_type);
   } else {
     throw "Internal error: chosen expression type not a possible expansion.";
   }
@@ -115,7 +134,13 @@ void CodeGenerator::print_attribute(string class_name, string attribute_name, st
 }
 
 // FUNCTION: Prints one method.
+// NOTES: Handles updating the identifiers vector with
+//        all the arguments in one method.
 void CodeGenerator::print_method(string class_name, string method_name, string method_type) {
+
+  // Update identifiers vector.
+  map<string, vector<pair<string, string> > > class_method_args = tree.class_method_args[class_name];
+  identifiers.insert(identifiers.end(), class_method_args[method_name].begin(), class_method_args[method_name].end());
 
   // Tabs + method name.
   print_tabs();
@@ -144,10 +169,24 @@ void CodeGenerator::print_method(string class_name, string method_name, string m
   indentation_tabs--;
   print_tabs();
   writer << "};" << endl;
+
+  // Remove from identifiers vector.
+  identifiers.resize(identifiers.size() - tree.class_method_args[class_name][method_name].size());
 }
 
 // FUNCTION: Prints one class.
+// NOTES: Handles updating the identifiers vector with all
+//        class attributes and self.
 void CodeGenerator::print_class(string class_name) {
+
+  // Update identifiers vector with local variables.
+  vector<string> attribute_holders = tree.class_ancestors[class_name];
+  attribute_holders.push_back(class_name);
+  for (int i = 0; i < attribute_holders.size(); i++) {
+    vector<pair<string, string> > current_attribute_pairs = tree.class_attributes[attribute_holders[i]];
+    identifiers.insert(identifiers.end(), current_attribute_pairs.begin(), current_attribute_pairs.end());
+  }
+  identifiers.push_back(pair<string, string>("self", class_name));
 
   // Print class declaration line.
   string parent = tree.class_ancestors[class_name][0];
@@ -178,11 +217,15 @@ void CodeGenerator::print_class(string class_name) {
   print_tabs();
   writer << "};" << endl << endl;
 
+  // Reset identifiers vector.
+  identifiers = vector<pair<string, string> >();
 }
 
 
 // FUNCTION: Main function that generates the output code file.
 void CodeGenerator::generate_code() {
+  identifiers = vector<pair<string, string> >();
+
   for (int i = 0; i < tree.class_names.size(); i++) {
     string class_name = tree.class_names[i];
     if (class_name == "Object" || class_name == "Bool" ||
