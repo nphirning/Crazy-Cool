@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include <vector>
 #include "ClassTree.h"
 #include "CodeGenerator.h"
