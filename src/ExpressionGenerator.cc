@@ -41,7 +41,8 @@ void CodeGenerator::generate_int() {
 // FUNCTION: Checks if there exists an identifier with provided type.
 bool CodeGenerator::identifiers_contains(string type) {
 
-  // If we are expanding to SELF_TYPE, we need an identifier with type SELF_TYPE.
+  // Case 1: Expanding to SELF_TYPE.
+  // NOTES: - We need an identifier of type SELF_TYPE.
   if (type == "SELF_TYPE") {
     for (int i = 0; i < identifiers.size(); i++) {
       if (identifiers[i].second == "SELF_TYPE") {
@@ -51,16 +52,16 @@ bool CodeGenerator::identifiers_contains(string type) {
     return false;
   }
 
-  // Otherwise, every time we see SELF_TYPE, we use the current class.
+  // Case 2: Expanding to anything but SELF_TYPE.
+  // NOTES: - SELF_TYPE is replaced by the current class.
   for(int i = 0; i < identifiers.size(); i++) {
-    if (identifiers[i].second == "SELF_TYPE") {
-      if (tree.is_child_of(current_class, type)) {
+    string identifier_type = identifiers[i].second;
+    if (identifier_type == "SELF_TYPE") {
+      identifier_type = current_class;
+    }
+
+    if (tree.is_child_of(identifier_type, type)) {
         return true;
-      }
-    } else {
-      if (tree.is_child_of(identifiers[i].second, type)) {
-        return true;
-      }
     }
   }
   return false;
@@ -79,14 +80,13 @@ void CodeGenerator::generate_identifier(string type) {
     }
   } else {
     for (int i = 0; i < identifiers.size(); i++) {
-      if (identifiers[i].second == "SELF_TYPE") {
-        if (tree.is_child_of(current_class, type)) {
-          possible_identifiers.push_back(identifiers[i]);
-        }
-      } else {
-        if (tree.is_child_of(identifiers[i].second, type)) {
-          possible_identifiers.push_back(identifiers[i]);
-        }
+      string identifier_type = identifiers[i].second;
+      if (identifier_type == "SELF_TYPE") {
+        identifier_type = current_class;
+      }
+
+      if (tree.is_child_of(identifier_type, type)) {
+        possible_identifiers.push_back(identifiers[i]);
       }
     }
   }
@@ -98,4 +98,86 @@ void CodeGenerator::generate_identifier(string type) {
   // Choose identifier at random and print out.
   string identifier = possible_identifiers[rand() % possible_identifiers.size()].first;
   writer << identifier;
+}
+
+// FUNCTION: Checks if an assignment can return provided type.
+bool CodeGenerator::assignment_possible(string type) {
+
+  // Case 1: Expanding to SELF_TYPE.
+  // NOTES: - We need an identifier of type SELF_TYPE.
+  if (type == "SELF_TYPE") {
+    for(int i = 0; i < identifiers.size(); i++) {
+      string identifier_type = identifiers[i].second;
+      if (identifier_type == "SELF_TYPE") {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Case 2: Not expanding to SELF_TYPE.
+  // NOTES: - For each possible child of @type, we check
+  //          if there exists an identifier with type <= child.
+  //        - Identifiers w/type SELF_TYPE are consider instances of current class.
+  set<string> possible_assign_types = tree.class_descendants[type];
+  possible_assign_types.insert(type);
+  for(set<string>::iterator it = possible_assign_types.begin();
+                            it != possible_assign_types.end(); ++it) {
+    string possible_type = *it;
+    for (int i = 0; i < identifiers.size(); i++) {
+      string identifier_type = identifiers[i].second;
+      if (identifier_type == "SELF_TYPE") {
+        identifier_type = current_class;
+      } else {
+        if (tree.is_child_of(possible_type, identifier_type)) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+// EXPRESSION: Assignment.
+void CodeGenerator::generate_assignment(string type) {
+
+  // Choose possible assigns.
+  // NOTES: - The possible assigns are stored in a vector where elements are of the form
+  //          ((identifier name, identifier type), assign expression type)
+  vector<pair<pair<string, string>, string> > possible_assigns = vector<pair<pair<string, string>, string> >();
+
+  if (type == "SELF_TYPE") {
+    for (int i = 0; i < identifiers.size(); i++) {
+      if (identifiers[i].second == "SELF_TYPE") {
+        possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], "SELF_TYPE"));
+      }
+    }
+  } else {
+    set<string> possible_assign_types = tree.class_descendants[type];
+    possible_assign_types.insert(type);
+    for (set<string>::iterator it = possible_assign_types.begin();
+                               it != possible_assign_types.end(); ++it) {
+      string possible_assign_type = *it;
+      for (int i = 0; i < identifiers.size(); i++) {
+        string identifier_type = identifiers[i].second;
+        if (identifier_type == "SELF_TYPE") {
+          identifier_type = current_class;
+        }
+        if (tree.is_child_of(possible_assign_type, identifier_type)) {
+          possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], possible_assign_type));
+        }
+      }
+    }
+  }
+
+  if (possible_assigns.size() == 0) {
+    throw "Internal Error: No possible assignments though generate_assignment was called.";
+  }
+
+  // Choose assignment randomly and output result.
+  pair<pair<string, string>, string> assign = possible_assigns[rand() % possible_assigns.size()];
+  writer << assign.first.first << " <- (";
+  generate_expression(assign.second);
+  writer << ")";
 }

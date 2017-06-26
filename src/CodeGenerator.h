@@ -40,10 +40,12 @@ private:
   void generate_int();
   bool identifiers_contains(std::string type);
   void generate_identifier(std::string type);
+  bool assignment_possible(std::string type);
+  void generate_assignment(std::string type);
 
   std::string output_file;
   ClassTree tree;
-  std::vector<std::string> expression_keys = {"new", "bool", "string", "int", "identifier"};
+  std::vector<std::string> expression_keys = {"new", "bool", "string", "int", "identifier", "assignment"};
   std::map<std::string, float> expression_map;
   int max_recursion_depth;
   float probability_initialized;

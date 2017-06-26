@@ -36,6 +36,9 @@ CodeGenerator::CodeGenerator( ClassTree tree,
 // FUNCTION: Generates an expression of the given type.
 void CodeGenerator::generate_expression(string expression_type) {
 
+  // Increase recursive depth.
+  recursive_depth++;
+
   // Compute possible expansions and keep track of weights.
   vector<string> possible_expansions = vector<string>();
   float normalization_factor = 0.0;
@@ -47,6 +50,7 @@ void CodeGenerator::generate_expression(string expression_type) {
   // 3. String constants.
   // 4. Int constants.
   // 5. Identifiers.
+  // 6. Assignment.
 
   // New.
   normalization_factor += expression_map["new"];
@@ -82,7 +86,11 @@ void CodeGenerator::generate_expression(string expression_type) {
   }
 
   // Assignment.
-
+  if (assignment_possible(expression_type) && recursive_depth < max_recursion_depth) {
+    normalization_factor += expression_map["assignment"];
+    possible_expansions.push_back("assignment");
+    probability_cutoffs.push_back(expression_map["assignment"]);
+  }
 
   // EXPANSION CHOICE AND GENERATION.
 
@@ -109,10 +117,13 @@ void CodeGenerator::generate_expression(string expression_type) {
   } else if (expansion == "identifier") {
     generate_identifier(expression_type);
   } else if (expansion == "assignment") {
-    //generate_assignment(expression_type);
+    generate_assignment(expression_type);
   } else {
     throw "Internal error: chosen expression type not a possible expansion.";
   }
+
+  // Reduce recursive depth.
+  recursive_depth--;
 
 }
 
