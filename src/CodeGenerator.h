@@ -36,10 +36,12 @@ private:
   // Expression generation.
   void generate_new(std::string type);
   void generate_bool();
+  void generate_string();
+  void generate_int();
 
   std::string output_file;
   ClassTree tree;
-  std::vector<std::string> expression_keys = {"new", "bool"};
+  std::vector<std::string> expression_keys = {"new", "bool", "string", "int"};
   std::map<std::string, float> expression_map;
   int max_recursion_depth;
   float probability_initialized;

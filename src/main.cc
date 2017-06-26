@@ -11,7 +11,7 @@
 
 using namespace std;
 
-bool DEBUG = true;
+bool DEBUG = false;
 
 // FUNCTION: main execution
 int main(int argc, char* argv[]) {
@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
 
   // Flag parsing.
 
-  int num_classes = 5;
+  int num_classes = 10;
   string corpus_name = "";
 
   int c;

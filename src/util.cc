@@ -47,6 +47,15 @@ bool string_vector_contains(string str, vector<string> word_vector) {
   return false;
 }
 
+// FUNCTION: Generates a random alphanumeric string.
+string generate_random_string(int length) {
+  string str = "";
+  for(int i = 0; i < length; i++) {
+    str += alphanum[rand() % 63];
+  }
+  return str;
+}
+
 // Generates a valid COOL class name of length @length
 // that is not inside the vector @illegal_words.
 // NOTE: This ignores the case of the strings in @illegal_words.
