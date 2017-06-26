@@ -43,12 +43,15 @@ private:
 
   std::string output_file;
   ClassTree tree;
-  std::vector<std::pair<std::string, std::string> > identifiers;
   std::vector<std::string> expression_keys = {"new", "bool", "string", "int", "identifier"};
   std::map<std::string, float> expression_map;
   int max_recursion_depth;
   float probability_initialized;
   std::ofstream writer;
+
+  // State-dependent variables.
+  std::vector<std::pair<std::string, std::string> > identifiers;
+  std::string current_class;
 };
 
 #endif

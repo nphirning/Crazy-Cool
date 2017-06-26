@@ -81,6 +81,8 @@ void CodeGenerator::generate_expression(string expression_type) {
     probability_cutoffs.push_back(expression_map["identifier"]);
   }
 
+  // Assignment.
+
 
   // EXPANSION CHOICE AND GENERATION.
 
@@ -106,6 +108,8 @@ void CodeGenerator::generate_expression(string expression_type) {
     generate_int();
   } else if (expansion == "identifier") {
     generate_identifier(expression_type);
+  } else if (expansion == "assignment") {
+    //generate_assignment(expression_type);
   } else {
     throw "Internal error: chosen expression type not a possible expansion.";
   }
@@ -175,9 +179,11 @@ void CodeGenerator::print_method(string class_name, string method_name, string m
 }
 
 // FUNCTION: Prints one class.
-// NOTES: Handles updating the identifiers vector with all
-//        class attributes and self.
+// NOTES: - updates identifiers vectors with attributes + self.
+//        - updates current_class as well.
 void CodeGenerator::print_class(string class_name) {
+
+  current_class = class_name;
 
   // Update identifiers vector with local variables.
   vector<string> attribute_holders = tree.class_ancestors[class_name];

@@ -469,6 +469,7 @@ void ClassTree::generate_class_information() {
 // MARK: - Helpers (not involved in class generation).
 
 // FUNCTION: Checks if child <= parent.
+// NOTES: Input is assumed to not be SELF_TYPE.
 bool ClassTree::is_child_of(string child, string parent) {
   if (child == parent) return true;
   for (int i = 0; i < class_ancestors[child].size(); i++) {

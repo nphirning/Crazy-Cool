@@ -1,138 +1,132 @@
-class NjgZkn55OU inherits F7Txj3_pSp {
-	qUm0D: IO;
-	c_Gbj: SELF_TYPE;
-	aa3Ak: NhDNWWaHuP;
-	gHZAk(s2U4U: JwN1EYl0Vd, fdICe: Object, kwFQV: Int, mW8MT: IO, hq0Ew: Bool) : EzOpWB9MhT {
-		wI0R3
+class HIbhCNY54l inherits PW8otAkL1a {
+	rAASW: SELF_TYPE <- rAASW;
+	dGmpJ: HIbhCNY54l <- zWcKT;
+	fNEAi: Bool;
+	yNbGq(u6T00: GLmeaiPOYO, koi87: Bool, j6D7X: Object, geB5w: KjcF7NLH8A, x_n4y: Main) : PW8otAkL1a {
+		self
 	};
-	zVl5Z(n69Bw: Bool, sYzyk: String, hnwEY: NjgZkn55OU, w0E2e: XVTzziKZnO, jg7QC: Gi8fH0OCUT) : Gi8fH0OCUT {
-		wI0R3
-	};
-	tg5iW(xZTEU: CALy93EpLe, bKV7L: XVTzziKZnO, zgAKG: XVTzziKZnO, xJ90M: NjgZkn55OU, tu6YG: F7Txj3_pSp) : Main {
-		gI1ew
+	koNY9(d7lqd: Main, u4bAu: HIbhCNY54l, jehvK: SdQ00L5XHL, j1L9o: DtSPvyrJoh, lqMwP: Fwx9yBAYr0) : GLmeaiPOYO {
+		lqMwP
 	};
 };
 
-class JwN1EYl0Vd inherits WlPdprTbz8 {
-	lID4S: Main <- lID4S;
-	co3LL: CALy93EpLe <- dzvSg;
-	nZusR: F7Txj3_pSp;
-	cthLk(uORsP: String, yLvHB: NhDNWWaHuP, iTox_: F7Txj3_pSp, fc650: NhDNWWaHuP, o7WDX: Int) : Gi8fH0OCUT {
-		vPRWV
+class EKIguxbXel inherits UKYZPO42uE {
+	ombYo: PW8otAkL1a <- zWcKT;
+	q1gz5: QVquWM9FSV;
+	wnXkU: HIbhCNY54l;
+	vkD7Q(goNEx: QVquWM9FSV, hOLTq: KjcF7NLH8A, ik72Q: SdQ00L5XHL, v4cB6: SdQ00L5XHL, msXXb: IO) : HIbhCNY54l {
+		ik72Q
 	};
-	lG5zq(oFzs4: JwN1EYl0Vd, yuUv_: JwN1EYl0Vd, vYxPm: Main, tTQqq: Gi8fH0OCUT, nMOsj: Main) : Int {
+	foF3F(tIWtj: DtSPvyrJoh, qCfda: DtSPvyrJoh, truB7: String, qX9cT: Main, fQ7yy: Bool) : QVquWM9FSV {
+		zAY_T
+	};
+};
+
+class PW8otAkL1a inherits GLmeaiPOYO {
+	s182n: Int;
+	u4IDO: String <- new String;
+	tE4cD: SdQ00L5XHL;
+	g8Z_V(tf09q: DtSPvyrJoh, y_SyK: SdQ00L5XHL, c96qD: HIbhCNY54l, kSL3P: QVquWM9FSV, rsgTl: KjcF7NLH8A) : IO {
+		new IO
+	};
+	dyUs1(pfqy6: Fwx9yBAYr0, op9VQ: QVquWM9FSV, rSBUu: EKIguxbXel, o31Ba: Object, gYpYp: EKIguxbXel) : Object {
+		s182n
+	};
+};
+
+class Fwx9yBAYr0 inherits GLmeaiPOYO {
+	mBy7A: SELF_TYPE <- mBy7A;
+	eLHqu: Fwx9yBAYr0 <- self;
+	s6x7s: HIbhCNY54l <- s6x7s;
+	ySbNQ(tikc3: EKIguxbXel, uLWx1: HIbhCNY54l, xTu03: PW8otAkL1a, zs1L3: PW8otAkL1a, ktZZ0: String) : SdQ00L5XHL {
+		f6j_S
+	};
+	gT9Mf(m29eR: QVquWM9FSV, aEiSg: GLmeaiPOYO, ceMB3: KjcF7NLH8A, i8BJM: Object, e0_nF: HIbhCNY54l) : Main {
+		cEtBt
+	};
+	k5VHd(mOEG2: Bool, eHv5D: Int, mTeZN: Object, uUNYQ: Main, k65Ug: EKIguxbXel) : EKIguxbXel {
+		vGo8I
+	};
+};
+
+class DtSPvyrJoh inherits Main {
+	mZjLC: PW8otAkL1a;
+	bE61w: UKYZPO42uE;
+	bxsjS: DtSPvyrJoh;
+	aUMMQ(xCXbb: String, vzX8Y: Main, wAqt6: HIbhCNY54l, izOLq: String, d3o4s: EKIguxbXel) : PW8otAkL1a {
+		mZjLC
+	};
+};
+
+class UKYZPO42uE inherits QVquWM9FSV {
+	zAY_T: UKYZPO42uE;
+	wE3vz: Main;
+	kXZYN: DtSPvyrJoh;
+	zdutM(hwA3g: GLmeaiPOYO, rJFJc: SdQ00L5XHL, sUdaL: PW8otAkL1a, fS0j7: Int, oCxW9: DtSPvyrJoh) : SdQ00L5XHL {
+		rJFJc
+	};
+	mBxQF(tgsFQ: Int, cll0T: SdQ00L5XHL, mhfSY: Object, zhb9t: KjcF7NLH8A, q1947: DtSPvyrJoh) : Int {
 		new Int
 	};
-	aIhMy(op2yh: CALy93EpLe, fq05r: XVTzziKZnO, hR1kS: Main, oWA3j: IO, yzelK: IO) : CALy93EpLe {
-		op2yh
+};
+
+class GLmeaiPOYO inherits Main {
+	f6j_S: SdQ00L5XHL <- f6j_S;
+	fchuB: Fwx9yBAYr0 <- fchuB;
+	vGo8I: EKIguxbXel;
+	hbb7B(yjaRB: PW8otAkL1a, pk44z: IO, hn6Az: SdQ00L5XHL, nRtBl: IO, vBzJf: PW8otAkL1a) : Fwx9yBAYr0 {
+		fchuB
+	};
+	jtb49(r7VBI: PW8otAkL1a, tERAn: Fwx9yBAYr0, f2kg_: UKYZPO42uE, aZW8P: DtSPvyrJoh, ogs7T: KjcF7NLH8A) : Fwx9yBAYr0 {
+		tERAn
 	};
 };
 
-class NhDNWWaHuP inherits IO {
-	va60a: NhDNWWaHuP;
-	w69sB: NjgZkn55OU;
-	vJBtL: NjgZkn55OU <- vJBtL;
-	qnmoz(cawix: NhDNWWaHuP, auBup: CALy93EpLe, sktvt: String, zmLRf: F7Txj3_pSp, p1m7c: Int) : Main {
-		new Main
+class KjcF7NLH8A inherits UKYZPO42uE {
+	yNOlu: IO <- yNOlu;
+	jzLqx: KjcF7NLH8A;
+	uAbN7: EKIguxbXel;
+	qK9YS(rwxe2: Int, vd4RW: KjcF7NLH8A, qptvy: GLmeaiPOYO, uMr08: EKIguxbXel, jJnWp: HIbhCNY54l) : Main {
+		uMr08
 	};
-	u6yIS(dzosi: CALy93EpLe, hFZDp: Gi8fH0OCUT, oQs8F: Dp7s07WL6_, em_Mf: Bool, kqc3p: EzOpWB9MhT) : XVTzziKZnO {
-		new XVTzziKZnO
+};
+
+class SdQ00L5XHL inherits HIbhCNY54l {
+	eX5YR: UKYZPO42uE <- vGo8I;
+	vYrYn: DtSPvyrJoh;
+	tEvF9: DtSPvyrJoh <- vYrYn;
+	i3XW3(ce5CR: Int, vgIrW: String, zSrom: Bool, fchRu: UKYZPO42uE, hP2iY: UKYZPO42uE) : SELF_TYPE {
+		rAASW
 	};
-	afdyh(kRkJq: Bool, oIi_N: WlPdprTbz8, lxlZq: F7Txj3_pSp, akFcb: Dp7s07WL6_, abNyL: Dp7s07WL6_) : Int {
+	scQqZ(ksPkY: GLmeaiPOYO, cwwr8: Main, tzasg: Main, rfvzi: HIbhCNY54l, yhtQp: Int) : KjcF7NLH8A {
+		new KjcF7NLH8A
+	};
+};
+
+class QVquWM9FSV inherits GLmeaiPOYO {
+	gJpf_: KjcF7NLH8A;
+	qbe1f: DtSPvyrJoh;
+	dp9fz: PW8otAkL1a <- f6j_S;
+	gLAau(giI3H: PW8otAkL1a, z_zGM: DtSPvyrJoh, fwPCL: KjcF7NLH8A, nkVaK: PW8otAkL1a, d3BqM: Main) : IO {
+		new IO
+	};
+	pAF3X(vqUbK: HIbhCNY54l, qlawR: DtSPvyrJoh, ajiPX: Int, suzne: UKYZPO42uE, hUmwM: UKYZPO42uE) : Bool {
+		false
+	};
+	cjuSU(e9neO: IO, tFWf7: HIbhCNY54l, zxtfx: Object, rmCrk: PW8otAkL1a, vnnRm: Object) : Int {
 		new Int
-	};
-};
-
-class CALy93EpLe inherits EzOpWB9MhT {
-	y4sqj: WlPdprTbz8;
-	cWulF: F7Txj3_pSp <- cWulF;
-	wI0R3: Dp7s07WL6_ <- wI0R3;
-	mWq5F(qBTGx: Int, weYoL: Main, p6RYW: Bool, l3fFV: NjgZkn55OU, lVl0Z: CALy93EpLe) : Gi8fH0OCUT {
-		wI0R3
-	};
-	iJHm6(an2iG: IO, cKhFe: XVTzziKZnO, hECb5: Dp7s07WL6_, i9oCx: F7Txj3_pSp, gXqQ8: CALy93EpLe) : IO {
-		an2iG
-	};
-	xGKpU(pp6va: Main, hwBrN: Main, oGacD: WlPdprTbz8, iCq20: Gi8fH0OCUT, yGzNn: WlPdprTbz8) : JwN1EYl0Vd {
-		cWulF
-	};
-};
-
-class WlPdprTbz8 inherits Gi8fH0OCUT {
-	lieWt: F7Txj3_pSp;
-	dzvSg: CALy93EpLe;
-	oSiZs: CALy93EpLe <- self;
-	c7u2z(a5ItS: F7Txj3_pSp, rdTdG: Gi8fH0OCUT, pbBAV: Bool, rPI5Y: WlPdprTbz8, sqSSs: String) : CALy93EpLe {
-		rdTdG
-	};
-	dme6X(nWXpw: NjgZkn55OU, zHSJU: WlPdprTbz8, iuRk6: Int, ccrnp: NjgZkn55OU, eqoCL: CALy93EpLe) : WlPdprTbz8 {
-		y4sqj
-	};
-};
-
-class Gi8fH0OCUT inherits CALy93EpLe {
-	dhC0Y: Gi8fH0OCUT;
-	zqUZF: Dp7s07WL6_;
-	gI1ew: XVTzziKZnO <- gI1ew;
-};
-
-class F7Txj3_pSp inherits JwN1EYl0Vd {
-	selU4: CALy93EpLe <- selU4;
-	fd8fn: Bool <- new Bool;
-	zqM41: Int <- new Int;
-	a2te_(yZAbY: Gi8fH0OCUT, eaw2k: NhDNWWaHuP, zatHH: Object, xhUoN: XVTzziKZnO, cJfvG: String) : CALy93EpLe {
-		cWulF
-	};
-};
-
-class Dp7s07WL6_ inherits Gi8fH0OCUT {
-	wGhft: Gi8fH0OCUT;
-	t8UaD: WlPdprTbz8 <- t8UaD;
-	ap91r: Int <- new Int;
-	peldx(moDDh: IO, xPtZQ: XVTzziKZnO, n839r: String, aVzK4: JwN1EYl0Vd, wLqtx: JwN1EYl0Vd) : NjgZkn55OU {
-		new NjgZkn55OU
-	};
-	yhLE9(wUXug: Main, gf0eA: NjgZkn55OU, fR_mG: Bool, uDkT3: JwN1EYl0Vd, hsm7Q: JwN1EYl0Vd) : Object {
-		wUXug
-	};
-};
-
-class EzOpWB9MhT {
-	rAP2v: Bool <- new Bool;
-	uMAAU: XVTzziKZnO;
-	vPRWV: WlPdprTbz8 <- vPRWV;
-	oyLwy(a2HHf: Main, lYJ8R: EzOpWB9MhT, aVdeP: CALy93EpLe, cwEvT: F7Txj3_pSp, iXFrn: Bool) : Main {
-		a2HHf
-	};
-	d5xMI(cZpy8: Main, y1cEE: CALy93EpLe, t1mYL: JwN1EYl0Vd, xDCta: Main, hL86E: Dp7s07WL6_) : Main {
-		xDCta
-	};
-	fbA77(vPzM7: EzOpWB9MhT, oiBxv: CALy93EpLe, yqKQ1: IO, j5sxq: WlPdprTbz8, hsYlK: Object) : NjgZkn55OU {
-		new NjgZkn55OU
-	};
-};
-
-class XVTzziKZnO inherits Main {
-	m7F9r: XVTzziKZnO <- m7F9r;
-	eY1O3: EzOpWB9MhT <- e33Gj;
-	hR1HV: EzOpWB9MhT;
-	o5opu(cq6sD: CALy93EpLe, jBZQY: XVTzziKZnO, q7VaS: Int, pycrU: WlPdprTbz8, sE1eh: CALy93EpLe) : Object {
-		q7VaS
-	};
-	vp0O9(crVDR: F7Txj3_pSp, fwmOu: EzOpWB9MhT, dUTQA: EzOpWB9MhT, gkqII: Dp7s07WL6_, ul17h: Bool) : NjgZkn55OU {
-		new NjgZkn55OU
 	};
 };
 
 class Main {
-	e33Gj: Dp7s07WL6_;
-	tg4jV: Bool;
-	e0BSK: Int <- new Int;
-	main() : Bool {
-		new Bool
+	feWCC: DtSPvyrJoh;
+	zWcKT: HIbhCNY54l <- zWcKT;
+	cEtBt: DtSPvyrJoh <- cEtBt;
+	main() : EKIguxbXel {
+		new EKIguxbXel
 	};
-	fuEs7(ylUuZ: Int, b4yUb: EzOpWB9MhT, aIEdE: JwN1EYl0Vd, zuptt: NjgZkn55OU, mvTVw: NhDNWWaHuP) : Bool {
-		new Bool
+	yEuU0(aMicf: Fwx9yBAYr0, x5mAB: KjcF7NLH8A, yuEZU: DtSPvyrJoh, djc51: HIbhCNY54l, bv2yU: UKYZPO42uE) : DtSPvyrJoh {
+		yuEZU
 	};
 };
 
