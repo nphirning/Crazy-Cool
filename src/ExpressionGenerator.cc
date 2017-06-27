@@ -104,15 +104,18 @@ void CodeGenerator::generate_identifier(string type) {
 bool CodeGenerator::assignment_possible(string type) {
 
   // Case 1: Expanding to SELF_TYPE.
-  // NOTES: - We need an identifier of type SELF_TYPE.
+  // NOTES: - Looking for A <- B.
+  //          - B must be of type SELF_TYPE.
+  //          - A cannot be self.
   if (type == "SELF_TYPE") {
     for(int i = 0; i < identifiers.size(); i++) {
+
+      string identifier_type = identifiers[i].second;
 
       // Can't assign to self.
       if (identifiers[i].first == "self") continue;
 
-      string identifier_type = identifiers[i].second;
-      if (identifier_type == "SELF_TYPE") {
+      if (identifier_type == "SELF_TYPE" || tree.is_child_of(current_class, identifier_type)) {
         return true;
       }
     }
@@ -122,20 +125,34 @@ bool CodeGenerator::assignment_possible(string type) {
   // Case 2: Not expanding to SELF_TYPE.
   // NOTES: - For each possible child of @type, we check
   //          if there exists an identifier with type <= child.
-  //        - Identifiers w/type SELF_TYPE are consider instances of current class.
+  //        - Identifiers w/type SELF_TYPE force the assignment to be SELF_TYPE.
+
   set<string> possible_assign_types = tree.class_descendants[type];
   possible_assign_types.insert(type);
+  if (tree.is_child_of(current_class, type)) {
+    possible_assign_types.insert("SELF_TYPE");
+  }
+
   for(set<string>::iterator it = possible_assign_types.begin();
                             it != possible_assign_types.end(); ++it) {
     string possible_type = *it;
+    if (possible_type == "SELF_TYPE") {
+      possible_type = current_class;
+    }
+
     for (int i = 0; i < identifiers.size(); i++) {
+
+      string identifier_type = identifiers[i].second;
 
       // Can't assign to self.
       if (identifiers[i].first == "self") continue;
 
-      string identifier_type = identifiers[i].second;
+      // If identifier is SELF_TYPE, we need assignment to be SELF_TYPE.
+      // Otherwise, if assignment is SELF_TYPE, we treat it as current class.
       if (identifier_type == "SELF_TYPE") {
-        identifier_type = current_class;
+        if (*it == "SELF_TYPE") {
+          return true;
+        }
       } else {
         if (tree.is_child_of(possible_type, identifier_type)) {
           return true;
@@ -156,32 +173,48 @@ void CodeGenerator::generate_assignment(string type) {
   vector<pair<pair<string, string>, string> > possible_assigns = vector<pair<pair<string, string>, string> >();
 
   if (type == "SELF_TYPE") {
-    for (int i = 0; i < identifiers.size(); i++) {
+    for(int i = 0; i < identifiers.size(); i++) {
+
+      string identifier_type = identifiers[i].second;
 
       // Can't assign to self.
       if (identifiers[i].first == "self") continue;
 
-      if (identifiers[i].second == "SELF_TYPE") {
+      if (identifier_type == "SELF_TYPE" || tree.is_child_of(current_class, identifier_type)) {
         possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], "SELF_TYPE"));
       }
     }
   } else {
     set<string> possible_assign_types = tree.class_descendants[type];
     possible_assign_types.insert(type);
-    for (set<string>::iterator it = possible_assign_types.begin();
-                               it != possible_assign_types.end(); ++it) {
-      string possible_assign_type = *it;
+    if (tree.is_child_of(current_class, type)) {
+      possible_assign_types.insert("SELF_TYPE");
+    }
+
+    for(set<string>::iterator it = possible_assign_types.begin();
+                              it != possible_assign_types.end(); ++it) {
+      string possible_type = *it;
+      if (possible_type == "SELF_TYPE") {
+        possible_type = current_class;
+      }
+
       for (int i = 0; i < identifiers.size(); i++) {
+
+        string identifier_type = identifiers[i].second;
 
         // Can't assign to self.
         if (identifiers[i].first == "self") continue;
 
-        string identifier_type = identifiers[i].second;
+        // If identifier is SELF_TYPE, we need assignment to be SELF_TYPE.
+        // Otherwise, if assignment is SELF_TYPE, we treat it as current class.
         if (identifier_type == "SELF_TYPE") {
-          identifier_type = current_class;
-        }
-        if (tree.is_child_of(possible_assign_type, identifier_type)) {
-          possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], possible_assign_type));
+          if (*it == "SELF_TYPE") {
+            possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], *it));
+          }
+        } else {
+          if (tree.is_child_of(possible_type, identifier_type)) {
+            possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], *it));
+          }
         }
       }
     }
