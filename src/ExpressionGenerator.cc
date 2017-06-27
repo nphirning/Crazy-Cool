@@ -13,6 +13,7 @@ using namespace std;
 // EXPRESSION: new.
 void CodeGenerator::generate_new(string type) {
   writer << "new " << type;
+  current_line_length += 4 + type.length();
 }
 
 // EXPRESSION: Bool constant.
@@ -20,8 +21,10 @@ void CodeGenerator::generate_new(string type) {
 void CodeGenerator::generate_bool() {
   if (rand() % 2 == 0) {
     writer << "true";
+    current_line_length += 4;
   } else {
     writer << "false";
+    current_line_length += 5;
   }
 }
 
@@ -30,12 +33,15 @@ void CodeGenerator::generate_bool() {
 void CodeGenerator::generate_string() {
   int length = rand() % 11;
   writer << '\"' << generate_random_string(length) << '\"';
+  current_line_length += length + 2;
 }
 
 // EXPRESSION: Int constant.
 // Notes: Generates number between 0 and INT_MAX.
 void CodeGenerator::generate_int() {
-  writer << rand();
+  int a = rand();
+  writer << a;
+  current_line_length += to_string(a).length();
 }
 
 // EXPRESSION: Identifier.
@@ -78,6 +84,7 @@ bool CodeGenerator::generate_identifier(string type, bool abort_early) {
   // Choose identifier at random and print out.
   string identifier = possible_identifiers[rand() % possible_identifiers.size()].first;
   writer << identifier;
+  current_line_length += identifier.length();
 
   // Default return.
   return true;
@@ -156,8 +163,21 @@ bool CodeGenerator::generate_assignment(string type, bool abort_early) {
   // Choose assignment randomly and output result.
   pair<pair<string, string>, string> assign = possible_assigns[rand() % possible_assigns.size()];
   writer << assign.first.first << " <- (";
-  generate_expression(assign.second);
-  writer << ")";
+  current_line_length += assign.first.first.length() + 5;
+
+  if (current_line_length >= max_line_length) {
+    writer << endl;
+    indentation_tabs++;
+    print_tabs();
+    generate_expression(assign.second);
+    indentation_tabs--;
+    writer << endl;
+    print_tabs();
+    writer << ")";
+  } else {
+    generate_expression(assign.second);
+    writer << ")";
+  }
 
   // Default return.
   return true;

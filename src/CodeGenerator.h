@@ -19,7 +19,9 @@ public:
                 std::vector<float> expression_weights = std::vector<float>(1, 1.0),
                 std::string output_file = "output.cl",
                 float probability_initialized = 0.5,
-                int max_recursion_depth = 10);
+                int max_recursion_depth = 10,
+                bool should_break_lines = true,
+                int max_line_length = 80);
 
   // Main code generation function.
   void generate_code();
@@ -46,12 +48,17 @@ private:
   std::vector<std::string> expression_keys = {"new", "bool", "string", "int", "identifier", "assignment"};
   std::map<std::string, float> expression_map;
   int max_recursion_depth;
+  bool should_break_lines;
+  int max_line_length;
   float probability_initialized;
   std::ofstream writer;
 
   // State-dependent variables.
   std::vector<std::pair<std::string, std::string> > identifiers;
   std::string current_class;
+  int current_line_length; // Currently only updated for expression generation.
+  int recursive_depth;
+  int indentation_tabs;
 };
 
 #endif

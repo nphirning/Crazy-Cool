@@ -11,20 +11,27 @@
 
 using namespace std;
 
-int indentation_tabs = 0;
-int recursive_depth = 0;
+int spaces_per_tab = 4; // Used to keep track of line length.
 
 // FUNCTION: Constructor.
 CodeGenerator::CodeGenerator( ClassTree tree,
                               vector<float> expression_weights,
                               string output_file,
                               float probability_initialized,
-                              int max_recursion_depth):
+                              int max_recursion_depth,
+                              bool should_break_lines,
+                              int max_line_length):
                               writer(output_file) {
   this->tree = tree;
   this->output_file = output_file;
   this->max_recursion_depth = max_recursion_depth;
   this->probability_initialized = probability_initialized;
+  this->should_break_lines = should_break_lines;
+  this->max_line_length = max_line_length;
+  this->current_line_length = 0;
+
+  indentation_tabs = 0;
+  recursive_depth = 0;
 
   // Create map from name -> weights.
   this->expression_map = map<string, float>();
@@ -128,7 +135,10 @@ void CodeGenerator::generate_expression(string expression_type) {
 }
 
 // FUNCTION: Prints the number of tabs indicated by global indentation_tabs.
+// NOTES: - This should only be used on a new line. Otherwise, current_line_length
+//          will be incorrect.
 void CodeGenerator::print_tabs() {
+  current_line_length = indentation_tabs * spaces_per_tab;
   writer << string(indentation_tabs, '\t');
 }
 
@@ -136,15 +146,17 @@ void CodeGenerator::print_tabs() {
 void CodeGenerator::print_attribute(string class_name, string attribute_name, string attribute_type) {
   print_tabs();
   writer << attribute_name << ": " << attribute_type;
+  current_line_length += attribute_name.length() + attribute_type.length() + 2;
 
   // Generate initialization based on initialization probability.
   double cutoff = ((double) rand() / (RAND_MAX));
   if (cutoff >= probability_initialized) {
     writer << ";" << endl;
   } else {
-    writer << " <- ";
+    writer << " <- (";
+    current_line_length += 5;
     generate_expression(attribute_type);
-    writer << ";" << endl;
+    writer << ");" << endl;
   }
 }
 
@@ -221,6 +233,9 @@ void CodeGenerator::print_class(string class_name) {
     string attribute_type = tree.class_attributes[class_name][i].second;
     print_attribute(class_name, attribute_name, attribute_type);
   }
+
+  // One line between methods and attributes.
+  writer << endl;
 
   // Print methods.
   for (int i = 0; i < tree.class_method_names[class_name].size(); i++) {
