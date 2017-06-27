@@ -20,7 +20,8 @@ CodeGenerator::CodeGenerator( ClassTree tree,
                               float probability_initialized,
                               int max_recursion_depth,
                               bool should_break_lines,
-                              int max_line_length):
+                              int max_line_length,
+                              int max_expression_count):
                               writer(output_file) {
   this->tree = tree;
   this->output_file = output_file;
@@ -29,9 +30,11 @@ CodeGenerator::CodeGenerator( ClassTree tree,
   this->should_break_lines = should_break_lines;
   this->max_line_length = max_line_length;
   this->current_line_length = 0;
+  this->max_expression_count = max_expression_count;
 
   indentation_tabs = 0;
   recursive_depth = 0;
+  expression_count = 0;
 
   // Create map from name -> weights.
   this->expression_map = map<string, float>();
@@ -45,6 +48,9 @@ void CodeGenerator::generate_expression(string expression_type) {
 
   // Increase recursive depth.
   recursive_depth++;
+
+  // Increase expression count.
+  expression_count++;
 
   // Compute possible expansions and keep track of weights.
   vector<string> possible_expansions = vector<string>();
@@ -95,14 +101,16 @@ void CodeGenerator::generate_expression(string expression_type) {
   }
 
   // Assignment.
-  if (generate_assignment(expression_type, true) && recursive_depth < max_recursion_depth) {
+  if (generate_assignment(expression_type, true) && recursive_depth < max_recursion_depth
+                                                  && expression_count < max_expression_count) {
     normalization_factor += expression_map["assignment"];
     possible_expansions.push_back("assignment");
     probability_cutoffs.push_back(expression_map["assignment"]);
   }
 
   // Dispatch.
-  if (generate_dispatch(expression_type, true) && recursive_depth < max_recursion_depth) {
+  if (generate_dispatch(expression_type, true) && recursive_depth < max_recursion_depth
+                                                && expression_count < max_expression_count) {
     normalization_factor += expression_map["dispatch"];
     possible_expansions.push_back("dispatch");
     probability_cutoffs.push_back(expression_map["dispatch"]);

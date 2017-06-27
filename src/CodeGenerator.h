@@ -19,9 +19,10 @@ public:
                 std::vector<float> expression_weights = std::vector<float>(1, 1.0),
                 std::string output_file = "output.cl",
                 float probability_initialized = 0.5,
-                int max_recursion_depth = 10,
+                int max_recursion_depth = 5,
                 bool should_break_lines = true,
-                int max_line_length = 80);
+                int max_line_length = 80,
+                int max_expression_count = 10000);
 
   // Main code generation function.
   void generate_code();
@@ -53,6 +54,7 @@ private:
   int max_recursion_depth;
   bool should_break_lines;
   int max_line_length;
+  int max_expression_count;
   float probability_initialized;
   std::ofstream writer;
 
@@ -61,6 +63,7 @@ private:
   std::string current_class;
   int current_line_length; // Currently only updated for expression generation.
   int recursive_depth;
+  int expression_count;
   int indentation_tabs;
 };
 
