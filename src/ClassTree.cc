@@ -344,9 +344,9 @@ void ClassTree::add_basic_class_methods() {
 
   class_method_args["IO"] = map<string, vector<pair<string, string> > >();
   class_method_args["IO"]["out_string"] = vector<pair<string, string> >();
-  class_method_args["String"]["out_string"].push_back(pair<string, string>("x", "String"));
+  class_method_args["IO"]["out_string"].push_back(pair<string, string>("x", "String"));
   class_method_args["IO"]["out_int"] = vector<pair<string, string> >();
-  class_method_args["String"]["out_int"].push_back(pair<string, string>("x", "Int"));
+  class_method_args["IO"]["out_int"].push_back(pair<string, string>("x", "Int"));
   class_method_args["IO"]["in_string"] = vector<pair<string, string> >();
   class_method_args["IO"]["in_int"] = vector<pair<string, string> >();
 }

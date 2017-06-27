@@ -6,3 +6,6 @@ all: crazycool
 
 crazycool: $(SRC)
 	$(CC) $(CFLAGS) $^ -o $@
+
+clean:
+	rm -f crazycool
