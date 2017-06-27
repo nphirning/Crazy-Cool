@@ -38,43 +38,19 @@ void CodeGenerator::generate_int() {
   writer << rand();
 }
 
-// FUNCTION: Checks if there exists an identifier with provided type.
-bool CodeGenerator::identifiers_contains(string type) {
-
-  // Case 1: Expanding to SELF_TYPE.
-  // NOTES: - We need an identifier of type SELF_TYPE.
-  if (type == "SELF_TYPE") {
-    for (int i = 0; i < identifiers.size(); i++) {
-      if (identifiers[i].second == "SELF_TYPE") {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  // Case 2: Expanding to anything but SELF_TYPE.
-  // NOTES: - SELF_TYPE is replaced by the current class.
-  for(int i = 0; i < identifiers.size(); i++) {
-    string identifier_type = identifiers[i].second;
-    if (identifier_type == "SELF_TYPE") {
-      identifier_type = current_class;
-    }
-
-    if (tree.is_child_of(identifier_type, type)) {
-        return true;
-    }
-  }
-  return false;
-}
-
 // EXPRESSION: Identifier.
-void CodeGenerator::generate_identifier(string type) {
+// NOTES: - If @abort_early is true, then this will return whether
+//          an identifier exists that can be used for @type.
+//        - If @abort_early is false, the return will be true on successful
+//          output (an exception will be thrown if no possible identifiers exist).
+bool CodeGenerator::generate_identifier(string type, bool abort_early) {
 
   // Find possible identifiers.
   vector<pair<string, string> > possible_identifiers = vector<pair<string, string> >();
   if (type == "SELF_TYPE") {
     for (int i = 0; i < identifiers.size(); i++) {
       if (identifiers[i].second == "SELF_TYPE") {
+        if (abort_early) return true;
         possible_identifiers.push_back(identifiers[i]);
       }
     }
@@ -86,10 +62,14 @@ void CodeGenerator::generate_identifier(string type) {
       }
 
       if (tree.is_child_of(identifier_type, type)) {
+        if (abort_early) return true;
         possible_identifiers.push_back(identifiers[i]);
       }
     }
   }
+
+  // No possible identifiers found.
+  if (abort_early) return false;
 
   if (identifiers.size() == 0) {
     throw "Internal Error: no identifiers match expression but generate_identifier was called.";
@@ -98,74 +78,17 @@ void CodeGenerator::generate_identifier(string type) {
   // Choose identifier at random and print out.
   string identifier = possible_identifiers[rand() % possible_identifiers.size()].first;
   writer << identifier;
-}
 
-// FUNCTION: Checks if an assignment can return provided type.
-bool CodeGenerator::assignment_possible(string type) {
-
-  // Case 1: Expanding to SELF_TYPE.
-  // NOTES: - Looking for A <- B.
-  //          - B must be of type SELF_TYPE.
-  //          - A cannot be self.
-  if (type == "SELF_TYPE") {
-    for(int i = 0; i < identifiers.size(); i++) {
-
-      string identifier_type = identifiers[i].second;
-
-      // Can't assign to self.
-      if (identifiers[i].first == "self") continue;
-
-      if (identifier_type == "SELF_TYPE" || tree.is_child_of(current_class, identifier_type)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  // Case 2: Not expanding to SELF_TYPE.
-  // NOTES: - For each possible child of @type, we check
-  //          if there exists an identifier with type <= child.
-  //        - Identifiers w/type SELF_TYPE force the assignment to be SELF_TYPE.
-
-  set<string> possible_assign_types = tree.class_descendants[type];
-  possible_assign_types.insert(type);
-  if (tree.is_child_of(current_class, type)) {
-    possible_assign_types.insert("SELF_TYPE");
-  }
-
-  for(set<string>::iterator it = possible_assign_types.begin();
-                            it != possible_assign_types.end(); ++it) {
-    string possible_type = *it;
-    if (possible_type == "SELF_TYPE") {
-      possible_type = current_class;
-    }
-
-    for (int i = 0; i < identifiers.size(); i++) {
-
-      string identifier_type = identifiers[i].second;
-
-      // Can't assign to self.
-      if (identifiers[i].first == "self") continue;
-
-      // If identifier is SELF_TYPE, we need assignment to be SELF_TYPE.
-      // Otherwise, if assignment is SELF_TYPE, we treat it as current class.
-      if (identifier_type == "SELF_TYPE") {
-        if (*it == "SELF_TYPE") {
-          return true;
-        }
-      } else {
-        if (tree.is_child_of(possible_type, identifier_type)) {
-          return true;
-        }
-      }
-    }
-  }
-
-  return false;
+  // Default return.
+  return true;
 }
 
 // EXPRESSION: Assignment.
-void CodeGenerator::generate_assignment(string type) {
+// NOTES: - If @abort_early is true, then this will return whether
+//          an assignment exists that can be used for @type.
+//        - If @abort_early is false, the return will be true on successful
+//          output (an exception will be thrown if no possible assignments exist).
+bool CodeGenerator::generate_assignment(string type, bool abort_early) {
 
   // Choose possible assigns.
   // NOTES: - The possible assigns are stored in a vector where elements are of the form
@@ -181,6 +104,7 @@ void CodeGenerator::generate_assignment(string type) {
       if (identifiers[i].first == "self") continue;
 
       if (identifier_type == "SELF_TYPE" || tree.is_child_of(current_class, identifier_type)) {
+        if (abort_early) return true;
         possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], "SELF_TYPE"));
       }
     }
@@ -209,16 +133,21 @@ void CodeGenerator::generate_assignment(string type) {
         // Otherwise, if assignment is SELF_TYPE, we treat it as current class.
         if (identifier_type == "SELF_TYPE") {
           if (*it == "SELF_TYPE") {
+            if (abort_early) return true;
             possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], *it));
           }
         } else {
           if (tree.is_child_of(possible_type, identifier_type)) {
+            if (abort_early) return true;
             possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], *it));
           }
         }
       }
     }
   }
+
+  // No possible assignments found.
+  if (abort_early) return false;
 
   if (possible_assigns.size() == 0) {
     throw "Internal Error: No possible assignments though generate_assignment was called.";
@@ -229,4 +158,7 @@ void CodeGenerator::generate_assignment(string type) {
   writer << assign.first.first << " <- (";
   generate_expression(assign.second);
   writer << ")";
+
+  // Default return.
+  return true;
 }

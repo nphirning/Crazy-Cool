@@ -79,14 +79,14 @@ void CodeGenerator::generate_expression(string expression_type) {
   }
 
   // Identifiers.
-  if (identifiers_contains(expression_type)) {
+  if (generate_identifier(expression_type, true)) {
     normalization_factor += expression_map["identifier"];
     possible_expansions.push_back("identifier");
     probability_cutoffs.push_back(expression_map["identifier"]);
   }
 
   // Assignment.
-  if (assignment_possible(expression_type) && recursive_depth < max_recursion_depth) {
+  if (generate_assignment(expression_type, true) && recursive_depth < max_recursion_depth) {
     normalization_factor += expression_map["assignment"];
     possible_expansions.push_back("assignment");
     probability_cutoffs.push_back(expression_map["assignment"]);
@@ -115,9 +115,9 @@ void CodeGenerator::generate_expression(string expression_type) {
   } else if (expansion == "int") {
     generate_int();
   } else if (expansion == "identifier") {
-    generate_identifier(expression_type);
+    generate_identifier(expression_type, false);
   } else if (expansion == "assignment") {
-    generate_assignment(expression_type);
+    generate_assignment(expression_type, false);
   } else {
     throw "Internal error: chosen expression type not a possible expansion.";
   }

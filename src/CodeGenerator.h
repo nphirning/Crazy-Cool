@@ -38,10 +38,8 @@ private:
   void generate_bool();
   void generate_string();
   void generate_int();
-  bool identifiers_contains(std::string type);
-  void generate_identifier(std::string type);
-  bool assignment_possible(std::string type);
-  void generate_assignment(std::string type);
+  bool generate_identifier(std::string type, bool abort_early);
+  bool generate_assignment(std::string type, bool abort_early);
 
   std::string output_file;
   ClassTree tree;
