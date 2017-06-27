@@ -42,10 +42,13 @@ private:
   void generate_int();
   bool generate_identifier(std::string type, bool abort_early);
   bool generate_assignment(std::string type, bool abort_early);
+  bool generate_dispatch(std::string type, bool abort_early);
 
   std::string output_file;
   ClassTree tree;
-  std::vector<std::string> expression_keys = {"new", "bool", "string", "int", "identifier", "assignment"};
+  std::vector<std::string> expression_keys = {"new", "bool", "string", "int",
+                                                    "identifier", "assignment"
+                                                    "dispatch", "static_dispatch"};
   std::map<std::string, float> expression_map;
   int max_recursion_depth;
   bool should_break_lines;

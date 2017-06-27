@@ -104,7 +104,6 @@ bool CodeGenerator::generate_assignment(string type, bool abort_early) {
 
   if (type == "SELF_TYPE") {
     for(int i = 0; i < identifiers.size(); i++) {
-
       string identifier_type = identifiers[i].second;
 
       // Can't assign to self.
@@ -180,5 +179,94 @@ bool CodeGenerator::generate_assignment(string type, bool abort_early) {
   }
 
   // Default return.
+  return true;
+}
+
+// EXPRESSION: Dispatch.
+// NOTES: See identifier/assignment for definition of @abort_early.
+bool CodeGenerator::generate_dispatch(string type, bool abort_early) {
+
+  // Iterate through identifiers and compute dispatches.
+  // Stored in a vector with entries ((identifier name, identifier type), method_name).
+  vector<pair<pair<string, string>, string> > possible_dispatches = vector<pair<pair<string, string>, string> >();
+
+  for (int i = 0; i < identifiers.size(); i++) {
+    string identifier_name = identifiers[i].first;
+    string identifier_type = identifiers[i].second;
+
+    vector<string> method_names = tree.class_method_names[identifier_type];
+    for (int j = 0; j < method_names.size(); j++) {
+      string return_type = tree.class_method_types[identifier_type][method_names[j]];
+
+      // Handle SELF_TYPE cases.
+      if (type == "SELF_TYPE") {
+        if (return_type == "SELF_TYPE") {
+          if (abort_early) return true;
+          possible_dispatches.push_back(pair<pair<string, string>, string>(identifiers[i], method_names[j]));
+        }
+      } else {
+        if (return_type == "SELF_TYPE") {
+          if (tree.is_child_of(current_class, type)) {
+            if (abort_early) return true;
+            possible_dispatches.push_back(pair<pair<string, string>, string>(identifiers[i], method_names[j]));
+          }
+        } else {
+          if (tree.is_child_of(return_type, type)) {
+            if (abort_early) return true;
+            possible_dispatches.push_back(pair<pair<string, string>, string>(identifiers[i], method_names[j]));
+          }
+        }
+      }
+    }
+  }
+
+  // Return if none found.
+  if (abort_early) return false;
+
+  if (possible_dispatches.size() == 0) {
+    throw "Internal Error: generate_dispatches called but no dispatches possible.";
+  }
+
+  // Choose dispatch and extract information.
+  pair<pair<string, string>, string> dispatch = possible_dispatches[rand() % possible_dispatches.size()];
+  string identifier_name = dispatch.first.first;
+  string identifier_type = dispatch.first.second;
+  string method_name = dispatch.second;
+  vector<pair<string, string> > arguments = tree.class_method_args[identifier_type][method_name];
+
+  // Write dispatch.
+  if (identifier_name != "self") {
+    writer << identifier_name << ".";
+    current_line_length += identifier_name.length() + 1;
+  }
+  writer << method_name << '(';
+  current_line_length += method_name.length() + 1;
+
+  // Print on other lines if enough arguments / line too long.
+  if (arguments.size() >= 3 || current_line_length >= max_line_length) {
+    writer << endl;
+    indentation_tabs++;
+    for (int i = 0; i < arguments.size(); i++) {
+      print_tabs();
+      generate_expression(arguments[i].second);
+      if (i != arguments.size() - 1) writer << ',';
+      writer << endl;
+    }
+    indentation_tabs--;
+    print_tabs();
+    writer << ')';
+  } else {
+    for (int i = 0; i < arguments.size(); i++) {
+      generate_expression(arguments[i].second);
+      if (i != arguments.size() - 1) {
+        writer << ", ";
+        current_line_length += 2;
+      }
+    }
+    writer << ')';
+    current_line_length++;
+  }
+
+  // Defaut return.
   return true;
 }

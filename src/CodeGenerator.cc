@@ -58,6 +58,8 @@ void CodeGenerator::generate_expression(string expression_type) {
   // 4. Int constants.
   // 5. Identifiers.
   // 6. Assignment.
+  // 7. Dispatch.
+  // 8. Static dispatch.
 
   // New.
   normalization_factor += expression_map["new"];
@@ -99,6 +101,13 @@ void CodeGenerator::generate_expression(string expression_type) {
     probability_cutoffs.push_back(expression_map["assignment"]);
   }
 
+  // Dispatch.
+  if (generate_dispatch(expression_type, true) && recursive_depth < max_recursion_depth) {
+    normalization_factor += expression_map["dispatch"];
+    possible_expansions.push_back("dispatch");
+    probability_cutoffs.push_back(expression_map["dispatch"]);
+  }
+
   // EXPANSION CHOICE AND GENERATION.
 
   // Choose expansion.
@@ -125,6 +134,8 @@ void CodeGenerator::generate_expression(string expression_type) {
     generate_identifier(expression_type, false);
   } else if (expansion == "assignment") {
     generate_assignment(expression_type, false);
+  } else if (expansion == "dispatch") {
+    generate_dispatch(expression_type, false);
   } else {
     throw "Internal error: chosen expression type not a possible expansion.";
   }
