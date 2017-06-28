@@ -18,7 +18,7 @@ using namespace std;
 ClassTree::ClassTree(   int num_classes,
                         int num_attributes_per_class,
                         int num_methods_per_class,
-                        int num_method_args,
+                        int max_num_method_args,
                         float probability_repeat_method_name,
                         std::string word_corpus,
                         int class_name_length,
@@ -32,7 +32,7 @@ ClassTree::ClassTree(   int num_classes,
 
   this->probability_repeat_method_name = probability_repeat_method_name;
   this->num_classes = num_classes;
-  this->num_method_args = num_method_args;
+  this->max_num_method_args = max_num_method_args;
   this->num_attributes_per_class = num_attributes_per_class;
   this->num_methods_per_class = num_methods_per_class;
   this->class_name_length = class_name_length;
@@ -447,7 +447,8 @@ void ClassTree::generate_class_methods() {
 
           // Generate arguments.
           vector<string> method_args = vector<string>();
-          for (int k = 0; k < this->num_method_args; k++) {
+          int num_method_args = rand() % (max_num_method_args + 1);
+          for (int k = 0; k < num_method_args; k++) {
               string argument_name = generate_feature_name(this->method_arg_name_length, method_args);
               method_args.push_back(argument_name);
               string argument_type = class_names[rand() % class_names.size()];

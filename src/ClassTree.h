@@ -18,7 +18,7 @@ public:
   ClassTree(int num_classes = 10,
             int num_attributes_per_class = 3,
             int num_methods_per_class = 3,
-            int num_method_args = 5,
+            int max_num_method_args = 5,
             float probability_repeat_method_name = 0.2,
             std::string word_corpus = "",
             int class_name_length = 10,
@@ -78,7 +78,7 @@ private:
   int attribute_name_length;
   int method_name_length;
   int method_arg_name_length;
-  int num_method_args;
+  int max_num_method_args;
   float probability_repeat_method_name;
   std::string word_corpus;  // Path to corpus for class name selection.
 
