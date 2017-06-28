@@ -187,7 +187,8 @@ bool CodeGenerator::generate_assignment(string type, bool abort_early) {
 bool CodeGenerator::generate_dispatch(string type, bool abort_early) {
 
   // Iterate through identifiers and compute dispatches.
-  // Stored in a vector with entries ((identifier name, identifier type), method_name).
+  // Stored in a vector with entries ((class_name, method_name), identifier name).
+  // The entry @class_name is the location where method_name is defined..
   vector<pair<pair<string, string>, string> > possible_dispatches = vector<pair<pair<string, string>, string> >();
 
   for (int i = 0; i < identifiers.size(); i++) {
@@ -250,16 +251,17 @@ bool CodeGenerator::generate_dispatch(string type, bool abort_early) {
       }
 
       // Lots of little SELF_TYPE edge cases.
+      pair<string, string> method_class_pair = pair<string, string>(class_name, method_name);
       if (type == "SELF_TYPE") {
         if (return_type == "SELF_TYPE") {
           if (abort_early) return true;
-          possible_dispatches.push_back(pair<pair<string, string>, string>(identifiers[i], method_name));
+          possible_dispatches.push_back(pair<pair<string, string>, string>(method_class_pair, identifiers[i].first));
         }
       } else {
         if (return_type == "SELF_TYPE") return_type = current_class;
         if (tree.is_child_of(return_type, type)) {
           if (abort_early) return true;
-          possible_dispatches.push_back(pair<pair<string, string>, string>(identifiers[i], method_name));
+          possible_dispatches.push_back(pair<pair<string, string>, string>(method_class_pair, identifiers[i].first));
         }
       }
     }
@@ -274,10 +276,10 @@ bool CodeGenerator::generate_dispatch(string type, bool abort_early) {
 
   // Choose dispatch and extract information.
   pair<pair<string, string>, string> dispatch = possible_dispatches[rand() % possible_dispatches.size()];
-  string identifier_name = dispatch.first.first;
-  string identifier_type = dispatch.first.second;
-  string method_name = dispatch.second;
-  vector<pair<string, string> > arguments = tree.class_method_args[identifier_type][method_name];
+  string class_name = dispatch.first.first;
+  string method_name = dispatch.first.second;
+  string identifier_name = dispatch.second;
+  vector<pair<string, string> > arguments = tree.class_method_args[class_name][method_name];
 
   // Write dispatch.
   if (identifier_name != "self") {
