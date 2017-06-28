@@ -193,28 +193,73 @@ bool CodeGenerator::generate_dispatch(string type, bool abort_early) {
   for (int i = 0; i < identifiers.size(); i++) {
     string identifier_name = identifiers[i].first;
     string identifier_type = identifiers[i].second;
+    if (identifier_type == "SELF_TYPE") identifier_type = current_class;
 
-    vector<string> method_names = tree.class_method_names[identifier_type];
-    for (int j = 0; j < method_names.size(); j++) {
-      string return_type = tree.class_method_types[identifier_type][method_names[j]];
+    // STEP 1: Extract all possible methods.
+    // NOTES: - We keep a set of the method signatures (name, return, [arg types])
+    //          for keeping track of inherited methods.
+    //        - In the end, we want a set of (class_name, method_name) pairs
+    //          representing all the call-able methods on a given identifier.
+    set<pair<pair<string, string>, vector<string> > > method_signatures =
+                            set<pair<pair<string, string>, vector<string> > >();
+    set<pair<string, string> > method_names = set<pair<string, string> >();
+    vector<string> available_method_classes = tree.class_ancestors[identifier_type];
+    available_method_classes.insert(available_method_classes.begin(), identifier_type);
 
-      // Handle SELF_TYPE cases.
+    for (int j = 0; j < available_method_classes.size(); j++) {
+      string class_to_check = available_method_classes[j];
+      vector<string> class_methods = tree.class_method_names[class_to_check];
+      for (int k = 0; k < class_methods.size(); k++) {
+        string method_name = class_methods[k];
+
+        // Compute method signature.
+        string method_return = tree.class_method_types[class_to_check][method_name];
+        pair<string, string> name_return_pair = pair<string, string>(method_name, method_return);
+        vector<string> argument_types = vector<string>();
+
+        vector<pair<string, string> > method_args = tree.class_method_args[class_to_check][method_name];
+        for (int l = 0; l < method_args.size(); l++) {
+          argument_types.push_back(method_args[l].second);
+        }
+
+        pair<pair<string, string>, vector<string> > method_signature =
+              pair<pair<string, string>, vector<string> >(name_return_pair, argument_types);
+
+        // Only add if this is not inherited and hidden by another method.
+        if (method_signatures.find(method_signature) == method_signatures.end()) {
+          method_signatures.insert(method_signature);
+          method_names.insert(pair<string, string>(class_to_check, method_name));
+        }
+      }
+    }
+
+    // STEP 2: For each method, check if the return type will pass type checking.
+
+    for (set<pair<string, string> >::iterator it = method_names.begin();
+            it != method_names.end(); ++it) {
+
+      string class_name = it->first;
+      string method_name = it->second;
+      string return_type = tree.class_method_types[class_name][method_name];
+
+      // If a method returns SELF_TYPE and is called on an identifier of type
+      // SELF_TYPE, then the return type is still SELF_TYPE. Otherwise, it
+      // should be the actual type of the identifier.
+      if (return_type == "SELF_TYPE") {
+        return_type = identifiers[i].second;
+      }
+
+      // Lots of little SELF_TYPE edge cases.
       if (type == "SELF_TYPE") {
         if (return_type == "SELF_TYPE") {
           if (abort_early) return true;
-          possible_dispatches.push_back(pair<pair<string, string>, string>(identifiers[i], method_names[j]));
+          possible_dispatches.push_back(pair<pair<string, string>, string>(identifiers[i], method_name));
         }
       } else {
-        if (return_type == "SELF_TYPE") {
-          if (tree.is_child_of(current_class, type)) {
-            if (abort_early) return true;
-            possible_dispatches.push_back(pair<pair<string, string>, string>(identifiers[i], method_names[j]));
-          }
-        } else {
-          if (tree.is_child_of(return_type, type)) {
-            if (abort_early) return true;
-            possible_dispatches.push_back(pair<pair<string, string>, string>(identifiers[i], method_names[j]));
-          }
+        if (return_type == "SELF_TYPE") return_type = current_class;
+        if (tree.is_child_of(return_type, type)) {
+          if (abort_early) return true;
+          possible_dispatches.push_back(pair<pair<string, string>, string>(identifiers[i], method_name));
         }
       }
     }
