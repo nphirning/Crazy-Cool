@@ -305,8 +305,6 @@ void CodeGenerator::generate_dispatch_structures(string type) {
             }
 
             // Regular.
-            set<string> type_children = tree.class_descendants[class_name];
-            type_children.insert(class_name);
             for(set<string>::iterator it = type_children.begin(); it != type_children.end(); ++it) {
               string possible_type = *it;
               if (!tree.is_child_of(possible_type, class_name)) continue;
