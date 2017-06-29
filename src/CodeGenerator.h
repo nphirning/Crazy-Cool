@@ -18,7 +18,7 @@ public:
   CodeGenerator(ClassTree tree,
                 std::vector<float> expression_weights = std::vector<float>(1, 1.0),
                 std::string output_file = "output.cl",
-                float probability_initialized = 0.5,
+                float probability_initialized = 0.75,
                 int max_recursion_depth = 5,
                 bool should_break_lines = true,
                 int max_line_length = 80,
@@ -43,13 +43,15 @@ private:
   void generate_int();
   bool generate_identifier(std::string type, bool abort_early);
   bool generate_assignment(std::string type, bool abort_early);
-  bool generate_dispatch(std::string type, bool abort_early);
+  void generate_dispatch_structures(std::string type);
+  void write_dispatch(std::string dispatch_type);
 
   std::string output_file;
   ClassTree tree;
   std::vector<std::string> expression_keys = {"new", "bool", "string", "int",
                                                     "identifier", "assignment"
-                                                    "dispatch", "static_dispatch"};
+                                                    "dispatch", "static_dispatch",
+                                                    "self_dispatch"};
   std::map<std::string, float> expression_map;
   int max_recursion_depth;
   bool should_break_lines;
@@ -65,6 +67,11 @@ private:
   int recursive_depth;
   int expression_count;
   int indentation_tabs;
+
+  // Internal dispatch structures.
+  std::vector<std::pair<std::string, std::string> > self_dispatches;
+  std::vector<std::pair<std::string, std::pair<std::string, std::string> > > dispatches;
+  std::vector<std::pair<std::pair<std::string, std::string>, std::pair<std::string, std::string> > > static_dispatches;
 };
 
 #endif

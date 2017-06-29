@@ -183,109 +183,204 @@ bool CodeGenerator::generate_assignment(string type, bool abort_early) {
 }
 
 // EXPRESSION: Dispatch.
-// NOTES: See identifier/assignment for definition of @abort_early.
-bool CodeGenerator::generate_dispatch(string type, bool abort_early) {
+// NOTES: - See identifier/assignment for definition of @abort_early.
+//        - @dispatch_type has three possible values.
+//          * 'static' for a static dispatch:   (expr)@(type).method(...).
+//          * 'regular' for a normal dispatch:  (expr).method(...).
+//          * 'self' for a dispatch on self:    method(...).
+void CodeGenerator::generate_dispatch_structures(string type) {
 
-  // Iterate through identifiers and compute dispatches.
-  // Stored in a vector with entries ((class_name, method_name), identifier name).
-  // The entry @class_name is the location where method_name is defined..
-  vector<pair<pair<string, string>, string> > possible_dispatches = vector<pair<pair<string, string>, string> >();
+  // Reset data structures.
+  static_dispatches = vector<pair<pair<string, string>, pair<string, string> > >();
+  dispatches = vector<pair<string, pair<string, string> > >();
+  self_dispatches = vector<pair<string, string> >();
 
-  for (int i = 0; i < identifiers.size(); i++) {
-    string identifier_name = identifiers[i].first;
-    string identifier_type = identifiers[i].second;
-    if (identifier_type == "SELF_TYPE") identifier_type = current_class;
-
-    // STEP 1: Extract all possible methods.
-    // NOTES: - We keep a set of the method signatures (name, return, [arg types])
-    //          for keeping track of inherited methods.
-    //        - In the end, we want a set of (class_name, method_name) pairs
-    //          representing all the call-able methods on a given identifier.
-    set<pair<pair<string, string>, vector<string> > > method_signatures =
-                            set<pair<pair<string, string>, vector<string> > >();
-    set<pair<string, string> > method_names = set<pair<string, string> >();
-    vector<string> available_method_classes = tree.class_ancestors[identifier_type];
-    available_method_classes.insert(available_method_classes.begin(), identifier_type);
-
-    for (int j = 0; j < available_method_classes.size(); j++) {
-      string class_to_check = available_method_classes[j];
-      vector<string> class_methods = tree.class_method_names[class_to_check];
-      for (int k = 0; k < class_methods.size(); k++) {
-        string method_name = class_methods[k];
-
-        // Compute method signature.
-        string method_return = tree.class_method_types[class_to_check][method_name];
-        pair<string, string> name_return_pair = pair<string, string>(method_name, method_return);
-        vector<string> argument_types = vector<string>();
-
-        vector<pair<string, string> > method_args = tree.class_method_args[class_to_check][method_name];
-        for (int l = 0; l < method_args.size(); l++) {
-          argument_types.push_back(method_args[l].second);
-        }
-
-        pair<pair<string, string>, vector<string> > method_signature =
-              pair<pair<string, string>, vector<string> >(name_return_pair, argument_types);
-
-        // Only add if this is not inherited and hidden by another method.
-        if (method_signatures.find(method_signature) == method_signatures.end()) {
-          method_signatures.insert(method_signature);
-          method_names.insert(pair<string, string>(class_to_check, method_name));
-        }
-      }
-    }
-
-    // STEP 2: For each method, check if the return type will pass type checking.
-
-    for (set<pair<string, string> >::iterator it = method_names.begin();
-            it != method_names.end(); ++it) {
-
-      string class_name = it->first;
-      string method_name = it->second;
+  // Iterate through all methods in all classes.
+  for (int i = 0; i < tree.class_names.size(); i++) {
+    string class_name = tree.class_names[i];
+    vector<string> class_methods = tree.class_method_names[class_name];
+    for (int j = 0; j < class_methods.size(); j++) {
+      string method_name = class_methods[j];
+      pair<string, string> method_signature = pair<string, string>(class_name, method_name);
       string return_type = tree.class_method_types[class_name][method_name];
 
-      // If a method returns SELF_TYPE and is called on an identifier of type
-      // SELF_TYPE, then the return type is still SELF_TYPE. Otherwise, it
-      // should be the actual type of the identifier.
-      if (return_type == "SELF_TYPE") {
-        return_type = identifiers[i].second;
-      }
+      // Case 1: We need the dispatch to conform to SELF_TYPE.
+      //          - This can only occur if the return type of the method is
+      //            SELF_TYPE and the object it is called on is of type SELF_TYPE.
 
-      // Lots of little SELF_TYPE edge cases.
-      pair<string, string> method_class_pair = pair<string, string>(class_name, method_name);
       if (type == "SELF_TYPE") {
         if (return_type == "SELF_TYPE") {
-          if (abort_early) return true;
-          possible_dispatches.push_back(pair<pair<string, string>, string>(method_class_pair, identifiers[i].first));
+
+          // Self.
+          if (tree.is_child_of(current_class, class_name)) {
+            self_dispatches.push_back(method_signature);
+          }
+
+          // Static.
+          pair<string, string> static_signature = pair<string, string>("SELF_TYPE", "SELF_TYPE");
+          static_dispatches.push_back(pair<pair<string, string>, pair<string, string> >(static_signature, method_signature));
+
+          // Regular.
+          dispatches.push_back(pair<string, pair<string, string> >("SELF_TYPE", method_signature));
         }
-      } else {
-        if (return_type == "SELF_TYPE") return_type = current_class;
-        if (tree.is_child_of(return_type, type)) {
-          if (abort_early) return true;
-          possible_dispatches.push_back(pair<pair<string, string>, string>(method_class_pair, identifiers[i].first));
+      }
+
+      // Case 2: The type we need to expand to is not SELF_TYPE.
+      //          - (2a) If the method returns SELF_TYPE then we have cases:
+      //            * self: we need @current_class <= @type and
+      //                            @current_class <= @class_name
+      //            * static: consider A@B.m(). Then we need
+      //                      B <= @class_name
+      //                      A <= B
+      //                      B <= @type.
+      //            * regular: consider A.m(). Then we need
+      //                      A <= @class_name
+      //                      A <= @type.
+      //          - (2b) If the method returns type C:
+      //            * self: we need C <= @type
+      //                            @current_class <= @class_name.
+      //            * static: consider A@B.m(). Then we need
+      //                      C <= @type
+      //                      B <= @class_name
+      //                      A <= B.
+      //            * regular: consider A.m(). Then we need
+      //                      C <= @type
+      //                      A <= @class_name.
+
+      if (type != "SELF_TYPE") {
+
+        // Case 2a.
+        if (return_type == "SELF_TYPE") {
+
+          // Self.
+          if (tree.is_child_of(current_class, class_name) && tree.is_child_of(current_class, type)) {
+            self_dispatches.push_back(method_signature);
+          }
+
+          // Static.
+          set<string> type_children = tree.class_descendants[type];
+          type_children.insert(type);
+          for(set<string>::iterator it = type_children.begin(); it != type_children.end(); ++it) {
+            string possible_static_type = *it;
+            if (!tree.is_child_of(possible_static_type, class_name)) continue;
+            set<string> static_type_children = tree.class_descendants[possible_static_type];
+            static_type_children.insert(possible_static_type);
+            for(set<string>::iterator it2 = static_type_children.begin(); it2 != static_type_children.end(); ++it2) {
+              string expression_type = *it2;
+              pair<string, string> static_signature = pair<string, string>(expression_type, possible_static_type);
+              static_dispatches.push_back(pair<pair<string, string>, pair<string, string> >(static_signature, method_signature));
+            }
+          }
+
+          // Regular.
+          for(set<string>::iterator it = type_children.begin(); it != type_children.end(); ++it) {
+            string possible_type = *it;
+            if (!tree.is_child_of(possible_type, class_name)) continue;
+            dispatches.push_back(pair<string, pair<string, string> >(possible_type, method_signature));
+          }
+        }
+
+        // Case 2b.
+        if (return_type != "SELF_TYPE") {
+          if (tree.is_child_of(return_type, type)) {
+
+            // Self.
+            if (tree.is_child_of(current_class, class_name)) {
+              self_dispatches.push_back(method_signature);
+            }
+
+            // Static.
+            set<string> type_children = tree.class_descendants[class_name];
+            type_children.insert(class_name);
+            for(set<string>::iterator it = type_children.begin(); it != type_children.end(); ++it) {
+              string possible_static_type = *it;
+              set<string> static_type_children = tree.class_descendants[possible_static_type];
+              static_type_children.insert(possible_static_type);
+              for(set<string>::iterator it2 = static_type_children.begin(); it2 != static_type_children.end(); ++it2) {
+                string expression_type = *it2;
+                pair<string, string> static_signature = pair<string, string>(expression_type, possible_static_type);
+                static_dispatches.push_back(pair<pair<string, string>, pair<string, string> >(static_signature, method_signature));
+              }
+            }
+
+            // Regular.
+            if (tree.is_child_of(return_type, type)) {
+              set<string> type_children = tree.class_descendants[class_name];
+              type_children.insert(class_name);
+              for(set<string>::iterator it = type_children.begin();
+                    it != type_children.end(); ++it) {
+                string possible_type = *it;
+                dispatches.push_back(pair<string, pair<string, string> >(possible_type, method_signature));
+              }
+            }
+          }
         }
       }
     }
   }
+}
 
-  // Return if none found.
-  if (abort_early) return false;
+void CodeGenerator::write_dispatch(string dispatch_type) {
+  string class_name, method_name;
 
-  if (possible_dispatches.size() == 0) {
-    throw "Internal Error: generate_dispatches called but no dispatches possible.";
+  if (dispatch_type == "self") {
+    if (self_dispatches.size() == 0) {
+      throw "Internal Error: self_dispatches is empty during write_dispatch(\"self\") call.";
+    }
+    pair<string, string> dispatch = self_dispatches[rand() % self_dispatches.size()];
+    class_name = dispatch.first;
+    method_name = dispatch.second;
+  } else if (dispatch_type == "static") {
+    if (static_dispatches.size() == 0) {
+      throw "Internal Error: static_dispatches is empty during write_dispatch(\"static\") call.";
+    }
+    pair<pair<string, string>, pair<string, string> > dispatch = static_dispatches[rand() % static_dispatches.size()];
+    class_name = dispatch.second.first;
+    method_name = dispatch.second.second;
+
+    // Write output.
+    writer << '(';
+    current_line_length += 1;
+    if (current_line_length >= max_line_length) {
+      writer << endl;
+      print_tabs();
+      generate_expression(dispatch.first.first);
+      writer << endl;
+      print_tabs();
+    } else {
+      generate_expression(dispatch.first.first);
+    }
+    writer << ")@" << dispatch.first.second << '.';
+    current_line_length += 3 + dispatch.first.second.length();
+
+  } else if (dispatch_type == "regular") {
+    if (dispatches.size() == 0) {
+      throw "Internal Error: dispatches is empty during write_dispatch(\"regular\") call.";
+    }
+    pair<string, pair<string, string> > dispatch = dispatches[rand() % dispatches.size()];
+    class_name = dispatch.second.first;
+    method_name = dispatch.second.second;
+
+    // Write output.
+    writer << '(';
+    current_line_length += 1;
+    if (current_line_length >= max_line_length) {
+      writer << endl;
+      print_tabs();
+      generate_expression(dispatch.first);
+      writer << endl;
+      print_tabs();
+    } else {
+      generate_expression(dispatch.first);
+    }
+    writer << ").";
+    current_line_length += 2;
+
+  } else {
+    throw "Internal Error: dispatch_type must be one of \"self\", \"static\", \"regular\".";
   }
 
-  // Choose dispatch and extract information.
-  pair<pair<string, string>, string> dispatch = possible_dispatches[rand() % possible_dispatches.size()];
-  string class_name = dispatch.first.first;
-  string method_name = dispatch.first.second;
-  string identifier_name = dispatch.second;
   vector<pair<string, string> > arguments = tree.class_method_args[class_name][method_name];
-
-  // Write dispatch.
-  if (identifier_name != "self") {
-    writer << identifier_name << ".";
-    current_line_length += identifier_name.length() + 1;
-  }
   writer << method_name << '(';
   current_line_length += method_name.length() + 1;
 
@@ -313,7 +408,4 @@ bool CodeGenerator::generate_dispatch(string type, bool abort_early) {
     writer << ')';
     current_line_length++;
   }
-
-  // Defaut return.
-  return true;
 }

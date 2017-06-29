@@ -109,11 +109,23 @@ void CodeGenerator::generate_expression(string expression_type) {
   }
 
   // Dispatch.
-  if (generate_dispatch(expression_type, true) && recursive_depth < max_recursion_depth
-                                                && expression_count < max_expression_count) {
-    normalization_factor += expression_map["dispatch"];
-    possible_expansions.push_back("dispatch");
-    probability_cutoffs.push_back(expression_map["dispatch"]);
+  generate_dispatch_structures(expression_type);
+  if (recursive_depth < max_recursion_depth && expression_count < max_expression_count) {
+    if (self_dispatches.size() != 0) {
+      normalization_factor += expression_map["self_dispatch"];
+      possible_expansions.push_back("self_dispatch");
+      probability_cutoffs.push_back(expression_map["self_dispatch"]);
+    }
+    if (static_dispatches.size() != 0) {
+      normalization_factor += expression_map["static_dispatch"];
+      possible_expansions.push_back("static_dispatch");
+      probability_cutoffs.push_back(expression_map["static_dispatch"]);
+    }
+    if (dispatches.size() != 0) {
+      normalization_factor += expression_map["dispatch"];
+      possible_expansions.push_back("dispatch");
+      probability_cutoffs.push_back(expression_map["dispatch"]);
+    }
   }
 
   // EXPANSION CHOICE AND GENERATION.
@@ -142,8 +154,12 @@ void CodeGenerator::generate_expression(string expression_type) {
     generate_identifier(expression_type, false);
   } else if (expansion == "assignment") {
     generate_assignment(expression_type, false);
+  } else if (expansion == "self_dispatch") {
+    write_dispatch("self");
+  } else if (expansion == "static_dispatch") {
+    write_dispatch("static");
   } else if (expansion == "dispatch") {
-    generate_dispatch(expression_type, false);
+    write_dispatch("regular");
   } else {
     throw "Internal error: chosen expression type not a possible expansion.";
   }
@@ -164,6 +180,8 @@ void CodeGenerator::print_tabs() {
 // FUNCTION: Prints one attribute.
 void CodeGenerator::print_attribute(string class_name, string attribute_name, string attribute_type) {
   print_tabs();
+  indentation_tabs++;
+
   writer << attribute_name << ": " << attribute_type;
   current_line_length += attribute_name.length() + attribute_type.length() + 2;
 
@@ -177,6 +195,8 @@ void CodeGenerator::print_attribute(string class_name, string attribute_name, st
     generate_expression(attribute_type);
     writer << ");" << endl;
   }
+
+  indentation_tabs--;
 }
 
 // FUNCTION: Prints one method.
