@@ -294,6 +294,7 @@ void CodeGenerator::generate_dispatch_structures(string type) {
             type_children.insert(class_name);
             for(set<string>::iterator it = type_children.begin(); it != type_children.end(); ++it) {
               string possible_static_type = *it;
+              if (!tree.is_child_of(possible_static_type, class_name)) continue;
               set<string> static_type_children = tree.class_descendants[possible_static_type];
               static_type_children.insert(possible_static_type);
               for(set<string>::iterator it2 = static_type_children.begin(); it2 != static_type_children.end(); ++it2) {
@@ -304,14 +305,12 @@ void CodeGenerator::generate_dispatch_structures(string type) {
             }
 
             // Regular.
-            if (tree.is_child_of(return_type, type)) {
-              set<string> type_children = tree.class_descendants[class_name];
-              type_children.insert(class_name);
-              for(set<string>::iterator it = type_children.begin();
-                    it != type_children.end(); ++it) {
-                string possible_type = *it;
-                dispatches.push_back(pair<string, pair<string, string> >(possible_type, method_signature));
-              }
+            set<string> type_children = tree.class_descendants[class_name];
+            type_children.insert(class_name);
+            for(set<string>::iterator it = type_children.begin(); it != type_children.end(); ++it) {
+              string possible_type = *it;
+              if (!tree.is_child_of(possible_type, class_name)) continue;
+              dispatches.push_back(pair<string, pair<string, string> >(possible_type, method_signature));
             }
           }
         }
