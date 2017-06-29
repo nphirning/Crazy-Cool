@@ -217,11 +217,15 @@ void CodeGenerator::generate_dispatch_structures(string type) {
           }
 
           // Static.
-          pair<string, string> static_signature = pair<string, string>("SELF_TYPE", "SELF_TYPE");
-          static_dispatches.push_back(pair<pair<string, string>, pair<string, string> >(static_signature, method_signature));
+          if (tree.is_child_of(current_class, class_name)) {
+            pair<string, string> static_signature = pair<string, string>("SELF_TYPE", "SELF_TYPE");
+            static_dispatches.push_back(pair<pair<string, string>, pair<string, string> >(static_signature, method_signature));
+          }
 
           // Regular.
-          dispatches.push_back(pair<string, pair<string, string> >("SELF_TYPE", method_signature));
+          if (tree.is_child_of(current_class, class_name)) {
+            dispatches.push_back(pair<string, pair<string, string> >("SELF_TYPE", method_signature));
+          }
         }
       }
 
