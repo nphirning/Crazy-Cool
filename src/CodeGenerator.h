@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 
+#define NUM_EXPRESSION_TYPES 9
 
 class CodeGenerator {
 public:
@@ -16,7 +17,7 @@ public:
   // NOTE: Expression weights are in the following order:
   //  [new, ]
   CodeGenerator(ClassTree tree,
-                std::vector<float> expression_weights = std::vector<float>(1, 1.0),
+                std::vector<float> expression_weights = std::vector<float>(NUM_EXPRESSION_TYPES, 1.0),
                 std::string output_file = "output.cl",
                 float probability_initialized = 0.75,
                 int max_recursion_depth = 5,
@@ -27,7 +28,14 @@ public:
   // Main code generation function.
   void generate_code();
 
+
 private:
+
+  // Constant values used for expression generation.
+  std::vector<std::string> expression_keys = {"new", "bool", "string", "int",
+                                                    "identifier", "assignment",
+                                                    "dispatch", "static_dispatch",
+                                                    "self_dispatch"};
 
   // Internal functions for generate_code();
   void generate_expression(std::string type);
@@ -46,21 +54,18 @@ private:
   void generate_dispatch_structures(std::string type);
   void write_dispatch(std::string dispatch_type);
 
+  // Configurable inputs.
   std::string output_file;
-  ClassTree tree;
-  std::vector<std::string> expression_keys = {"new", "bool", "string", "int",
-                                                    "identifier", "assignment"
-                                                    "dispatch", "static_dispatch",
-                                                    "self_dispatch"};
-  std::map<std::string, float> expression_map;
   int max_recursion_depth;
   bool should_break_lines;
   int max_line_length;
   int max_expression_count;
   float probability_initialized;
   std::ofstream writer;
+  ClassTree tree;
 
-  // State-dependent variables.
+  // Internal variables.
+  std::map<std::string, float> expression_map;
   std::vector<std::pair<std::string, std::string> > identifiers;
   std::string current_class;
   int current_line_length; // Currently only updated for expression generation.

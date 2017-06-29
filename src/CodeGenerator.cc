@@ -131,14 +131,19 @@ void CodeGenerator::generate_expression(string expression_type) {
   // EXPANSION CHOICE AND GENERATION.
 
   // Choose expansion.
+  float probability_sum = 0.0;
+  for (int i = 0; i < probability_cutoffs.size(); i++) {
+    probability_sum += probability_cutoffs[i];
+    probability_cutoffs[i] = probability_sum;
+  }
   transform(probability_cutoffs.begin(), probability_cutoffs.end(), probability_cutoffs.begin(),
             [normalization_factor](float i){return i / normalization_factor;});
   double probability_cutoff = ((double) rand() / (RAND_MAX));
   int expansion_index = 0;
-  while (expansion_index < probability_cutoffs.size() - 1 &&
-          probability_cutoff >= probability_cutoffs[expansion_index + 1]) {
-    expansion_index++;
+  for (; expansion_index < probability_cutoffs.size(); expansion_index++) {
+    if (probability_cutoff < probability_cutoffs[expansion_index]) break;
   }
+
   string expansion = possible_expansions[expansion_index];
 
   // Generate code corresponding to chosen expansion.
