@@ -183,11 +183,8 @@ bool CodeGenerator::generate_assignment(string type, bool abort_early) {
 }
 
 // EXPRESSION: Dispatch.
-// NOTES: - See identifier/assignment for definition of @abort_early.
-//        - @dispatch_type has three possible values.
-//          * 'static' for a static dispatch:   (expr)@(type).method(...).
-//          * 'regular' for a normal dispatch:  (expr).method(...).
-//          * 'self' for a dispatch on self:    method(...).
+// NOTES: - This updates the internal class structures storing information
+//          about dispatches.
 void CodeGenerator::generate_dispatch_structures(string type) {
 
   // Reset data structures.
@@ -316,6 +313,13 @@ void CodeGenerator::generate_dispatch_structures(string type) {
   }
 }
 
+// EXPRESSION: Dispatch.
+// NOTES: - This writes out a dispatch with the assumption that the
+//          internal structures are updated (with a call to generate_dispatch_structures).
+//        - @dispatch_type has three possible values:
+//          * 'self' for a self-dispatch (e.g., method_name(args)).
+//          * 'static' for a static dispatch (e.g., <expr>@<type>.method(args)).
+//          * 'regular' for a normal dispatch (e.g., <expr>.method(args)).
 void CodeGenerator::write_dispatch(string dispatch_type) {
   string class_name, method_name;
 
