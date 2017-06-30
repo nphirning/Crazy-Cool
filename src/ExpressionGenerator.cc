@@ -207,6 +207,7 @@ void CodeGenerator::generate_dispatch_structures(string type) {
       // Case 1: We need the dispatch to conform to SELF_TYPE.
       //          - This can only occur if the return type of the method is
       //            SELF_TYPE and the object it is called on is of type SELF_TYPE.
+      //          - No such thing as a static dispatch to SELF_TYPE.
 
       if (type == "SELF_TYPE") {
         if (return_type == "SELF_TYPE") {
@@ -214,12 +215,6 @@ void CodeGenerator::generate_dispatch_structures(string type) {
           // Self.
           if (tree.is_child_of(current_class, class_name)) {
             self_dispatches.push_back(method_signature);
-          }
-
-          // Static.
-          if (tree.is_child_of(current_class, class_name)) {
-            pair<string, string> static_signature = pair<string, string>("SELF_TYPE", "SELF_TYPE");
-            static_dispatches.push_back(pair<pair<string, string>, pair<string, string> >(static_signature, method_signature));
           }
 
           // Regular.
