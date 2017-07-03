@@ -16,11 +16,11 @@ using namespace std;
 
 // FUNCTION: Constructor.
 ClassTree::ClassTree(   int num_classes,
+                        string word_corpus,
                         int num_attributes_per_class,
                         int num_methods_per_class,
                         int max_num_method_args,
                         float probability_repeat_method_name,
-                        std::string word_corpus,
                         int class_name_length,
                         int attribute_name_length,
                         int method_name_length,
@@ -113,7 +113,23 @@ void ClassTree::generate_class_names() {
   // Generate class names.
   for (int i = 0; i < num_classes; i++) {
     try {
-      string class_name = generate_class_name(class_name_length, class_names);
+
+      string class_name;
+
+      if (word_corpus.length() > 0) {
+
+        // Extract absolute path to the corpus.
+        string corpus_path;
+        if (word_corpus[0] == '/') {
+          corpus_path = word_corpus;
+        } else {
+          corpus_path = get_current_working_directory() + '/' + word_corpus;
+        }
+        class_name = extract_class_name(corpus_path, class_names);
+      } else {
+        class_name = generate_class_name(class_name_length, class_names);
+      }
+
       class_names.push_back(class_name);
     } catch (string e) {
       cout << "Error: " << e << endl;
@@ -233,13 +249,8 @@ void ClassTree::add_basic_classes() {
 // FUNCTION: Generates class tree.
 void ClassTree::generate_class_tree() {
 
-  // Generate class names.
   generate_class_names();
-
-  // Generate inheritance.
   generate_inheritance();
-
-  // Add basic classes.
   add_basic_classes();
 
 }
@@ -270,7 +281,19 @@ void ClassTree::generate_class_attributes() {
     } else {
       for (int j = 0; j < this->num_attributes_per_class; j++) {
         // Choose attribute name.
-        string attribute_name = generate_feature_name(this->attribute_name_length, current_class_attributes);
+        string attribute_name;
+        if (word_corpus.length() > 0) {
+          // Extract absolute path to the corpus.
+          string corpus_path;
+          if (word_corpus[0] == '/') {
+            corpus_path = word_corpus;
+          } else {
+            corpus_path = get_current_working_directory() + '/' + word_corpus;
+          }
+          attribute_name = extract_feature_name(corpus_path, current_class_attributes);
+        } else {
+          attribute_name = generate_feature_name(this->attribute_name_length, current_class_attributes);
+        }
         current_class_attributes.push_back(attribute_name);
 
         // Choose attribute type.
@@ -428,15 +451,44 @@ void ClassTree::generate_class_methods() {
           vector<string> method_args = vector<string>();
           for (int k = 0; k < method_redef_args.size(); k++) {
             string argument_type = method_redef_args[k].second;
-            string argument_name = generate_feature_name(this->method_arg_name_length, method_args);
+
+            // Generate argument name.
+            string argument_name;
+            if (word_corpus.length() > 0) {
+              // Extract absolute path to the corpus.
+              string corpus_path;
+              if (word_corpus[0] == '/') {
+                corpus_path = word_corpus;
+              } else {
+                corpus_path = get_current_working_directory() + '/' + word_corpus;
+              }
+              argument_name = extract_feature_name(corpus_path, method_args);
+            } else {
+              argument_name = generate_feature_name(this->method_arg_name_length, method_args);
+            }
+
             class_method_args[current_class][method_name].push_back(pair<string, string>(argument_name, argument_type));
             method_args.push_back(argument_name);
           }
 
         } else {
 
-          // Generate method name and type.
-          string method_name = generate_feature_name(this->method_name_length, unavailable_names);
+          // Generate method name.
+          string method_name;
+          if (word_corpus.length() > 0) {
+            // Extract absolute path to the corpus.
+            string corpus_path;
+            if (word_corpus[0] == '/') {
+              corpus_path = word_corpus;
+            } else {
+              corpus_path = get_current_working_directory() + '/' + word_corpus;
+            }
+            method_name = extract_feature_name(corpus_path, unavailable_names);
+          } else {
+            method_name = generate_feature_name(this->method_name_length, unavailable_names);
+          }
+
+          // Generate method type.
           string method_type = possible_types[rand() % possible_types.size()];
 
           // Update data structures.
@@ -449,10 +501,24 @@ void ClassTree::generate_class_methods() {
           vector<string> method_args = vector<string>();
           int num_method_args = rand() % (max_num_method_args + 1);
           for (int k = 0; k < num_method_args; k++) {
-              string argument_name = generate_feature_name(this->method_arg_name_length, method_args);
-              method_args.push_back(argument_name);
-              string argument_type = class_names[rand() % class_names.size()];
-              class_method_args[current_class][method_name].push_back(pair<string, string>(argument_name, argument_type));
+            // Generate argument name.
+            string argument_name;
+            if (word_corpus.length() > 0) {
+              // Extract absolute path to the corpus.
+              string corpus_path;
+              if (word_corpus[0] == '/') {
+                corpus_path = word_corpus;
+              } else {
+                corpus_path = get_current_working_directory() + '/' + word_corpus;
+              }
+              argument_name = extract_feature_name(corpus_path, method_args);
+            } else {
+              argument_name = generate_feature_name(this->method_arg_name_length, method_args);
+            }
+
+            method_args.push_back(argument_name);
+            string argument_type = class_names[rand() % class_names.size()];
+            class_method_args[current_class][method_name].push_back(pair<string, string>(argument_name, argument_type));
           }
         }
       }

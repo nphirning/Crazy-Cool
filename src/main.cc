@@ -20,12 +20,12 @@ int main(int argc, char* argv[]) {
   srand(time(NULL));
 
   // Flag parsing.
-
   int num_classes = 10;
   string corpus_name = "";
 
   int c;
-  while ((c = getopt (argc, argv, "cw:")) != -1) {
+  while ((c = getopt (argc, argv, "c:w:")) != -1) {
+
     switch(c) {
       case 'c':
         try {
@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
   }
 
   // Generate class information.
-  ClassTree tree = ClassTree(num_classes);
+  ClassTree tree = ClassTree(num_classes, corpus_name);
   tree.generate_class_information();
   if (DEBUG) tree.print_class_information();
 
