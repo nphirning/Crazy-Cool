@@ -475,7 +475,7 @@ void CodeGenerator::generate_conditional(string type) {
   writer << endl;
   indentation_tabs--;
   print_tabs();
-  writer << ') fi';
+  writer << ") fi";
   current_line_length += 4;
 }
 
