@@ -455,7 +455,7 @@ void CodeGenerator::generate_conditional(string type) {
   writer << "if (";
   current_line_length += 4;
   generate_expression("Bool");
-  writer << ") {" << endl;
+  writer << ") then (" << endl;
 
   //       then_type
   //    } else {
@@ -465,7 +465,7 @@ void CodeGenerator::generate_conditional(string type) {
   writer << endl;
   indentation_tabs--;
   print_tabs();
-  writer << "} else {" << endl;
+  writer << ") else (" << endl;
 
   //      else_type
   //    }
@@ -475,7 +475,7 @@ void CodeGenerator::generate_conditional(string type) {
   writer << endl;
   indentation_tabs--;
   print_tabs();
-  writer << '}';
+  writer << ')';
 }
 
 
