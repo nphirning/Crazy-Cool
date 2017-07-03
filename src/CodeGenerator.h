@@ -8,7 +8,7 @@
 #include <fstream>
 #include <vector>
 
-#define NUM_EXPRESSION_TYPES 9
+#define NUM_EXPRESSION_TYPES 10
 
 class CodeGenerator {
 public:
@@ -35,7 +35,7 @@ private:
   std::vector<std::string> expression_keys = {"new", "bool", "string", "int",
                                                     "identifier", "assignment",
                                                     "dispatch", "static_dispatch",
-                                                    "self_dispatch"};
+                                                    "self_dispatch", "conditional"};
 
   // Internal functions for generate_code();
   void generate_expression(std::string type);
@@ -53,6 +53,7 @@ private:
   bool generate_assignment(std::string type, bool abort_early);
   void generate_dispatch_structures(std::string type);
   void write_dispatch(std::string dispatch_type);
+  void generate_conditional(std::string type);
 
   // Configurable inputs.
   std::string output_file;

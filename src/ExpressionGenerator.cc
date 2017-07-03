@@ -409,3 +409,82 @@ void CodeGenerator::write_dispatch(string dispatch_type) {
     current_line_length++;
   }
 }
+
+// EXPRESSION: Conditional
+// NOTES: - This writes out a conditional.
+void CodeGenerator::generate_conditional(string type) {
+  // Generate all possible conditional expressions.
+  // We keep track of this with a vector where the entry
+  //  (a,b) represents if (bool) then (type a) else (type b).
+  vector<pair<string, string> > possible_conditionals = vector<pair<string, string> >();
+
+  // Case 1: type is SELF_TYPE and both branches must then be SELF_TYPE.
+  if (type == "SELF_TYPE") {
+    possible_conditionals.push_back(pair<string, string>("SELF_TYPE", "SELF_TYPE"));
+  } 
+
+  // Case 2: type is not SELF_TYPE.
+  if (type != "SELF_TYPE") {
+
+    // The branches have the same type possibilities.
+    set<string> possible_branch_types = tree.class_descendants[type];
+    possible_branch_types.insert(type);
+
+    // We can add SELF_TYPE if the current class <= type.
+    if (tree.is_child_of(current_class, type)) {
+      possible_branch_types.insert("SELF_TYPE");
+    }
+
+    for (set<string>::iterator it = possible_branch_types.begin(); it != possible_branch_types.end(); ++it) {
+      string possible_then_type = *it;
+      for (set<string>::iterator it2 = possible_branch_types.begin(); it2 != possible_branch_types.end(); ++it2) {
+        string possible_else_type = *it2;
+        possible_conditionals.push_back(pair<string, string>(possible_then_type, possible_else_type));
+      }
+    }
+  }
+
+  // Choose conditional.
+  pair<string, string> branch_types = possible_conditionals[rand() % possible_conditionals.size()];
+  string then_type = branch_types.first;
+  string else_type = branch_types.second;
+
+  // Write output.
+
+  //    if (bool) {
+  writer << "if (";
+  current_line_length += 4;
+  generate_expression("Bool");
+  writer << ") {" << endl;
+
+  //       then_type
+  //    } else {
+  indentation_tabs++;
+  print_tabs();
+  generate_expression(then_type);
+  writer << endl;
+  indentation_tabs--;
+  print_tabs();
+  writer << "} else {" << endl;
+
+  //      else_type
+  //    }
+  indentation_tabs++;
+  print_tabs();
+  generate_expression(else_type);
+  writer << endl;
+  indentation_tabs--;
+  print_tabs();
+  writer << '}';
+}
+
+
+
+
+
+
+
+
+
+
+
