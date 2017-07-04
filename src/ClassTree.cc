@@ -271,7 +271,20 @@ void ClassTree::generate_class_attributes() {
 
     // Extract class and initialize data structures.
     string current_class = class_names[i];
-    vector<string> current_class_attributes = vector<string>();
+
+    // Attributes cannot be duplicated within a class and
+    // we can't use the names of inherited attributes.
+    vector<string> disallowed_attribute_names = vector<string>();
+    vector<string> ancestors = class_ancestors[current_class];
+    for (int j = 0; j < ancestors.size(); j++) {
+      string ancestor = ancestors[j];
+      vector<pair<string, string> > ancestor_attributes = class_attributes[ancestor];
+      for (int k = 0; k < ancestor_attributes.size(); k++) {
+        string attribute_name = ancestor_attributes[k].first;
+        disallowed_attribute_names.push_back(attribute_name);
+      }
+    }
+
     class_attributes[current_class] = vector<pair<string, string> >();
 
     // Basic classes should have no attributes.
@@ -290,11 +303,11 @@ void ClassTree::generate_class_attributes() {
           } else {
             corpus_path = get_current_working_directory() + '/' + word_corpus;
           }
-          attribute_name = extract_feature_name(corpus_path, current_class_attributes);
+          attribute_name = extract_feature_name(corpus_path, disallowed_attribute_names);
         } else {
-          attribute_name = generate_feature_name(this->attribute_name_length, current_class_attributes);
+          attribute_name = generate_feature_name(this->attribute_name_length, disallowed_attribute_names);
         }
-        current_class_attributes.push_back(attribute_name);
+        disallowed_attribute_names.push_back(attribute_name);
 
         // Choose attribute type.
         string attribute_type = possible_attribute_types[rand() % possible_attribute_types.size()];
