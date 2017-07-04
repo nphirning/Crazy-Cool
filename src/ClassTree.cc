@@ -428,18 +428,37 @@ void ClassTree::generate_class_methods() {
     class_method_names[current_class] = vector<string>();
     class_method_types[current_class] = map<string, string>();
     class_method_args[current_class] = map<string, vector<pair<string, string> > >();
+    
+    // We want to compute the names that we should not use if we 
+    // are not redefining a method. Thus, we must look at all parents
+    // and all children of the current class. 
     vector<string> unavailable_names = vector<string>();
 
-    // Compute the methods which we can redefine.
-    // NOTE: We compute a list of pairs (method_name, class_name).
+    // We will also update the method signatures that we can redefine.
     vector<pair<string, string> > redefinable_methods = vector<pair<string, string> >();
+
+    // Iterate through ancestors.
     vector<string> ancestors = class_ancestors[current_class];
-    for (int k = 0; k < ancestors.size(); k++) {
-      string ancestor_class = ancestors[k];
-      vector<string> ancestor_methods = class_method_names[ancestor_class];
-      for (int l = 0; l < ancestor_methods.size(); l++) {
-        unavailable_names.push_back(ancestor_methods[l]);
-        pair<string, string> redefinable_method = pair<string, string>(ancestor_methods[l], current_class);
+    for (int j = 0; j < ancestors.size(); j++) {
+      string ancestor = ancestors[j];
+      vector<string > ancestor_methods = class_method_names[ancestor];
+      for (int k = 0; k < ancestor_methods.size(); k++) {
+        string method_name = ancestor_methods[k];
+        unavailable_names.push_back(method_name);
+        pair<string, string> redefinable_method = pair<string, string>(method_name, current_class);
+        redefinable_methods.push_back(redefinable_method);
+      }
+    }
+
+    // Iterate through descendants.
+    set<string> descendants = class_descendants[current_class];
+    for (set<string>::iterator it = descendants.begin(); it != descendants.end(); ++it) {
+      string descendant = *it;
+      vector<string> descendant_methods = class_method_names[descendant];
+      for (int k = 0; k < descendant_methods.size(); k++) {
+        string method_name = descendant_methods[k];
+        unavailable_names.push_back(method_name);
+        pair<string, string> redefinable_method = pair<string, string>(method_name, current_class);
         redefinable_methods.push_back(redefinable_method);
       }
     }
