@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
     switch(c) {
       case 'c':
         try {
-          int num_classes = stoi(optarg);
+          num_classes = stoi(optarg);
         }
         catch (const invalid_argument& ia) {
           cout << "Invalid argument: " << ia.what() << endl;
