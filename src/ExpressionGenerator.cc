@@ -143,6 +143,7 @@ bool CodeGenerator::generate_assignment(string type, bool abort_early) {
             possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], *it));
           }
         } else {
+
           if (tree.is_child_of(possible_type, identifier_type)) {
             if (abort_early) return true;
             possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], *it));
