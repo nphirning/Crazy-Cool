@@ -274,13 +274,28 @@ void ClassTree::generate_class_attributes() {
 
     // Attributes cannot be duplicated within a class and
     // we can't use the names of inherited attributes.
+    // Because we aren't traversing the tree in a particular order
+    // this means that we need to check the descendants as well.
     vector<string> disallowed_attribute_names = vector<string>();
+
+    // Add ancestor attribute names.
     vector<string> ancestors = class_ancestors[current_class];
     for (int j = 0; j < ancestors.size(); j++) {
       string ancestor = ancestors[j];
       vector<pair<string, string> > ancestor_attributes = class_attributes[ancestor];
       for (int k = 0; k < ancestor_attributes.size(); k++) {
         string attribute_name = ancestor_attributes[k].first;
+        disallowed_attribute_names.push_back(attribute_name);
+      }
+    }
+
+    // Add descendant attribute names.
+    set<string> descendants = class_descendants[current_class];
+    for (set<string>::iterator it = descendants.begin(); it != descendants.end(); ++it) {
+      string descendant = *it;
+      vector<pair<string, string> > descendant_attributes = class_attributes[descendant];
+      for (int k = 0; k < descendant_attributes.size(); k++) {
+        string attribute_name = descendant_attributes[k].first;
         disallowed_attribute_names.push_back(attribute_name);
       }
     }
