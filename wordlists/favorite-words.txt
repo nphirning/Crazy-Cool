@@ -1,0 +1,14 @@
+man
+woman
+child
+baby
+sister
+father
+kills
+runs
+jumps
+swings
+dies
+lives
+births
+aborts
