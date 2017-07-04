@@ -83,7 +83,7 @@ string generate_class_name(int length, vector<string> illegal_words) {
     }
 
     // Exit if class name is not a keyword and not in list of illegal words.
-    if (!(string_vector_contains(class_name, class_keyword_vec) &&
+    if (!(string_vector_contains(class_name, class_keyword_vec) ||
                   string_vector_contains(class_name, illegal_words))) break;
   }
 
@@ -109,7 +109,7 @@ string generate_feature_name(int length, vector<string> illegal_words) {
     }
 
     // Exit if class name is not a keyword and not in list of illegal words.
-    if (!(string_vector_contains(feature_name, feature_keyword_vec) &&
+    if (!(string_vector_contains(feature_name, feature_keyword_vec) ||
                   string_vector_contains(feature_name, illegal_words))) break;
   }
 
@@ -164,7 +164,7 @@ string extract_class_name(string corpus_path, vector<string> illegal_words) {
     }
 
     // Exit if class name is not a keyword and not in list of illegal words.
-    if (!(string_vector_contains(class_name, class_keyword_vec) &&
+    if (!(string_vector_contains(class_name, class_keyword_vec) ||
                   string_vector_contains(class_name, illegal_words))) break;
   }
 
@@ -188,7 +188,7 @@ string extract_feature_name(string corpus_path, vector<string> illegal_words) {
     }
 
     // Exit if class name is not a keyword and not in list of illegal words.
-    if (!(string_vector_contains(feature_name, feature_keyword_vec) &&
+    if (!(string_vector_contains(feature_name, feature_keyword_vec) ||
                   string_vector_contains(feature_name, illegal_words))) break;
   }
 
