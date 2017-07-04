@@ -143,6 +143,10 @@ bool CodeGenerator::generate_assignment(string type, bool abort_early) {
             possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], *it));
           }
         } else {
+          cout << "possible_type: " << possible_type << endl;
+          cout << "identifier_type: " << identifier_type << endl;
+          cout << tree.is_child_of(possible_type, identifier_type) << endl;
+          cout << endl;
 
           if (tree.is_child_of(possible_type, identifier_type)) {
             if (abort_early) return true;
@@ -422,7 +426,7 @@ void CodeGenerator::generate_conditional(string type) {
   // Case 1: type is SELF_TYPE and both branches must then be SELF_TYPE.
   if (type == "SELF_TYPE") {
     possible_conditionals.push_back(pair<string, string>("SELF_TYPE", "SELF_TYPE"));
-  } 
+  }
 
   // Case 2: type is not SELF_TYPE.
   if (type != "SELF_TYPE") {
@@ -479,14 +483,3 @@ void CodeGenerator::generate_conditional(string type) {
   writer << ") fi";
   current_line_length += 4;
 }
-
-
-
-
-
-
-
-
-
-
-
