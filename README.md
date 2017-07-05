@@ -30,5 +30,5 @@ This currently supports the following optional input flags.
 * Benchmark the different expression types to figure out what takes the most time in generation (my suspicion: dispatch). 
 * Add support for configuration via input flags.
 * Expand corpus of my favorite words to include more of my favorite words.
-* Generate COOL program with ~1000000 lines and upload it to show dominance over all the other COOL compilers out there.
+* Generate COOL program with ~1000000 lines and upload it to show dominance over all the other COOL code generators out there.
 * Delete this section in the README.
