@@ -71,6 +71,7 @@ void CodeGenerator::generate_expression(string expression_type) {
   // 8. Static dispatch.
   // 9. Self dispatch.
   // 10. Conditional.
+  // 11. Loop.
 
   // New.
   normalization_factor += expression_map["new"];
@@ -140,6 +141,14 @@ void CodeGenerator::generate_expression(string expression_type) {
     probability_cutoffs.push_back(expression_map["conditional"]);
   }
 
+  // Loop.
+  if (expression_type == "Object" && recursive_depth < max_recursion_depth 
+                                    && expression_count < max_expression_count) {
+    normalization_factor += expression_map["loop"];
+    possible_expansions.push_back("loop");
+    probability_cutoffs.push_back(expression_map["loop"]);
+  }
+
   // EXPANSION CHOICE AND GENERATION.
 
   // Choose expansion.
@@ -179,6 +188,8 @@ void CodeGenerator::generate_expression(string expression_type) {
     write_dispatch("regular");
   } else if (expansion == "conditional") {
     generate_conditional(expression_type);
+  } else if (expansion == "loop") {
+    generate_loop();
   } else {
     throw "Internal error: chosen expression type not a possible expansion.";
   }
@@ -327,5 +338,7 @@ void CodeGenerator::generate_code() {
         class_name == "String" || class_name == "Int" ||
         class_name == "IO") continue;
     print_class(tree.class_names[i]);
+
+    if (i % 10 == 0 && i > 0) cout << i << " classes generated." << endl;
   }
 }

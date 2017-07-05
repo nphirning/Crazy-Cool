@@ -53,6 +53,7 @@ int main(int argc, char* argv[]) {
     // Generate code.
     CodeGenerator generator(tree);
     generator.generate_code();
+    
   } catch (const char* e) {
     cout << "Exception: " << e << endl;
   }

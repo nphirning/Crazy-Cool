@@ -9,7 +9,7 @@
 #include <vector>
 #include "SymbolTable.h"
 
-#define NUM_EXPRESSION_TYPES 10
+#define NUM_EXPRESSION_TYPES 11
 
 class CodeGenerator {
 public:
@@ -36,7 +36,8 @@ private:
   std::vector<std::string> expression_keys = {"new", "bool", "string", "int",
                                                     "identifier", "assignment",
                                                     "dispatch", "static_dispatch",
-                                                    "self_dispatch", "conditional"};
+                                                    "self_dispatch", "conditional",
+                                                    "loop"};
 
   // Internal functions for generate_code();
   void generate_expression(std::string type);
@@ -55,6 +56,7 @@ private:
   void generate_dispatch_structures(std::string type);
   void write_dispatch(std::string dispatch_type);
   void generate_conditional(std::string type);
+  void generate_loop();
 
   // Configurable inputs.
   std::string output_file;

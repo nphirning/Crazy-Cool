@@ -417,8 +417,7 @@ void CodeGenerator::write_dispatch(string dispatch_type) {
   }
 }
 
-// EXPRESSION: Conditional
-// NOTES: - This writes out a conditional.
+// EXPRESSION: Conditional.
 void CodeGenerator::generate_conditional(string type) {
   // Generate all possible conditional expressions.
   // We keep track of this with a vector where the entry
@@ -484,4 +483,43 @@ void CodeGenerator::generate_conditional(string type) {
   print_tabs();
   writer << ") fi";
   current_line_length += 4;
+}
+
+// EXPRESSION: Loop.
+void CodeGenerator::generate_loop() {
+  
+  // Randomly choose the static type of the body.
+  vector<string> possible_body_types = tree.class_names;
+  possible_body_types.push_back("SELF_TYPE");
+  string body_type = possible_body_types[rand() % possible_body_types.size()];
+
+  // Output result.
+  writer << "while (";
+  current_line_length += 7;
+  if (current_line_length >= max_line_length) {
+    writer << endl;
+    indentation_tabs++;
+    print_tabs();
+    generate_expression("Bool");
+    writer << endl;
+    indentation_tabs--;
+    print_tabs();
+  } else {
+    generate_expression("Bool");
+  }
+  writer << ") loop (";
+  current_line_length += 8;
+  if (current_line_length >= max_line_length) {
+    writer << endl;
+    indentation_tabs++;
+    print_tabs();
+    generate_expression(body_type);
+    writer << endl;
+    indentation_tabs--;
+    print_tabs();
+  } else {
+    generate_expression(body_type);
+  }
+  writer << ") pool";
+  current_line_length += 6;
 }
