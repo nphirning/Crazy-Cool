@@ -1,17 +1,15 @@
 CC=g++
 INC=-I../class_structure -I../utils
 OBJ=CodeGenerator.o ExpressionGenerator.o
-CFLAGS=-std=c++11 -c $(INC)
+CFLAGS=-std=c++11 -c -MM $(INC)
+DEPS=CodeGenerator.h
 
 all: dependencies
 
 dependencies: $(OBJ)
 
-CodeGenerator.o: CodeGenerator.cc
-	$(CC) $(CFLAGS) $^ -o $@
-
-ExpressionGenerator.o: ExpressionGenerator.cc
-	$(CC) $(CFLAGS) $^ -o $@
+%.o: %.cc $(DEPS)
+	$(CC) $(CFLAGS) $< -o $@
 
 clean: 
 	rm -f *.o

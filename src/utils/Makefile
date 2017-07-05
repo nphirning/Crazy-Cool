@@ -1,21 +1,20 @@
 CC=g++
-TEST=SymbolTable.o SymbolTableTest.cc
+SYMBOLTEST_SRC=SymbolTable.o SymbolTableTest.cc
 OBJ=SymbolTable.o util.o
 CFLAGS=-std=c++11 
 CFLAGS_COMPILE=-std=c++11 -c
+DEPS=SymbolTable.h util.h
+
 
 all: symboltest dependencies
 
-symboltest: $(TEST)
+symboltest: $(SYMBOLTEST_SRC)
 	$(CC) $(CFLAGS) $^ -o $@
 
 dependencies: $(OBJ)
 
-SymbolTable.o: SymbolTable.cc
-	$(CC) $(CFLAGS_COMPILE) $^
-
-util.o: util.cc
-	$(CC) $(CFLAGS_COMPILE) $^
+%.o: %.cc $(DEPS)
+	$(CC) $(CFLAGS_COMPILE) $< -o $@
 
 clean: 
 	rm -f *.o symboltest

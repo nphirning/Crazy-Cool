@@ -1,15 +1,15 @@
 CC=g++
 INC=../utils
-SRC=ClassTree.cc
 OBJ=ClassTree.o
 CFLAGS=-std=c++11 -c -I$(INC)
+DEPS=ClassTree.h
 
 all: dependencies
 
 dependencies: $(OBJ)
 
-$(OBJ): $(SRC)
-	$(CC) $(CFLAGS) $^
+%.o: %.cc $(DEPS)
+	$(CC) $(CFLAGS) $< -o $@
 
 clean:
 	rm -f *.o

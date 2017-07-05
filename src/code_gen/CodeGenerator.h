@@ -9,7 +9,7 @@
 #include <vector>
 #include "SymbolTable.h"
 
-#define NUM_EXPRESSION_TYPES 11
+#define NUM_EXPRESSION_TYPES 12
 
 class CodeGenerator {
 public:

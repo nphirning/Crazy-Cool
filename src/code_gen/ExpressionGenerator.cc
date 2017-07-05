@@ -530,6 +530,21 @@ void CodeGenerator::generate_block(string type) {
   // Choose number of lines in block.
   int num_lines = (rand() % (max_block_length + 1)) + 1;
 
+  // Compute possible expression types.
+  vector<string> possible_types = tree.class_names;
+  possible_types.push_back("SELF_TYPE");
+
   // Output block.
-  writer << "{";
+  writer << "{" << endl;
+  indentation_tabs++;
+  for (int i = 0; i < num_lines; i++) {
+    print_tabs();
+    string current = possible_types[rand() % possible_types.size()];
+    generate_expression(current);
+    writer << ';' << endl;
+  }
+  indentation_tabs--;
+  print_tabs();
+  writer << '}';
+  current_line_length++;
 }
