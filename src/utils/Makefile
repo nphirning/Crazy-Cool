@@ -1,15 +1,15 @@
 CC=g++
-SRC_TEST=SymbolTable.o SymbolTableTest.cc
-SRC=SymbolTable.o util.o
+TEST=SymbolTable.o SymbolTableTest.cc
+OBJ=SymbolTable.o util.o
 CFLAGS=-std=c++11 
 CFLAGS_COMPILE=-std=c++11 -c
 
 all: symboltest dependencies
 
-symboltest: $(SRC_TEST)
+symboltest: $(TEST)
 	$(CC) $(CFLAGS) $^ -o $@
 
-dependencies: $(SRC)
+dependencies: $(OBJ)
 
 SymbolTable.o: SymbolTable.cc
 	$(CC) $(CFLAGS_COMPILE) $^

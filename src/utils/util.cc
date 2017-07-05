@@ -71,6 +71,8 @@ string generate_class_name(int length, vector<string> illegal_words) {
   if (length <= 0) throw "Nonpositive name length";
   string class_name = "";
 
+  int iterations = 0;
+
   while (true) {
     // Generate first character uppercase.
     char first = alphanum[rand() % 26];
@@ -85,6 +87,12 @@ string generate_class_name(int length, vector<string> illegal_words) {
     // Exit if class name is not a keyword and not in list of illegal words.
     if (!(string_vector_contains(class_name, class_keyword_vec) ||
                   string_vector_contains(class_name, illegal_words))) break;
+
+    // Throw exception on max iterations limit.
+    iterations++;
+    if (iterations > 100) {
+      throw "Reached max iteration limit while generating class name.";
+    }
   }
 
   return class_name;
@@ -96,6 +104,8 @@ string generate_class_name(int length, vector<string> illegal_words) {
 string generate_feature_name(int length, vector<string> illegal_words) {
   if (length <= 0) throw "Nonpositive name length";
   string feature_name = "";
+
+  int iterations = 0;
 
   while (true) {
     // Generate first character lowercase.
@@ -111,6 +121,12 @@ string generate_feature_name(int length, vector<string> illegal_words) {
     // Exit if class name is not a keyword and not in list of illegal words.
     if (!(string_vector_contains(feature_name, feature_keyword_vec) ||
                   string_vector_contains(feature_name, illegal_words))) break;
+
+    // Throw exception on max iterations limit.
+    iterations++;
+    if (iterations > 100) {
+      throw "Reached max iteration limit while generating feature name.";
+    }
   }
 
   return feature_name;
@@ -152,6 +168,7 @@ string extract_class_name(string corpus_path, vector<string> illegal_words) {
   }
 
   string class_name = "";
+  int iterations = 0;
 
   while(true) {
     class_name = corpus[rand() % corpus.size()];
@@ -166,6 +183,12 @@ string extract_class_name(string corpus_path, vector<string> illegal_words) {
     // Exit if class name is not a keyword and not in list of illegal words.
     if (!(string_vector_contains(class_name, class_keyword_vec) ||
                   string_vector_contains(class_name, illegal_words))) break;
+
+    // Throw exception on max iterations limit.
+    iterations++;
+    if (iterations > 100) {
+      throw "Reached max iteration limit while extracting class name. Expand your corpus!";
+    }
   }
 
   return class_name;
@@ -177,6 +200,7 @@ string extract_feature_name(string corpus_path, vector<string> illegal_words) {
   }
 
   string feature_name = "";
+  int iterations = 0;
 
   while(true) {
     feature_name = corpus[rand() % corpus.size()];
@@ -190,6 +214,12 @@ string extract_feature_name(string corpus_path, vector<string> illegal_words) {
     // Exit if class name is not a keyword and not in list of illegal words.
     if (!(string_vector_contains(feature_name, feature_keyword_vec) ||
                   string_vector_contains(feature_name, illegal_words))) break;
+
+    // Throw exception on max iterations limit.
+    iterations++;
+    if (iterations > 100) {
+      throw "Reached max iteration limit while extracting feature name. Expand your corpus!";
+    }
   }
 
   return feature_name;
