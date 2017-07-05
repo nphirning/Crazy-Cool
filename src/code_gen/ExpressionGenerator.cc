@@ -7,6 +7,7 @@
 #include <vector>
 #include "util.h"
 #include "CodeGenerator.h"
+#include "SymbolTable.h"
 
 using namespace std;
 
@@ -51,25 +52,28 @@ void CodeGenerator::generate_int() {
 //          output (an exception will be thrown if no possible identifiers exist).
 bool CodeGenerator::generate_identifier(string type, bool abort_early) {
 
+  // Extract available locals.
+  vector<pair<string, string> > locals = identifiers.current_ids();
+
   // Find possible identifiers.
   vector<pair<string, string> > possible_identifiers = vector<pair<string, string> >();
   if (type == "SELF_TYPE") {
-    for (int i = 0; i < identifiers.size(); i++) {
-      if (identifiers[i].second == "SELF_TYPE") {
+    for (int i = 0; i < locals.size(); i++) {
+      if (locals[i].second == "SELF_TYPE") {
         if (abort_early) return true;
-        possible_identifiers.push_back(identifiers[i]);
+        possible_identifiers.push_back(locals[i]);
       }
     }
   } else {
-    for (int i = 0; i < identifiers.size(); i++) {
-      string identifier_type = identifiers[i].second;
+    for (int i = 0; i < locals.size(); i++) {
+      string identifier_type = locals[i].second;
       if (identifier_type == "SELF_TYPE") {
         identifier_type = current_class;
       }
 
       if (tree.is_child_of(identifier_type, type)) {
         if (abort_early) return true;
-        possible_identifiers.push_back(identifiers[i]);
+        possible_identifiers.push_back(locals[i]);
       }
     }
   }
@@ -77,7 +81,7 @@ bool CodeGenerator::generate_identifier(string type, bool abort_early) {
   // No possible identifiers found.
   if (abort_early) return false;
 
-  if (identifiers.size() == 0) {
+  if (possible_identifiers.size() == 0) {
     throw "Internal Error: no identifiers match expression but generate_identifier was called.";
   }
 
@@ -97,21 +101,24 @@ bool CodeGenerator::generate_identifier(string type, bool abort_early) {
 //          output (an exception will be thrown if no possible assignments exist).
 bool CodeGenerator::generate_assignment(string type, bool abort_early) {
 
+  // Extract available locals.
+  vector<pair<string, string> > locals = identifiers.current_ids();
+
   // Choose possible assigns.
   // NOTES: - The possible assigns are stored in a vector where elements are of the form
   //          ((identifier name, identifier type), assign expression type)
   vector<pair<pair<string, string>, string> > possible_assigns = vector<pair<pair<string, string>, string> >();
 
   if (type == "SELF_TYPE") {
-    for(int i = 0; i < identifiers.size(); i++) {
-      string identifier_type = identifiers[i].second;
+    for(int i = 0; i < locals.size(); i++) {
+      string identifier_type = locals[i].second;
 
       // Can't assign to self.
-      if (identifiers[i].first == "self") continue;
+      if (locals[i].first == "self") continue;
 
       if (identifier_type == "SELF_TYPE" || tree.is_child_of(current_class, identifier_type)) {
         if (abort_early) return true;
-        possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], "SELF_TYPE"));
+        possible_assigns.push_back(pair<pair<string, string>, string>(locals[i], "SELF_TYPE"));
       }
     }
   } else {
@@ -128,19 +135,19 @@ bool CodeGenerator::generate_assignment(string type, bool abort_early) {
         possible_type = current_class;
       }
 
-      for (int i = 0; i < identifiers.size(); i++) {
+      for (int i = 0; i < locals.size(); i++) {
 
-        string identifier_type = identifiers[i].second;
+        string identifier_type = locals[i].second;
 
         // Can't assign to self.
-        if (identifiers[i].first == "self") continue;
+        if (locals[i].first == "self") continue;
 
         // If identifier is SELF_TYPE, we need assignment to be SELF_TYPE.
         // Otherwise, if assignment is SELF_TYPE, we treat it as current class.
         if (identifier_type == "SELF_TYPE") {
           if (*it == "SELF_TYPE") {
             if (abort_early) return true;
-            possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], *it));
+            possible_assigns.push_back(pair<pair<string, string>, string>(locals[i], *it));
           }
         } else {
           cout << "possible_type: " << possible_type << endl;
@@ -150,7 +157,7 @@ bool CodeGenerator::generate_assignment(string type, bool abort_early) {
 
           if (tree.is_child_of(possible_type, identifier_type)) {
             if (abort_early) return true;
-            possible_assigns.push_back(pair<pair<string, string>, string>(identifiers[i], *it));
+            possible_assigns.push_back(pair<pair<string, string>, string>(locals[i], *it));
           }
         }
       }

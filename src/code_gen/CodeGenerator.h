@@ -7,6 +7,7 @@
 #include "ClassTree.h"
 #include <fstream>
 #include <vector>
+#include "SymbolTable.h"
 
 #define NUM_EXPRESSION_TYPES 10
 
@@ -67,7 +68,7 @@ private:
 
   // Internal variables.
   std::map<std::string, float> expression_map;
-  std::vector<std::pair<std::string, std::string> > identifiers;
+  SymbolTable identifiers;
   std::string current_class;
   int current_line_length; // Currently only updated for expression generation.
   int recursive_depth;

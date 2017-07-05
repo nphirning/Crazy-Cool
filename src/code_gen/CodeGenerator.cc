@@ -8,6 +8,7 @@
 #include <vector>
 #include "ClassTree.h"
 #include "CodeGenerator.h"
+#include "SymbolTable.h"
 
 using namespace std;
 
@@ -32,9 +33,11 @@ CodeGenerator::CodeGenerator( ClassTree tree,
   this->current_line_length = 0;
   this->max_expression_count = max_expression_count;
 
-  indentation_tabs = 0;
-  recursive_depth = 0;
-  expression_count = 0;
+  this->indentation_tabs = 0;
+  this->recursive_depth = 0;
+  this->expression_count = 0;
+
+  this->identifiers = SymbolTable();
 
   // Create map from name -> weights.
   this->expression_map = map<string, float>();
@@ -220,9 +223,13 @@ void CodeGenerator::print_attribute(string class_name, string attribute_name, st
 //        all the arguments in one method.
 void CodeGenerator::print_method(string class_name, string method_name, string method_type) {
 
-  // Update identifiers vector.
+  // Update identifiers.
+  identifiers.enter_scope();
   map<string, vector<pair<string, string> > > class_method_args = tree.class_method_args[class_name];
-  identifiers.insert(identifiers.end(), class_method_args[method_name].begin(), class_method_args[method_name].end());
+  vector<pair<string, string> > method_args = class_method_args[method_name];
+  for (int i = 0; i < method_args.size(); i++) {
+    identifiers.add_id(method_args[i].first, method_args[i].second);
+  }
 
   // Tabs + method name.
   print_tabs();
@@ -252,8 +259,8 @@ void CodeGenerator::print_method(string class_name, string method_name, string m
   print_tabs();
   writer << "};" << endl;
 
-  // Remove from identifiers vector.
-  identifiers.resize(identifiers.size() - tree.class_method_args[class_name][method_name].size());
+  // Remove arguments from identifiers.
+  identifiers.exit_scope();
 }
 
 // FUNCTION: Prints one class.
@@ -268,9 +275,11 @@ void CodeGenerator::print_class(string class_name) {
   attribute_holders.push_back(class_name);
   for (int i = 0; i < attribute_holders.size(); i++) {
     vector<pair<string, string> > current_attribute_pairs = tree.class_attributes[attribute_holders[i]];
-    identifiers.insert(identifiers.end(), current_attribute_pairs.begin(), current_attribute_pairs.end());
+    for (int j = 0; j < current_attribute_pairs.size(); j++) {
+      identifiers.add_id(current_attribute_pairs[j].first, current_attribute_pairs[j].second);
+    }
   }
-  identifiers.push_back(pair<string, string>("self", class_name));
+  identifiers.add_id("self", class_name);
 
   // Print class declaration line.
   string parent = tree.class_ancestors[class_name][0];
@@ -305,13 +314,12 @@ void CodeGenerator::print_class(string class_name) {
   writer << "};" << endl << endl;
 
   // Reset identifiers vector.
-  identifiers = vector<pair<string, string> >();
+  identifiers.exit_scope();
 }
 
 
 // FUNCTION: Main function that generates the output code file.
 void CodeGenerator::generate_code() {
-  identifiers = vector<pair<string, string> >();
 
   for (int i = 0; i < tree.class_names.size(); i++) {
     string class_name = tree.class_names[i];

@@ -20,10 +20,6 @@ void SymbolTable::enter_scope() {
 }
 
 void SymbolTable::exit_scope() {
-	if (current_scope == 0) {
-		throw "Attempt to exit ground scope of symbol table";
-	}
-
 	map<string, vector<pair<string, int> > >::iterator it = table.begin();
 	while (it != table.end()) {
 		vector<pair<string, int> >& entry = it->second;
@@ -40,10 +36,13 @@ void SymbolTable::exit_scope() {
 			++it;
 		}
 	}
-	current_scope--;
+
+	if (current_scope != 0) {
+		current_scope--;
+	}
 }
 
-void SymbolTable::addid(string id, string type) {
+void SymbolTable::add_id(string id, string type) {
 
 	if (type == "") {
 		throw "Type cannot be the empty string";

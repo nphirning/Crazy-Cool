@@ -11,9 +11,9 @@ int main() {
 	SymbolTable table = SymbolTable();
 	
 	// Test base scope functionality.
-	table.addid("a", "A");
-	table.addid("b", "B");
-	table.addid("c", "C");
+	table.add_id("a", "A");
+	table.add_id("b", "B");
+	table.add_id("c", "C");
 	assert(table.lookup("b") == "B");
 	assert(table.lookup("d") == "");
 
@@ -30,7 +30,7 @@ int main() {
 
 	// Test adding to second scope.
 	table.enter_scope();
-	table.addid("d", "D");
+	table.add_id("d", "D");
 	assert(table.lookup("a") == "A");
 	assert(table.lookup("d") == "D");
 	assert(table.lookup("b") == "B");
@@ -50,13 +50,13 @@ int main() {
 
 	// Test overwriting from scope.
 	table.enter_scope();
-	table.addid("a", "A1");
-	table.addid("e", "E");
-	table.addid("d", "D1");
+	table.add_id("a", "A1");
+	table.add_id("e", "E");
+	table.add_id("d", "D1");
 	assert(table.lookup("a") == "A1");
 	assert(table.lookup("e") == "E");
 	assert(table.lookup("b") == "B");
-	table.addid("e", "E1");
+	table.add_id("e", "E1");
 	assert(table.lookup("e") == "E1");
 
 	// Current state:
@@ -80,7 +80,7 @@ int main() {
 	assert(table.lookup("b") == "B");
 	assert(table.lookup("d") == "D");
 	assert(table.lookup("e") == "");
-	table.addid("e", "E");
+	table.add_id("e", "E");
 
 	// Current state:
 	//	a -> [(A, 0)]
@@ -113,6 +113,18 @@ int main() {
 	state.push_back(pair<string, string>("a", "A"));
 	state.push_back(pair<string, string>("b", "B"));
 	state.push_back(pair<string, string>("c", "C"));
+	assert(state == table.current_ids());
+
+	// Remove ground scope.
+	table.exit_scope();
+	assert(table.lookup("a") == "");
+	assert(table.lookup("b") == "");
+	assert(table.lookup("c") == "");
+	state = vector<pair<string, string> >();
+	assert(state == table.current_ids());
+
+	// Remove empty ground scope.
+	table.exit_scope();
 	assert(state == table.current_ids());
 
 	cout << "Tests passed!" << endl;
