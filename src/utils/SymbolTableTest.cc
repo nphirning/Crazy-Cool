@@ -21,6 +21,12 @@ int main() {
 	//	a -> [(A, 0)]
 	//	b -> [(B, 0)]
 	// 	c -> [(C, 0)]
+	
+	vector<pair<string, string> > state = vector<pair<string, string> >();
+	state.push_back(pair<string, string>("a", "A"));
+	state.push_back(pair<string, string>("b", "B"));
+	state.push_back(pair<string, string>("c", "C"));
+	assert(state == table.current_ids());
 
 	// Test adding to second scope.
 	table.enter_scope();
@@ -34,6 +40,13 @@ int main() {
 	//	b -> [(B, 0)]
 	// 	c -> [(C, 0)]
 	//	d -> [(D, 1)]
+
+	state = vector<pair<string, string> >();
+	state.push_back(pair<string, string>("a", "A"));
+	state.push_back(pair<string, string>("b", "B"));
+	state.push_back(pair<string, string>("c", "C"));
+	state.push_back(pair<string, string>("d", "D"));
+	assert(state == table.current_ids());
 
 	// Test overwriting from scope.
 	table.enter_scope();
@@ -53,6 +66,14 @@ int main() {
 	//	d -> [(D, 1), (D1, 2)]
 	// 	e -> [(E1, 2)]
 
+	state = vector<pair<string, string> >();
+	state.push_back(pair<string, string>("a", "A1"));
+	state.push_back(pair<string, string>("b", "B"));
+	state.push_back(pair<string, string>("c", "C"));
+	state.push_back(pair<string, string>("d", "D1"));
+	state.push_back(pair<string, string>("e", "E1"));
+	assert(state == table.current_ids());
+
 	// Test for removing scope.
 	table.exit_scope();
 	assert(table.lookup("a") == "A");
@@ -68,6 +89,14 @@ int main() {
 	//	d -> [(D, 1)]
 	// 	e -> [(E, 1)]
 
+	state = vector<pair<string, string> >();
+	state.push_back(pair<string, string>("a", "A"));
+	state.push_back(pair<string, string>("b", "B"));
+	state.push_back(pair<string, string>("c", "C"));
+	state.push_back(pair<string, string>("d", "D"));
+	state.push_back(pair<string, string>("e", "E"));
+	assert(state == table.current_ids());
+
 	// Final removing scope test.
 	table.exit_scope();
 
@@ -79,6 +108,12 @@ int main() {
 	//	a -> [(A, 0)]
 	//	b -> [(B, 0)]
 	// 	c -> [(C, 0)]
+
+	state = vector<pair<string, string> >();
+	state.push_back(pair<string, string>("a", "A"));
+	state.push_back(pair<string, string>("b", "B"));
+	state.push_back(pair<string, string>("c", "C"));
+	assert(state == table.current_ids());
 
 	cout << "Tests passed!" << endl;
 

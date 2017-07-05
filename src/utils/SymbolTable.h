@@ -36,6 +36,10 @@ public:
 	// string if @id is not found.
 	std::string lookup(std::string id);
 
+	// Returns a vector that contains entries (id, type) with the
+	// closest scoped definitions of all keys in the symbol table.
+	std::vector<std::pair<std::string, std::string> > current_ids();
+
 	// Prints out the contents of the table. Used for debugging.
 	void print_debug();
 

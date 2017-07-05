@@ -70,6 +70,15 @@ string SymbolTable::lookup(string id) {
 	}
 }
 
+vector<pair<string, string> > SymbolTable::current_ids() {
+	vector<pair<string, string> > ids = vector<pair<string, string> >();
+	for (map<string, vector<pair<string, int> > >::iterator it = table.begin(); it != table.end(); ++it) {
+		vector<pair<string, int> > entry = it->second;
+		ids.push_back(pair<string, string>(it->first, entry.back().first));
+	}
+	return ids;
+}
+
 void SymbolTable::print_debug() {
 	cout << "PRINT ------" << endl;
 	for (map<string, vector<pair<string, int> > >::iterator it = table.begin(); it != table.end(); ++it) {
