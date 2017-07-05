@@ -523,3 +523,13 @@ void CodeGenerator::generate_loop() {
   writer << ") pool";
   current_line_length += 6;
 }
+
+// EXPRESSION: Block.
+void CodeGenerator::generate_block(string type) {
+
+  // Choose number of lines in block.
+  int num_lines = (rand() % (max_block_length + 1)) + 1;
+
+  // Output block.
+  writer << "{";
+}

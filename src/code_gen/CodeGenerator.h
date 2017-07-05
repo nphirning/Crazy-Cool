@@ -23,6 +23,7 @@ public:
                 float probability_initialized = 0.75,
                 int max_recursion_depth = 5,
                 bool should_break_lines = true,
+                int max_block_length = 5,
                 int max_line_length = 80,
                 int max_expression_count = 10000);
 
@@ -37,7 +38,7 @@ private:
                                                     "identifier", "assignment",
                                                     "dispatch", "static_dispatch",
                                                     "self_dispatch", "conditional",
-                                                    "loop"};
+                                                    "loop", "block"};
 
   // Internal functions for generate_code();
   void generate_expression(std::string type);
@@ -57,10 +58,12 @@ private:
   void write_dispatch(std::string dispatch_type);
   void generate_conditional(std::string type);
   void generate_loop();
+  void generate_block(std::string type);
 
   // Configurable inputs.
   std::string output_file;
   int max_recursion_depth;
+  int max_block_length;
   bool should_break_lines;
   int max_line_length;
   int max_expression_count;

@@ -21,6 +21,7 @@ CodeGenerator::CodeGenerator( ClassTree tree,
                               float probability_initialized,
                               int max_recursion_depth,
                               bool should_break_lines,
+                              int max_block_length,
                               int max_line_length,
                               int max_expression_count):
                               writer(output_file) {
@@ -29,6 +30,7 @@ CodeGenerator::CodeGenerator( ClassTree tree,
   this->max_recursion_depth = max_recursion_depth;
   this->probability_initialized = probability_initialized;
   this->should_break_lines = should_break_lines;
+  this->max_block_length = max_block_length;
   this->max_line_length = max_line_length;
   this->current_line_length = 0;
   this->max_expression_count = max_expression_count;
@@ -72,6 +74,7 @@ void CodeGenerator::generate_expression(string expression_type) {
   // 9. Self dispatch.
   // 10. Conditional.
   // 11. Loop.
+  // 12. Block.
 
   // New.
   normalization_factor += expression_map["new"];
@@ -149,6 +152,13 @@ void CodeGenerator::generate_expression(string expression_type) {
     probability_cutoffs.push_back(expression_map["loop"]);
   }
 
+  // Block.
+  if (recursive_depth < max_recursion_depth && expression_count < max_expression_count) {
+    normalization_factor += expression_map["block"];
+    possible_expansions.push_back("block");
+    probability_cutoffs.push_back(expression_map["block"]);
+  }
+
   // EXPANSION CHOICE AND GENERATION.
 
   // Choose expansion.
@@ -190,6 +200,8 @@ void CodeGenerator::generate_expression(string expression_type) {
     generate_conditional(expression_type);
   } else if (expansion == "loop") {
     generate_loop();
+  } else if (expansion == "block") {
+    generate_block(expression_type);
   } else {
     throw "Internal error: chosen expression type not a possible expansion.";
   }

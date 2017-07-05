@@ -431,8 +431,10 @@ void ClassTree::generate_class_methods() {
     
     // We want to compute the names that we should not use if we 
     // are not redefining a method. Thus, we must look at all parents
-    // and all children of the current class. 
+    // and all children of the current class. For simplicity, we don't allow
+    // redefinition of the method main until it has been created in Main.
     vector<string> unavailable_names = vector<string>();
+    unavailable_names.push_back("main");
 
     // We will also update the method signatures that we can redefine.
     vector<pair<string, string> > redefinable_methods = vector<pair<string, string> >();
