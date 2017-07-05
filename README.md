@@ -14,7 +14,7 @@
 The generator is written in C++ 11. So the instructions follow:
 
 * Make sure C++ 11 is installed on your system.
-* Compile the C++ files in the `src` directory (if you want, you can inspect the Makefile for inspiration on how to do this). 
+* Compile the C++ files (go ahead and use the makefiles for this task --- there are four of them, but you should only `make` inside the `src/` directory). 
 * The resulting executable will work. Read the section on input flags for customization.
 
 ## Input Flags
