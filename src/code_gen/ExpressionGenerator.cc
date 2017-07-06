@@ -640,6 +640,8 @@ void CodeGenerator::generate_comparison() {
     second_type = "Int";
   }
 
+  cout << second_type << " " << first_type << endl;
+
   writer << "(";
   current_line_length++;
   generate_expression(first_type);
