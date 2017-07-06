@@ -75,6 +75,7 @@ void CodeGenerator::generate_expression(string expression_type) {
   // 10. Conditional.
   // 11. Loop.
   // 12. Block.
+  // 13. isVoid.
 
   // New.
   normalization_factor += expression_map["new"];
@@ -159,6 +160,14 @@ void CodeGenerator::generate_expression(string expression_type) {
     probability_cutoffs.push_back(expression_map["block"]);
   }
 
+  // isVoid.
+  if (expression_type == "Bool" && recursive_depth < max_recursion_depth 
+                                            && expression_count < max_expression_count) {
+    normalization_factor += expression_map["isvoid"];
+    possible_expansions.push_back("isvoid");
+    probability_cutoffs.push_back(expression_map["isvoid"]);
+  }
+
   // EXPANSION CHOICE AND GENERATION.
 
   // Choose expansion.
@@ -202,6 +211,8 @@ void CodeGenerator::generate_expression(string expression_type) {
     generate_loop();
   } else if (expansion == "block") {
     generate_block(expression_type);
+  } else if (expansion == "isvoid") {
+    generate_isvoid();
   } else {
     throw "Internal error: chosen expression type not a possible expansion.";
   }

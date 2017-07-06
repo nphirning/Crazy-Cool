@@ -560,3 +560,29 @@ void CodeGenerator::generate_block(string type) {
   writer << '}';
   current_line_length++;
 }
+
+// EXPRESSION: isVoid.
+void CodeGenerator::generate_isvoid() {
+  
+  // Choose expression type.
+  vector<string> possible_types = tree.class_names;
+  possible_types.push_back("SELF_TYPE");
+  string type = possible_types[rand() % possible_types.size()];
+
+  // Output expression.
+  writer << "isvoid (";
+  current_line_length += 8;
+  if (current_line_length >= max_line_length) {
+    writer << endl;
+    indentation_tabs++;
+    print_tabs();
+    generate_expression(type);
+    writer << endl;
+    indentation_tabs--;
+    print_tabs();
+  } else {
+    generate_expression(type);
+  }
+  writer << ')';
+  current_line_length++;
+}
