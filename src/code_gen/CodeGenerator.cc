@@ -76,28 +76,29 @@ void CodeGenerator::generate_expression(string expression_type) {
   // 11. Loop.
   // 12. Block.
   // 13. isVoid.
+  // 14. Arithmetic.
 
   // New.
   normalization_factor += expression_map["new"];
   possible_expansions.push_back("new");
   probability_cutoffs.push_back(expression_map["new"]);
 
-  // Bool constants (only valid if we're generating a Bool).
-  if (expression_type == "Bool") {
+  // Bool constants.
+  if (tree.is_child_of("Bool", expression_type)) {
     normalization_factor += expression_map["bool"];
     possible_expansions.push_back("bool");
     probability_cutoffs.push_back(expression_map["bool"]);
   }
 
-  // String constants (only valid if we're generating a String).
-  if (expression_type == "String") {
+  // String constants.
+  if (tree.is_child_of("String", expression_type)) {
     normalization_factor += expression_map["string"];
     possible_expansions.push_back("string");
     probability_cutoffs.push_back(expression_map["string"]);
   }
 
-  // Int constants (only valid if we're generating an Int).
-  if (expression_type == "Int") {
+  // Int constants.
+  if (tree.is_child_of("Int", expression_type)) {
     normalization_factor += expression_map["int"];
     possible_expansions.push_back("int");
     probability_cutoffs.push_back(expression_map["int"]);
@@ -161,11 +162,19 @@ void CodeGenerator::generate_expression(string expression_type) {
   }
 
   // isVoid.
-  if (expression_type == "Bool" && recursive_depth < max_recursion_depth 
+  if (tree.is_child_of("Bool", expression_type) && recursive_depth < max_recursion_depth 
                                             && expression_count < max_expression_count) {
     normalization_factor += expression_map["isvoid"];
     possible_expansions.push_back("isvoid");
     probability_cutoffs.push_back(expression_map["isvoid"]);
+  }
+
+  // Arithmetic.
+  if (expression_type == "Bool" && recursive_depth < max_recursion_depth 
+                                            && expression_count < max_expression_count) {
+    normalization_factor += expression_map["arithmetic"];
+    possible_expansions.push_back("arithmetic");
+    probability_cutoffs.push_back(expression_map["arithmetic"]);
   }
 
   // EXPANSION CHOICE AND GENERATION.
@@ -213,6 +222,8 @@ void CodeGenerator::generate_expression(string expression_type) {
     generate_block(expression_type);
   } else if (expansion == "isvoid") {
     generate_isvoid();
+  } else if (expansion == "arithmetic") {
+    generate_arithmetic();
   } else {
     throw "Internal error: chosen expression type not a possible expansion.";
   }

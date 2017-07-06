@@ -9,7 +9,7 @@
 #include <vector>
 #include "SymbolTable.h"
 
-#define NUM_EXPRESSION_TYPES 13
+#define NUM_EXPRESSION_TYPES 14
 
 class CodeGenerator {
 public:
@@ -38,7 +38,8 @@ private:
                                                     "identifier", "assignment",
                                                     "dispatch", "static_dispatch",
                                                     "self_dispatch", "conditional",
-                                                    "loop", "block", "isvoid"};
+                                                    "loop", "block", "isvoid",
+                                                    "arithmetic"};
 
   // Internal functions for generate_code();
   void generate_expression(std::string type);
@@ -60,6 +61,7 @@ private:
   void generate_loop();
   void generate_block(std::string type);
   void generate_isvoid();
+  void generate_arithmetic();
 
   // Configurable inputs.
   std::string output_file;

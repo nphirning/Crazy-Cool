@@ -586,3 +586,22 @@ void CodeGenerator::generate_isvoid() {
   writer << ')';
   current_line_length++;
 }
+
+// EXPRESSION: Arithmetic.
+void CodeGenerator::generate_arithmetic() {
+  
+  // Choose operation.
+  string ops_arr[] = {"+", "-", "/", "*"};
+  vector<string> ops (ops_arr, ops_arr + 4);
+  string operation = ops[rand() % ops.size()];
+
+  // Write result.
+  writer << "(";
+  current_line_length++;
+  generate_expression("Int");
+  writer << ") " + operation + " (";
+  current_line_length += 5;
+  generate_expression("Int");
+  writer << ")";
+  current_line_length++;
+}
