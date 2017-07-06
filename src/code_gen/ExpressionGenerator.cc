@@ -533,13 +533,25 @@ void CodeGenerator::generate_block(string type) {
   // Compute possible expression types.
   vector<string> possible_types = tree.class_names;
   possible_types.push_back("SELF_TYPE");
+  set<string> possible_last_types = tree.class_descendants[type];
+  possible_last_types.insert(type);
+  if (tree.is_child_of(current_class, type)) {
+    possible_last_types.insert("SELF_TYPE");
+  }
 
   // Output block.
   writer << "{" << endl;
   indentation_tabs++;
   for (int i = 0; i < num_lines; i++) {
     print_tabs();
-    string current = possible_types[rand() % possible_types.size()];
+    string current;
+    if (i == num_lines - 1) {
+      set<string>::iterator it = possible_last_types.begin();
+      advance(it, rand() % possible_last_types.size());
+      current = *it;
+    } else {
+      current = possible_types[rand() % possible_types.size()];
+    }
     generate_expression(current);
     writer << ';' << endl;
   }
