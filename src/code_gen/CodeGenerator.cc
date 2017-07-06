@@ -170,7 +170,7 @@ void CodeGenerator::generate_expression(string expression_type) {
   }
 
   // Arithmetic.
-  if (expression_type == "Bool" && recursive_depth < max_recursion_depth 
+  if (tree.is_child_of("Int", expression_type) && recursive_depth < max_recursion_depth 
                                             && expression_count < max_expression_count) {
     normalization_factor += expression_map["arithmetic"];
     possible_expansions.push_back("arithmetic");
