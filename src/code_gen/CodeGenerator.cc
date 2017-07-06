@@ -77,6 +77,7 @@ void CodeGenerator::generate_expression(string expression_type) {
   // 12. Block.
   // 13. isVoid.
   // 14. Arithmetic.
+  // 15. Comparison.
 
   // New.
   normalization_factor += expression_map["new"];
@@ -177,6 +178,14 @@ void CodeGenerator::generate_expression(string expression_type) {
     probability_cutoffs.push_back(expression_map["arithmetic"]);
   }
 
+  // Comparison.
+  if (tree.is_child_of("Bool", expression_type)&& recursive_depth < max_recursion_depth 
+                                            && expression_count < max_expression_count) {
+    normalization_factor += expression_map["comparison"];
+    possible_expansions.push_back("comparison");
+    probability_cutoffs.push_back(expression_map["comparison"]);
+  }
+
   // EXPANSION CHOICE AND GENERATION.
 
   // Choose expansion.
@@ -224,6 +233,8 @@ void CodeGenerator::generate_expression(string expression_type) {
     generate_isvoid();
   } else if (expansion == "arithmetic") {
     generate_arithmetic();
+  } else if (expansion == "comparison") {
+    generate_comparison();
   } else {
     throw "Internal error: chosen expression type not a possible expansion.";
   }

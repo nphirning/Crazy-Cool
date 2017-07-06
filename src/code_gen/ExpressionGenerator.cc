@@ -605,3 +605,39 @@ void CodeGenerator::generate_arithmetic() {
   writer << ")";
   current_line_length++;
 }
+
+// EXPRESSION: Comparison.
+void CodeGenerator::generate_comparison() {
+
+  // Choose comparison.
+  string ops_arr[] = {"<", "<=", "="};
+  vector<string> ops (ops_arr, ops_arr + 3);
+  string operation = ops[rand() % ops.size()];
+  
+  string first_type;
+  string second_type;
+
+  if (operation == "=") {
+    vector<string> possible_types = tree.class_names;
+    possible_types.push_back("SELF_TYPE");
+    first_type = possible_types[rand() % possible_types.size()];
+    if (first_type == "Int" || first_type == "String" || first_type == "Bool") {
+      second_type = first_type;
+    } else {
+      second_type = possible_types[rand() % possible_types.size()];
+    }
+  } else {
+    first_type = "Int";
+    second_type = "Int";
+  }
+
+  writer << "(";
+  current_line_length++;
+  generate_expression(first_type);
+  writer << ") " << operation << " (";
+  current_line_length += 4 + operation.length();
+  generate_expression(second_type);
+  writer << ")";
+  current_line_length++;
+
+}
