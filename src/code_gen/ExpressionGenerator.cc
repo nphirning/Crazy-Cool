@@ -624,6 +624,15 @@ void CodeGenerator::generate_comparison() {
     if (first_type == "Int" || first_type == "String" || first_type == "Bool") {
       second_type = first_type;
     } else {
+
+      // Second type cannot be an Int, String, or Bool, 
+      // so remove these from the vector.
+
+      for (int i = possible_types.size() - 1; i >= 0; i--) {
+        if (possible_types[i] == "Int" || possible_types[i] == "String" || possible_types[i] == "Bool") {
+          possible_types.erase(possible_types.begin() + i);
+        }
+      }
       second_type = possible_types[rand() % possible_types.size()];
     }
   } else {
