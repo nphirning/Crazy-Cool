@@ -157,6 +157,7 @@ void cache_corpus(string corpus_path) {
   while(file >> word) {
     corpus.push_back(word);
   }
+  is_corpus_cached = true;
 }
 
 // FUNCTION: Extracts a class name from the corpus.
