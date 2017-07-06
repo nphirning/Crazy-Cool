@@ -541,7 +541,8 @@ void CodeGenerator::generate_block(string type) {
     print_tabs();
     string current = possible_types[rand() % possible_types.size()];
     generate_expression(current);
-    writer << ';' << endl;
+    if (i != num_lines - 1) writer << ';';
+    writer << endl;
   }
   indentation_tabs--;
   print_tabs();

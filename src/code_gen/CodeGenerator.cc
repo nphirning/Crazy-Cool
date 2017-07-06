@@ -153,11 +153,11 @@ void CodeGenerator::generate_expression(string expression_type) {
   }
 
   // Block.
-  // if (recursive_depth < max_recursion_depth && expression_count < max_expression_count) {
-  //   normalization_factor += expression_map["block"];
-  //   possible_expansions.push_back("block");
-  //   probability_cutoffs.push_back(expression_map["block"]);
-  // }
+  if (recursive_depth < max_recursion_depth && expression_count < max_expression_count) {
+    normalization_factor += expression_map["block"];
+    possible_expansions.push_back("block");
+    probability_cutoffs.push_back(expression_map["block"]);
+  }
 
   // EXPANSION CHOICE AND GENERATION.
 

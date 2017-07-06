@@ -5,10 +5,10 @@ OBJ=utils/SymbolTable.o utils/util.o class_structure/ClassTree.o \
 SRC=main.cc 
 CFLAGS=-std=c++11 $(INC)
 
-all: makefiles crazycool
+all: crazycool
 
-crazycool: $(SRC)
-	$(CC) $(CFLAGS) $^ $(OBJ) -o $@
+crazycool: $(SRC) makefiles
+	$(CC) $(CFLAGS) $< $(OBJ) -o $@
 
 makefiles:
 	$(MAKE) -C utils
@@ -19,4 +19,4 @@ clean:
 	rm -f crazycool
 	find . -type f -name '*.o' -delete
 
-.PHONY: makefiles
+.PHONY: makefiles all clean
