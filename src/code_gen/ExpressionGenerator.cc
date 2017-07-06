@@ -620,13 +620,23 @@ void CodeGenerator::generate_comparison() {
   if (operation == "=") {
     vector<string> possible_types = tree.class_names;
     possible_types.push_back("SELF_TYPE");
+
+    // We remove Object, because that could expand to one of Int, String, Bool.
+    for (int i = 0; i < possible_types.size(); i++) {
+      if (possible_types[i] == "Object") {
+        possible_types.erase(possible_types.begin() + i);
+        break;
+      }
+    }
+
     first_type = possible_types[rand() % possible_types.size()];
     if (first_type == "Int" || first_type == "String" || first_type == "Bool") {
       second_type = first_type;
     } else {
 
-      // Second type cannot be an Int, String, or Bool, 
-      // so remove these from the vector.
+      // First type is not Int, String, or Bool,
+      // so second type cannot be an Int, String, 
+      // or Bool. Remove these from the vector.
 
       for (int i = possible_types.size() - 1; i >= 0; i--) {
         if (possible_types[i] == "Int" || possible_types[i] == "String" || possible_types[i] == "Bool") {
@@ -639,8 +649,6 @@ void CodeGenerator::generate_comparison() {
     first_type = "Int";
     second_type = "Int";
   }
-
-  cout << second_type << " " << first_type << endl;
 
   writer << "(";
   current_line_length++;
