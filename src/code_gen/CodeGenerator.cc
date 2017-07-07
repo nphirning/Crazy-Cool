@@ -78,6 +78,8 @@ void CodeGenerator::generate_expression(string expression_type) {
   // 13. isVoid.
   // 14. Arithmetic.
   // 15. Comparison.
+  // 16. Integer complement.
+  // 17. Boolean complement.
 
   // New.
   normalization_factor += expression_map["new"];
@@ -179,11 +181,27 @@ void CodeGenerator::generate_expression(string expression_type) {
   }
 
   // Comparison.
-  if (tree.is_child_of("Bool", expression_type)&& recursive_depth < max_recursion_depth 
+  if (tree.is_child_of("Bool", expression_type) && recursive_depth < max_recursion_depth 
                                             && expression_count < max_expression_count) {
     normalization_factor += expression_map["comparison"];
     possible_expansions.push_back("comparison");
     probability_cutoffs.push_back(expression_map["comparison"]);
+  }
+
+  // Integer complement.
+  if (tree.is_child_of("Int", expression_type) && recursive_depth < max_recursion_depth 
+                                            && expression_count < max_expression_count) {
+    normalization_factor += expression_map["int_complement"];
+    possible_expansions.push_back("int_complement");
+    probability_cutoffs.push_back(expression_map["int_complement"]);
+  }
+
+  // Boolean complement.
+  if (tree.is_child_of("Bool", expression_type) && recursive_depth < max_recursion_depth 
+                                            && expression_count < max_expression_count) {
+    normalization_factor += expression_map["bool_complement"];
+    possible_expansions.push_back("bool_complement");
+    probability_cutoffs.push_back(expression_map["bool_complement"]);
   }
 
   // EXPANSION CHOICE AND GENERATION.
@@ -235,6 +253,10 @@ void CodeGenerator::generate_expression(string expression_type) {
     generate_arithmetic();
   } else if (expansion == "comparison") {
     generate_comparison();
+  } else if (expansion == "int_complement") {
+    generate_int_complement();
+  } else if (expansion == "bool_complement") {
+    generate_bool_complement();
   } else {
     throw "Internal error: chosen expression type not a possible expansion.";
   }

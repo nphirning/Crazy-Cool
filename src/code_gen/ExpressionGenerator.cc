@@ -658,5 +658,22 @@ void CodeGenerator::generate_comparison() {
   generate_expression(second_type);
   writer << ")";
   current_line_length++;
+}
 
+// EXPRESSION: Boolean complement.
+void CodeGenerator::generate_bool_complement() {
+  writer << "not (";
+  current_line_length += 5;
+  generate_expression("Bool");
+  writer << ")";
+  current_line_length++;
+}
+
+// EXPRESSION: Integer complement.
+void CodeGenerator::generate_int_complement() {
+  writer << "~(";
+  current_line_length += 2;
+  generate_expression("Int");
+  writer << ")";
+  current_line_length++;
 }
