@@ -50,6 +50,10 @@ private:
   void print_tabs();
 
   // Expression generation.
+  void generate_expansion(std::string expansion, std::string expression_type);
+  float populate_possible_expansions(std::vector<std::string>& possible_expansions, 
+                                                  std::vector<float>& probability_cutoffs,
+                                                  std::string expression_type);
   void generate_new(std::string type);
   void generate_bool();
   void generate_string();

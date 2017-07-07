@@ -48,21 +48,93 @@ CodeGenerator::CodeGenerator( ClassTree tree,
   }
 }
 
-// FUNCTION: Generates an expression of the given type.
-void CodeGenerator::generate_expression(string expression_type) {
+// FUNCTION: Generates an expansion of the given name. This
+//  is different from generate_expression in the sense that the input
+//  to this function is a type of expression expansion. For 
+//  example, "dispatch" is a type of expansion, and it may
+//  evaluate to an expression of type "Int".
+void CodeGenerator::generate_expansion(string expansion, string expression_type) {
+  if (expansion == "new") {
+    generate_new(expression_type);
+  } else if (expansion == "bool") {
+    generate_bool();
+  } else if (expansion == "string") {
+    generate_string();
+  } else if (expansion == "int") {
+    generate_int();
+  } else if (expansion == "identifier") {
+    generate_identifier(expression_type, false);
+  } else if (expansion == "assignment") {
+    generate_assignment(expression_type, false);
+  } else if (expansion == "self_dispatch") {
+    write_dispatch("self");
+  } else if (expansion == "static_dispatch") {
+    write_dispatch("static");
+  } else if (expansion == "dispatch") {
+    write_dispatch("regular");
+  } else if (expansion == "conditional") {
+    generate_conditional(expression_type);
+  } else if (expansion == "loop") {
+    generate_loop();
+  } else if (expansion == "block") {
+    generate_block(expression_type);
+  } else if (expansion == "isvoid") {
+    generate_isvoid();
+  } else if (expansion == "arithmetic") {
+    generate_arithmetic();
+  } else if (expansion == "comparison") {
+    generate_comparison();
+  } else if (expansion == "int_complement") {
+    generate_int_complement();
+  } else if (expansion == "bool_complement") {
+    generate_bool_complement();
+  } else {
+    throw "Internal error: chosen expression type not a possible expansion.";
+  }
+}
 
-  // Increase recursive depth.
-  recursive_depth++;
+// FUNCTION: This is a fairly tricky function. We describe
+//  the parameters separately and in detail below:
+//  
+//  [String] possible_expansions:
+//          This should be passed in as an empty vector and 
+//          passed by reference. At the end, it will be filled
+//          with the names of possible valid expansions, given
+//          the fact that the resulting expression must satisfy
+//          expression_type, and also stay within the recursion
+//          depth limit and max number of expressions. 
+//  [Float] probability_cutoffs:
+//          This should be passed in as an empty vector and 
+//          passed by reference. As we populate the possible_expansions 
+//          vector, we will also populate probability cutoffs 
+//          with the float weights that are pulled from expression_map 
+//          (this is configured when the class is created and denotes 
+//          the amount of weight each expansion should have -- for 
+//          instance, if you set "new" to zero then you will get no 
+//          "new" expansions).
+//  [String] expression_type:
+//          A string representing the class we are trying to generate. This
+//          means that for the expansion to be valid, there must be an expansion
+//          of the given type that will generate a static type <= expression_type. 
+//          
+//  Returns:
+//       We return the sum of the entries in probability cutoffs. This can be used
+//       for normalization after. 
+//  
+//  Example:
+//        Suppose there are four expansion types: ["new", "constant", "assign", "dispatch"].
+//        The user has configured the corresponding weights: [1.5, 0.5, 1.2, 12.3].
+//        It turns out, that only the first three are valid if we are trying to generate
+//        an "Int" (that is, we cannot generate an expression <= Int using a dispatch). Then,
+//        we might end up with:
+//        
+//        possible_expansions = ["new", "assign", "constant"]
+//        probability_cutoffs = [1.5, 1.2, 0.5]
+//        return value        = 3.2
+float CodeGenerator::populate_possible_expansions(vector<string>& possible_expansions, 
+  vector<float>& probability_cutoffs, string expression_type) {
 
-  // Increase expression count.
-  expression_count++;
-
-  // Compute possible expansions and keep track of weights.
-  vector<string> possible_expansions = vector<string>();
-  float normalization_factor = 0.0;
-  vector<float> probability_cutoffs;
-
-  // POSSIBLE EXPRESSION TYPES.
+  // POSSIBLE EXPANSION TYPES.
   // 1. New.
   // 2. Bool constants.
   // 3. String constants.
@@ -82,7 +154,7 @@ void CodeGenerator::generate_expression(string expression_type) {
   // 17. Boolean complement.
 
   // New.
-  normalization_factor += expression_map["new"];
+  float normalization_factor = expression_map["new"];
   possible_expansions.push_back("new");
   probability_cutoffs.push_back(expression_map["new"]);
 
@@ -204,7 +276,24 @@ void CodeGenerator::generate_expression(string expression_type) {
     probability_cutoffs.push_back(expression_map["bool_complement"]);
   }
 
-  // EXPANSION CHOICE AND GENERATION.
+  return normalization_factor;
+}
+
+// FUNCTION: Generates an expression of the given type.
+void CodeGenerator::generate_expression(string expression_type) {
+
+  // Increase recursive depth.
+  recursive_depth++;
+
+  // Increase expression count.
+  expression_count++;
+
+  // Compute possible expansions and keep track of weights.
+  vector<string> possible_expansions = vector<string>();
+  vector<float> probability_cutoffs = vector<float>();
+  float normalization_factor = populate_possible_expansions(possible_expansions, 
+                                                            probability_cutoffs, 
+                                                            expression_type);
 
   // Choose expansion.
   float probability_sum = 0.0;
@@ -213,53 +302,16 @@ void CodeGenerator::generate_expression(string expression_type) {
     probability_cutoffs[i] = probability_sum;
   }
   transform(probability_cutoffs.begin(), probability_cutoffs.end(), probability_cutoffs.begin(),
-            [normalization_factor](float i){return i / normalization_factor;});
+                                 [normalization_factor](float i){return i / normalization_factor;});
   double probability_cutoff = ((double) rand() / (RAND_MAX));
   int expansion_index = 0;
   for (; expansion_index < probability_cutoffs.size(); expansion_index++) {
     if (probability_cutoff < probability_cutoffs[expansion_index]) break;
   }
-
   string expansion = possible_expansions[expansion_index];
 
   // Generate code corresponding to chosen expansion.
-  if (expansion == "new") {
-    generate_new(expression_type);
-  } else if (expansion == "bool") {
-    generate_bool();
-  } else if (expansion == "string") {
-    generate_string();
-  } else if (expansion == "int") {
-    generate_int();
-  } else if (expansion == "identifier") {
-    generate_identifier(expression_type, false);
-  } else if (expansion == "assignment") {
-    generate_assignment(expression_type, false);
-  } else if (expansion == "self_dispatch") {
-    write_dispatch("self");
-  } else if (expansion == "static_dispatch") {
-    write_dispatch("static");
-  } else if (expansion == "dispatch") {
-    write_dispatch("regular");
-  } else if (expansion == "conditional") {
-    generate_conditional(expression_type);
-  } else if (expansion == "loop") {
-    generate_loop();
-  } else if (expansion == "block") {
-    generate_block(expression_type);
-  } else if (expansion == "isvoid") {
-    generate_isvoid();
-  } else if (expansion == "arithmetic") {
-    generate_arithmetic();
-  } else if (expansion == "comparison") {
-    generate_comparison();
-  } else if (expansion == "int_complement") {
-    generate_int_complement();
-  } else if (expansion == "bool_complement") {
-    generate_bool_complement();
-  } else {
-    throw "Internal error: chosen expression type not a possible expansion.";
-  }
+  generate_expansion(expansion, expression_type);
 
   // Reduce recursive depth.
   recursive_depth--;
