@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
   try {
 
     // Main code generation call.
-    CodeGenerator cg = CodeGenerator(num_classes, corpus_name);
+    CodeGenerator cg(num_classes, corpus_name);
     cg.generate_code();
 
   } catch (const char* e) {
