@@ -1,7 +1,7 @@
 CC=g++
 INC=-Iclass_structure -Icode_gen -Iutils
-OBJ=utils/SymbolTable.o utils/util.o class_structure/ClassTree.o \
-	code_gen/CodeGenerator.o code_gen/ExpressionGenerator.o
+OBJ=utils/SymbolTable.o utils/util.o utils/NameGenerator.o class_structure/ClassTree.o \
+	code_gen/CodeGenerator.o code_gen/ExpressionGenerator.o 
 SRC=main.cc 
 CFLAGS=-std=c++11 $(INC)
 

@@ -8,26 +8,26 @@
 #include <fstream>
 #include <vector>
 #include "SymbolTable.h"
+#include "NameGenerator.h"
 
 #define NUM_EXPRESSION_TYPES 17
 
 class CodeGenerator {
 public:
 
-  // Constructor.
-  // NOTE: Expression weights are in the following order:
-  //  [new, ]
-  CodeGenerator(ClassTree tree,
-                std::vector<float> expression_weights = std::vector<float>(NUM_EXPRESSION_TYPES, 1.0),
-                std::string output_file = "output.cl",
-                float probability_initialized = 0.75,
-                int max_recursion_depth = 5,
-                bool should_break_lines = true,
-                int max_block_length = 5,
-                int max_line_length = 80,
-                int max_expression_count = 10000);
+  // FUNCTION: Constructor.
+  // ----------------------
+  // Parameters:
+  //    Int num_classes
+  //        The number of classes to generate.
+  //    String corpus_name
+  //        The path (relative or absolute) to the corpus from
+  //        which to draw names.
+  CodeGenerator (int num_classes = 10, std::string corpus_name = "");
 
-  // Main code generation function.
+  // FUNCTION generate_code
+  // ----------------------
+  // Generates code and deposits in the file output.cl.
   void generate_code();
 
 
@@ -35,12 +35,9 @@ private:
 
   // Constant values used for expression generation.
   std::vector<std::string> expression_keys = {"new", "bool", "string", "int",
-                                                    "identifier", "assignment",
-                                                    "dispatch", "static_dispatch",
-                                                    "self_dispatch", "conditional",
-                                                    "loop", "block", "isvoid",
-                                                    "arithmetic", "comparison",
-                                                    "int_complement", "bool_complement"};
+    "identifier", "assignment", "dispatch", "static_dispatch", "self_dispatch", 
+    "conditional", "loop", "block", "isvoid", "arithmetic", "comparison", 
+    "int_complement", "bool_complement"};
 
   // Internal functions for generate_code();
   void generate_expression(std::string type);
@@ -52,8 +49,7 @@ private:
   // Expression generation.
   void generate_expansion(std::string expansion, std::string expression_type);
   float populate_possible_expansions(std::vector<std::string>& possible_expansions, 
-                                                  std::vector<float>& probability_cutoffs,
-                                                  std::string expression_type);
+    std::vector<float>& probability_cutoffs, std::string expression_type);
   void generate_new(std::string type);
   void generate_bool();
   void generate_string();
@@ -70,19 +66,40 @@ private:
   void generate_comparison();
   void generate_bool_complement();
   void generate_int_complement();
+  void generate_let(std::string type);
 
-  // Configurable inputs.
+  // These values can be configured but
+  // are currently constants that are
+  // hardcoded inside the constructor.
   std::string output_file;
   int max_recursion_depth;
   int max_block_length;
-  bool should_break_lines;
+  int max_let_defines;
   int max_line_length;
   int max_expression_count;
-  float probability_initialized;
-  std::ofstream writer;
+  float probability_initialized; // This applies to let statements as well.
+
+  // The following is declared in the initialization list ---------
+
+  // NameGenerator configuration.
+  int class_name_length;
+  int class_attribute_length;
+  int class_method_length;
+  int class_method_arg_length;
+  NameGenerator name_generator;
+
+  // ClassTree configuration.
+  int num_classes;
+  int num_attributes_per_class;
+  int num_methods_per_class;
+  int max_num_method_args;
+  float probability_repeat_method_name;
   ClassTree tree;
 
-  // Internal variables.
+  // --------------------------------------------------------------
+
+  // Variables used internally.
+  std::ofstream writer;
   std::map<std::string, float> expression_map;
   SymbolTable identifiers;
   std::string current_class;

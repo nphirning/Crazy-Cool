@@ -45,17 +45,13 @@ int main(int argc, char* argv[]) {
   }
 
   try {
-    // Generate class information.
-    ClassTree tree = ClassTree(num_classes, corpus_name);
-    tree.generate_class_information();
-    if (DEBUG) tree.print_class_information();
 
-    // Generate code.
-    CodeGenerator generator(tree);
-    generator.generate_code();
-    
+    // Main code generation call.
+    CodeGenerator cg = CodeGenerator(num_classes, corpus_name);
+    cg.generate_code();
+
   } catch (const char* e) {
-    cout << "Exception: " << e << endl;
+    cout << "Error: " << e << endl;
   }
 
 }

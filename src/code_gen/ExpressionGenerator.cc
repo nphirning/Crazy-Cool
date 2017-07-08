@@ -528,7 +528,7 @@ void CodeGenerator::generate_loop() {
 void CodeGenerator::generate_block(string type) {
 
   // Choose number of lines in block.
-  int num_lines = (rand() % (max_block_length + 1)) + 1;
+  int num_lines = (rand() % (max_block_length - 1)) + 1;
 
   // Compute possible expression types.
   vector<string> possible_types = tree.class_names;
@@ -676,4 +676,20 @@ void CodeGenerator::generate_int_complement() {
   generate_expression("Int");
   writer << ")";
   current_line_length++;
+}
+
+// EXPRESSION: Let.
+// NOTES: - When generating variable names,
+//          we use 
+void CodeGenerator::generate_let(string type) {
+
+  // Choose number of definitions.
+  int num_defines = (rand() % (max_let_defines - 1)) + 1;
+
+  // For each definition, generate:
+  //  - A name for the variable.
+  //  - A type for the variable.
+  for (int i = 0; i < num_defines; i++) {
+    //TODO.
+  }
 }

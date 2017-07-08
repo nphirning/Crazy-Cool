@@ -8,32 +8,67 @@
 #include <vector>
 #include <map>
 #include <set>
+#include "NameGenerator.h"
 
 // Generates information for class names, attribute names, method names.
 // NOTE: None of the structures include the special values SELF_TYPE and self.
 class ClassTree {
 public:
 
-  // Constructor.
-  ClassTree(int num_classes = 10,
-            std::string word_corpus = "",
-            int num_attributes_per_class = 3,
-            int num_methods_per_class = 3,
-            int max_num_method_args = 5,
-            float probability_repeat_method_name = 0.2,
-            int class_name_length = 10,
-            int attribute_name_length = 5,
-            int method_name_length = 5,
-            int method_arg_name_length = 5);
+  // FUNCTION: Constructor.
+  // ----------------------
+  // Parameters:
+  //    NameGenerator name_generator
+  //            Any NameGenerator object will do. This is used
+  //            for name generation. Duh.
+  //    Int num_classes
+  //            This is the number of classes to generate. We
+  //            throw if this is not positive.
+  //    Int num_attributes_per_class
+  //            The number of attributes to generate in each 
+  //            class. Currently, there is no randomness.
+  //    Int num_methods_per_class
+  //            The number of methods to generate in each class.
+  //    Int max_num_method_args
+  //            The maximum number of arguments to each method.
+  //            For each method, we'll draw from [0, max_num_method_args]
+  //            to choose the number of arguments.
+  //    Int probability_repeat_method_name
+  //            Must be in the range [0,1]. This reflects the 
+  //            probability that we repeat a method name (i.e., 
+  //            method redefinition).
+  ClassTree(const NameGenerator& name_generator,
+            int num_classes,
+            int num_attributes_per_class,
+            int num_methods_per_class,
+            int max_num_method_args,
+            float probability_repeat_method_name);
 
-  // Populates data structures with information.
+  // FUNCTION: generate_class_information.
+  // ------------------------------------
+  // This populates the many data structures outlined below.
   void generate_class_information();
 
-  // Print method for debugging.
+  // FUNCTION: print_class_information.
+  // ---------------------------------
+  // This prints out the information in the class for debugging. 
+  // Look at the implementation for more information.
   void print_class_information();
 
+  // FUNCTION: is_child_of
+  // ---------------------
+  // Checks if child <= parent.
+  // Parameters:
+  //    String child
+  //            Name of a class inside class_names.
+  //    Sting parent
+  //            Name of a class inside class_names.
+  // Returns:
+  //    True if child <= parent.
+  bool is_child_of(std::string child, std::string parent);
+
   // Data structures for class tree information.
-  // NOTE: Most maps are intuitive, but just for the record:
+  // NOTE: Most maps are intuitive, but we record their official definitions here.
   //    class_names       : vector of class names as strings
   //    class_ancestors   : map from class name to ordered vector of ancestors
   //    class_descendants : map from class name to set of all children
@@ -49,9 +84,6 @@ public:
   std::map<std::string, std::map<std::string, std::string> > class_method_types;
   std::map<std::string, std::map<std::string, std::vector<std::pair<std::string, std::string> > > > class_method_args;
 
-  // Helper functions.
-  bool is_child_of(std::string child, std::string parent);
-
 private:
 
   // Internal methods for generate_class_information().
@@ -60,10 +92,8 @@ private:
   void generate_class_attributes();
   void generate_class_methods();
 
-  // Internal methods used by generate_class_methods().
+  // Other internal methods. See implementation for details.
   void add_basic_class_methods();
-
-  // Internal methods used by generate_class_tree().
   void generate_class_names();
   void generate_inheritance();
   void add_basic_classes();
@@ -71,17 +101,12 @@ private:
   void update_child_sets(std::string child, std::string parent);
 
   // Parameters for class generation.
-  int num_classes;          // Not including basic classes.
+  const NameGenerator& name_generator;
+  int num_classes;                // Doesn't include basic classes.
   int num_attributes_per_class;
   int num_methods_per_class;
-  int class_name_length;    // Length of randomly generated strings.
-  int attribute_name_length;
-  int method_name_length;
-  int method_arg_name_length;
   int max_num_method_args;
   float probability_repeat_method_name;
-  std::string word_corpus;  // Path to corpus for class name selection.
-
 };
 
 #endif

@@ -26,7 +26,8 @@ This currently supports the following optional input flags.
 
 ## Things to Do
 
-* Add support for let, case, and arithmetic operations.
+* Add support for let, case.
+* Oh. Switch things to enums.
 * Benchmark the different expression types to figure out what takes the most time in generation (my suspicion: dispatch). 
 * Add support for configuration via input flags.
 * Expand corpus of my favorite words to include more of my favorite words.

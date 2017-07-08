@@ -9,39 +9,49 @@
 #include "ClassTree.h"
 #include "CodeGenerator.h"
 #include "SymbolTable.h"
+#include "NameGenerator.h"
 
 using namespace std;
 
 int spaces_per_tab = 4; // Used to keep track of line length.
 
 // FUNCTION: Constructor.
-CodeGenerator::CodeGenerator( ClassTree tree,
-                              vector<float> expression_weights,
-                              string output_file,
-                              float probability_initialized,
-                              int max_recursion_depth,
-                              bool should_break_lines,
-                              int max_block_length,
-                              int max_line_length,
-                              int max_expression_count):
-                              writer(output_file) {
-  this->tree = tree;
-  this->output_file = output_file;
-  this->max_recursion_depth = max_recursion_depth;
-  this->probability_initialized = probability_initialized;
-  this->should_break_lines = should_break_lines;
-  this->max_block_length = max_block_length;
-  this->max_line_length = max_line_length;
+CodeGenerator::CodeGenerator( int num_classes, string word_corpus)
+    : output_file("output.cl")
+    , writer(output_file)
+    , class_name_length(10)
+    , class_attribute_length(5)
+    , class_method_length(5)
+    , class_method_arg_length(5)
+    , name_generator(word_corpus, class_name_length, class_attribute_length, class_method_length,
+    class_method_arg_length)
+    , num_attributes_per_class(3)
+    , num_methods_per_class(3)
+    , max_num_method_args(5)
+    , probability_repeat_method_name(0.2)
+    , tree(name_generator, num_classes, num_attributes_per_class, num_methods_per_class, 
+      max_num_method_args, probability_repeat_method_name) {
+  
+  // Internal configuration.
+  this->max_recursion_depth = 5;
+  this->probability_initialized = 0.75;
+  this->max_block_length = 5;
+  this->max_let_defines = 3;
+  this->max_line_length = 80;
   this->current_line_length = 0;
-  this->max_expression_count = max_expression_count;
+  this->max_expression_count = 10000;
 
+  // Initialization of internal state.
   this->indentation_tabs = 0;
   this->recursive_depth = 0;
   this->expression_count = 0;
-
   this->identifiers = SymbolTable();
 
-  // Create map from name -> weights.
+  // Initialize the class tree.
+  tree.generate_class_information();
+
+  // Create map from expansion name -> expansion weight.
+  vector<float> expression_weights = vector<float>(NUM_EXPRESSION_TYPES, 1.0);
   this->expression_map = map<string, float>();
   for (int i = 0; i < expression_keys.size(); i++) {
     this->expression_map[expression_keys[i]] = expression_weights[i];
@@ -88,6 +98,8 @@ void CodeGenerator::generate_expansion(string expansion, string expression_type)
     generate_int_complement();
   } else if (expansion == "bool_complement") {
     generate_bool_complement();
+  } else if (expansion == "let") {
+    generate_let(expression_type);
   } else {
     throw "Internal error: chosen expression type not a possible expansion.";
   }
@@ -112,7 +124,7 @@ void CodeGenerator::generate_expansion(string expansion, string expression_type)
 //          the amount of weight each expansion should have -- for 
 //          instance, if you set "new" to zero then you will get no 
 //          "new" expansions).
-//  [String] expression_type:
+//  String expression_type:
 //          A string representing the class we are trying to generate. This
 //          means that for the expansion to be valid, there must be an expansion
 //          of the given type that will generate a static type <= expression_type. 
@@ -132,7 +144,7 @@ void CodeGenerator::generate_expansion(string expansion, string expression_type)
 //        probability_cutoffs = [1.5, 1.2, 0.5]
 //        return value        = 3.2
 float CodeGenerator::populate_possible_expansions(vector<string>& possible_expansions, 
-  vector<float>& probability_cutoffs, string expression_type) {
+      vector<float>& probability_cutoffs, string expression_type) {
 
   // POSSIBLE EXPANSION TYPES.
   // 1. New.
@@ -152,6 +164,8 @@ float CodeGenerator::populate_possible_expansions(vector<string>& possible_expan
   // 15. Comparison.
   // 16. Integer complement.
   // 17. Boolean complement.
+  // 18. Let.
+  // 19. Case.
 
   // New.
   float normalization_factor = expression_map["new"];
@@ -276,6 +290,13 @@ float CodeGenerator::populate_possible_expansions(vector<string>& possible_expan
     probability_cutoffs.push_back(expression_map["bool_complement"]);
   }
 
+  // Let statement.
+  // if (recursive_depth < max_recursion_depth && expression_count < max_expression_count) {
+  //   normalization_factor += expression_map["let"];
+  //   possible_expansions.push_back("let");
+  //   probability_cutoffs.push_back(expression_map["let"]);
+  // }
+
   return normalization_factor;
 }
 
@@ -315,7 +336,6 @@ void CodeGenerator::generate_expression(string expression_type) {
 
   // Reduce recursive depth.
   recursive_depth--;
-
 }
 
 // FUNCTION: Prints the number of tabs indicated by global indentation_tabs.

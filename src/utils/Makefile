@@ -1,9 +1,9 @@
 CC=g++
 SYMBOLTEST_SRC=SymbolTable.o SymbolTableTest.cc
-OBJ=SymbolTable.o util.o
+OBJ=SymbolTable.o NameGenerator.o util.o
 CFLAGS=-std=c++11 
 CFLAGS_COMPILE=-std=c++11 -c
-DEPS=SymbolTable.h util.h
+DEPS=SymbolTable.h util.h NameGenerator.h
 
 
 all: symboltest dependencies
