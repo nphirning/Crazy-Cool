@@ -1,4 +1,5 @@
-// File : main.cc
+// File         : main.cc
+// Description  : Main executable of Crazy Cool.
 
 #include <unistd.h>
 #include <string>

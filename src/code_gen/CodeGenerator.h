@@ -1,5 +1,5 @@
 // File       : CodeGenerator.h
-// Description: File for generating the
+// Description: File for generating COOL code. 
 
 #ifndef CODEGENERATOR_H_
 #define CODEGENERATOR_H_
@@ -10,8 +10,23 @@
 #include "SymbolTable.h"
 #include "NameGenerator.h"
 
+// Total number of expression types in COOL.
 #define NUM_EXPRESSION_TYPES 17
 
+// CLASS CodeGenerator
+// -------------------
+// This is the standalone class that generates
+// COOL code. 
+// 
+// Usage: Very simple. 
+//          1. Construct the class. 
+//          2. Call generate_code. 
+//          
+// That's it! Add configuration when you 
+// construct the class. Or -- if you want 
+// some real configuration *power* -- go edit 
+// the constants in the constructor. Much of
+// the configuration is currently hardcoded there. 
 class CodeGenerator {
 public:
 

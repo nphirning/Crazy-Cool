@@ -13,6 +13,7 @@
 
 using namespace std;
 
+// FUNCTION: Constructor.
 ClassTree::ClassTree(   const NameGenerator& name_generator,
                         int num_classes,
                         int num_attributes_per_class,

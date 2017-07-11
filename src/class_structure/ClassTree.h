@@ -10,8 +10,35 @@
 #include <set>
 #include "NameGenerator.h"
 
-// Generates information for class names, attribute names, method names.
-// NOTE: None of the structures include the special values SELF_TYPE and self.
+// CLASS ClassTree
+// ---------------
+// This class is intended to generate all of the 
+// internal class-based structure of a COOL program.
+// That is, this will generate class names, their 
+// relationships, and which classes have which attributes
+// and which methods and the arguments and return types
+// of those methods.
+// 
+// Usage: 
+//    Construct an instance. For this purpose, it requires
+//    an instance of the NameGenerator class that will be 
+//    used to generate the names as well as some basic
+//    configuration details. Then, simply call the method
+//    generate_class_information and it will populate a 
+//    multitude of data structures about the class. For 
+//    convenience, these structures are currently public.
+//    In the future, it may be nice to make these private.
+//    
+//    This also supplies the helper method is_child_of which
+//    will use the forementioned data structures to check if 
+//    one class is the child of another, and a helper method 
+//    for debugging that prints the class internals. 
+//    
+// NOTES: - None of this class's structures include the special 
+//          values SELF_TYPE and self. These also cannot be input
+//          to the function is_child_of because it doesn't know the
+//          current class. 
+//          
 class ClassTree {
 public:
 

@@ -1,5 +1,5 @@
-// File         : Util.cc
-// Description  : Variety of useful functions.
+// File         : NameGenerator.cc
+// Description  : The implementation of the NameGenerator class. 
 
 #include <string>
 #include <stdlib.h>
@@ -11,11 +11,15 @@
 #include "util.h"
 #include "NameGenerator.h"
 
+#define NUM_VALID_CHARACTERS 63
+
 using namespace std;
 
+// Convenient list of alphanumeric characters (allowed in COOL) for random generation.
+// NOTE: We keep the alphabetic characters at the front so we can iterate over the alphabet easily.
+static const char valid_characters[NUM_VALID_CHARACTERS + 1] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
 
 // Disallowed class keywords.
-static const char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
 string class_keywords[] = {"class", "else", "fi", "if", "in",
                             "inherits", "isvoid", "let", "loop", "pool",
                             "then", "while", "case", "esac", "new",
@@ -30,8 +34,7 @@ string feature_keywords[] = {"class", "else", "fi", "if", "in",
                                 "of", "not", "true", "false", "self"};
 vector<string> feature_keyword_vec (feature_keywords, feature_keywords + 20);
 
-// FUNCTION: Constructor. 
-// NOTES: Cache the corpus if supplied.
+// FUNCTION: Constructor. Also caches the corpus.
 NameGenerator::NameGenerator( string corpus_path,
                               int class_name_length,
                               int attribute_name_length,
@@ -62,6 +65,8 @@ NameGenerator::NameGenerator( string corpus_path,
   this->method_arg_name_length = method_arg_name_length;
 }
 
+// FUNCTION: Generates a COOL name that is not contained in @illegal_names.
+// The supported types are given by the enum NameTypes defined in the header.
 string NameGenerator::generate(NameType type, vector<string> illegal_names) const {
 
   // Corpus extraction.
@@ -83,6 +88,7 @@ string NameGenerator::generate(NameType type, vector<string> illegal_names) cons
   return generate_random_feature_name(method_arg_name_length, illegal_names);
 }
 
+// FUNCTION: Generates a random COOL class name of the desired length.
 string NameGenerator::generate_random_class_name(int length, vector<string> illegal_words) const {
   if (length <= 0) throw "Nonpositive name length";
   string class_name = "";
@@ -91,12 +97,12 @@ string NameGenerator::generate_random_class_name(int length, vector<string> ille
 
   while (true) {
     // Generate first character uppercase.
-    char first = alphanum[rand() % 26];
+    char first = valid_characters[rand() % 26];
     class_name += first;
 
     // Generate rest of class name.
     for (int i = 0; i < length - 1; i++) {
-      char c = alphanum[rand() % 63];
+      char c = valid_characters[rand() % 63];
       class_name += c;
     }
 
@@ -114,6 +120,7 @@ string NameGenerator::generate_random_class_name(int length, vector<string> ille
   return class_name;
 }
 
+// FUNCTION: Generates a random COOL feature name of the desired length.
 string NameGenerator::generate_random_feature_name(int length, vector<string> illegal_words) const {
   if (length <= 0) throw "Nonpositive name length";
   string feature_name = "";
@@ -122,12 +129,12 @@ string NameGenerator::generate_random_feature_name(int length, vector<string> il
 
   while (true) {
     // Generate first character lowercase.
-    char first = alphanum[(rand() % 26) + 26];
+    char first = valid_characters[(rand() % 26) + 26];
     feature_name += first;
 
     // Generate rest of class name.
     for (int i = 0; i < length - 1; i++) {
-      char c = alphanum[rand() % 63];
+      char c = valid_characters[rand() % 63];
       feature_name += c;
     }
 
@@ -145,6 +152,7 @@ string NameGenerator::generate_random_feature_name(int length, vector<string> il
   return feature_name;
 }
 
+// FUNCTION: Caches the corpus into the corpus class member variable.
 void NameGenerator::cache_corpus() {
   ifstream file(corpus_path);
   string word;
@@ -153,6 +161,7 @@ void NameGenerator::cache_corpus() {
   }
 }
 
+// FUNCTION: Extracts a COOL class name from the corpus.
 string NameGenerator::extract_class_name(vector<string> illegal_words) const {
 
   string class_name = "";
@@ -182,6 +191,7 @@ string NameGenerator::extract_class_name(vector<string> illegal_words) const {
   return class_name;
 }
 
+// FUNCTION: Extracts a COOL feature name from the corpus.
 string NameGenerator::extract_feature_name(vector<string> illegal_words) const {
   string feature_name = "";
   int iterations = 0;
@@ -207,4 +217,20 @@ string NameGenerator::extract_feature_name(vector<string> illegal_words) const {
   }
 
   return feature_name;
+}
+
+// FUNCTION: Validates that a name contains only alphanumeric characters + underscores.
+bool NameGenerator::validate_name(string name) {
+  for (int i = 0; i < name.length(); i++) {
+    char character = name[i];
+    bool flag = false;
+    for (int j = 0; j < NUM_VALID_CHARACTERS; j++) {
+      char valid_character = valid_characters[j];
+      if (character == valid_character) {
+        flag = true;
+      }
+    }
+    if (!flag) return false;
+  }
+  return true;
 }
