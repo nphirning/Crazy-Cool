@@ -12,3 +12,11 @@ dies
 lives
 births
 aborts
+main
+object
+bool
+int
+string
+main
+main
+main
