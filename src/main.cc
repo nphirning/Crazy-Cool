@@ -7,7 +7,6 @@
 #include <fstream>
 #include <stdexcept>
 #include <stdlib.h>
-#include "ClassTree.h"
 #include "CodeGenerator.h"
 
 using namespace std;
@@ -51,7 +50,7 @@ int main(int argc, char* argv[]) {
     CodeGenerator cg(num_classes, corpus_name);
     cg.generate_code();
 
-  } catch (const char* e) {
+  } catch (string e) {
     cout << "Error: " << e << endl;
   }
 

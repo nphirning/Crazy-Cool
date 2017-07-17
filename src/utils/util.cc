@@ -11,8 +11,6 @@
 
 using namespace std;
 
-static const char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
-
 // FUNCTION: Returns true if words are equal ignoring case.
 bool compare_case_insensitive(string a, string b) {
   if (a.length() != b.length()) return false;
@@ -30,15 +28,6 @@ bool string_vector_contains(string str, vector<string> word_vector) {
     }
   }
   return false;
-}
-
-// FUNCTION: Generates a random alphanumeric string.
-string generate_random_string(int length) {
-  string str = "";
-  for(int i = 0; i < length; i++) {
-    str += alphanum[rand() % 63];
-  }
-  return str;
 }
 
 // FUNCTION: Returns the absolute path to the current working directory

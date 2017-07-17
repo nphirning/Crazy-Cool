@@ -1,5 +1,5 @@
 // File       : CodeGenerator.h
-// Description: File for generating COOL code. 
+// Description: File for generating COOL code.
 
 #ifndef CODEGENERATOR_H_
 #define CODEGENERATOR_H_
@@ -16,17 +16,17 @@
 // CLASS CodeGenerator
 // -------------------
 // This is the standalone class that generates
-// COOL code. 
-// 
-// Usage: Very simple. 
-//          1. Construct the class. 
-//          2. Call generate_code. 
-//          
-// That's it! Add configuration when you 
-// construct the class. Or -- if you want 
-// some real configuration *power* -- go edit 
+// COOL code.
+//
+// Usage: Very simple.
+//          1. Construct the class.
+//          2. Call generate_code.
+//
+// That's it! Add configuration when you
+// construct the class. Or -- if you want
+// some real configuration *power* -- go edit
 // the constants in the constructor. Much of
-// the configuration is currently hardcoded there. 
+// the configuration is currently hardcoded there.
 class CodeGenerator {
 public:
 
@@ -50,8 +50,8 @@ private:
 
   // Constant values used for expression generation.
   std::vector<std::string> expression_keys = {"new", "bool", "string", "int",
-    "identifier", "assignment", "dispatch", "static_dispatch", "self_dispatch", 
-    "conditional", "loop", "block", "isvoid", "arithmetic", "comparison", 
+    "identifier", "assignment", "dispatch", "static_dispatch", "self_dispatch",
+    "conditional", "loop", "block", "isvoid", "arithmetic", "comparison",
     "int_complement", "bool_complement"};
 
   // Internal functions for generate_code();
@@ -63,7 +63,7 @@ private:
 
   // Expression generation.
   void generate_expansion(std::string expansion, std::string expression_type);
-  float populate_possible_expansions(std::vector<std::string>& possible_expansions, 
+  float populate_possible_expansions(std::vector<std::string>& possible_expansions,
     std::vector<float>& probability_cutoffs, std::string expression_type);
   void generate_new(std::string type);
   void generate_bool();

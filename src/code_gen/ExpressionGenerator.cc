@@ -7,7 +7,6 @@
 #include <vector>
 #include "util.h"
 #include "CodeGenerator.h"
-#include "SymbolTable.h"
 
 using namespace std;
 
@@ -33,7 +32,7 @@ void CodeGenerator::generate_bool() {
 // Notes: Generates string of 0-10 characters randomly.
 void CodeGenerator::generate_string() {
   int length = rand() % 11;
-  writer << '\"' << generate_random_string(length) << '\"';
+  writer << '\"' << name_generator.generate_random_string(length) << '\"';
   current_line_length += length + 2;
 }
 
@@ -487,7 +486,7 @@ void CodeGenerator::generate_conditional(string type) {
 
 // EXPRESSION: Loop.
 void CodeGenerator::generate_loop() {
-  
+
   // Randomly choose the static type of the body.
   vector<string> possible_body_types = tree.class_names;
   possible_body_types.push_back("SELF_TYPE");
@@ -563,7 +562,7 @@ void CodeGenerator::generate_block(string type) {
 
 // EXPRESSION: isVoid.
 void CodeGenerator::generate_isvoid() {
-  
+
   // Choose expression type.
   vector<string> possible_types = tree.class_names;
   possible_types.push_back("SELF_TYPE");
@@ -589,7 +588,7 @@ void CodeGenerator::generate_isvoid() {
 
 // EXPRESSION: Arithmetic.
 void CodeGenerator::generate_arithmetic() {
-  
+
   // Choose operation.
   string ops_arr[] = {"+", "-", "/", "*"};
   vector<string> ops (ops_arr, ops_arr + 4);
@@ -613,7 +612,7 @@ void CodeGenerator::generate_comparison() {
   string ops_arr[] = {"<", "<=", "="};
   vector<string> ops (ops_arr, ops_arr + 3);
   string operation = ops[rand() % ops.size()];
-  
+
   string first_type;
   string second_type;
 
@@ -635,7 +634,7 @@ void CodeGenerator::generate_comparison() {
     } else {
 
       // First type is not Int, String, or Bool,
-      // so second type cannot be an Int, String, 
+      // so second type cannot be an Int, String,
       // or Bool. Remove these from the vector.
 
       for (int i = possible_types.size() - 1; i >= 0; i--) {
@@ -680,7 +679,7 @@ void CodeGenerator::generate_int_complement() {
 
 // EXPRESSION: Let.
 // NOTES: - When generating variable names,
-//          we use 
+//          we use
 void CodeGenerator::generate_let(string type) {
 
   // Choose number of definitions.

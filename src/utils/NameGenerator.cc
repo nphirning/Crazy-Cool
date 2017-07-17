@@ -1,5 +1,5 @@
 // File         : NameGenerator.cc
-// Description  : The implementation of the NameGenerator class. 
+// Description  : The implementation of the NameGenerator class.
 
 #include <string>
 #include <stdlib.h>
@@ -38,12 +38,12 @@ vector<string> feature_keyword_vec (feature_keywords, feature_keywords + 20);
 NameGenerator::NameGenerator( string corpus_path,
                               int class_name_length,
                               int attribute_name_length,
-                              int method_name_length, 
+                              int method_name_length,
                               int method_arg_name_length) {
-  
+
   // If we are supplied a corpus, parse
   // the absolute path and cache it.
-  
+
   if (corpus_path != "") {
     // Store correct corpus path.
     if (corpus_path[0] == '/') {
@@ -61,8 +61,17 @@ NameGenerator::NameGenerator( string corpus_path,
   // Set name length configurations.
   this->class_name_length = class_name_length;
   this->attribute_name_length = attribute_name_length;
-  this->method_name_length = method_name_length; 
+  this->method_name_length = method_name_length;
   this->method_arg_name_length = method_arg_name_length;
+}
+
+// FUNCTION: Generates a random alphanumeric string.
+string NameGenerator::generate_random_string(int length) {
+  string str = "";
+  for(int i = 0; i < length; i++) {
+    str += valid_characters[rand() % 63];
+  }
+  return str;
 }
 
 // FUNCTION: Generates a COOL name that is not contained in @illegal_names.
@@ -73,7 +82,7 @@ string NameGenerator::generate(NameType type, vector<string> illegal_names) cons
   if (corpus_path.length() > 0) {
     if (type == className) {
       return extract_class_name(illegal_names);
-    } 
+    }
     return extract_feature_name(illegal_names);
   }
 
@@ -157,6 +166,9 @@ void NameGenerator::cache_corpus() {
   ifstream file(corpus_path);
   string word;
   while(file >> word) {
+    if (!validate_name(word)) {
+      throw "Invalid word in corpus: " + word;
+    }
     corpus.push_back(word);
   }
 }
@@ -219,12 +231,18 @@ string NameGenerator::extract_feature_name(vector<string> illegal_words) const {
   return feature_name;
 }
 
-// FUNCTION: Validates that a name contains only alphanumeric characters + underscores.
+// FUNCTION: Validates that a name contains only alphanumeric
+//           characters + underscores and that the first letter
+//           is alphabetic.
 bool NameGenerator::validate_name(string name) {
   for (int i = 0; i < name.length(); i++) {
     char character = name[i];
     bool flag = false;
     for (int j = 0; j < NUM_VALID_CHARACTERS; j++) {
+
+      // First character must be a letter.
+      if (i == 0 && j == 26 * 2) break;
+
       char valid_character = valid_characters[j];
       if (character == valid_character) {
         flag = true;

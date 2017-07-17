@@ -7,8 +7,6 @@
 
 using namespace std;
 
-string generate_random_string(int len);
 bool compare_case_insensitive(string a, string b);
 bool string_vector_contains(string str, vector<string> word_vector);
 string get_current_working_directory();
-

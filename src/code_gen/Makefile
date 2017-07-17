@@ -11,5 +11,5 @@ dependencies: $(OBJ)
 %.o: %.cc $(DEPS)
 	$(CC) $(CFLAGS) $< -o $@
 
-clean: 
+clean:
 	rm -f *.o
