@@ -23,8 +23,9 @@ CodeGenerator::CodeGenerator(int num_classes, string word_corpus)
     , class_attribute_length(5)
     , class_method_length(5)
     , class_method_arg_length(5)
+    , class_variable_length(10)
     , name_generator(word_corpus, class_name_length, class_attribute_length, class_method_length,
-    class_method_arg_length)
+    class_method_arg_length, class_variable_length)
     , num_attributes_per_class(3)
     , num_methods_per_class(3)
     , max_num_method_args(5)
@@ -36,7 +37,7 @@ CodeGenerator::CodeGenerator(int num_classes, string word_corpus)
   this->max_recursion_depth = 5;
   this->probability_initialized = 0.75;
   this->max_block_length = 5;
-  this->max_let_defines = 3;
+  this->max_let_defines = 4;
   this->max_line_length = 80;
   this->current_line_length = 0;
   this->max_expression_count = 10000;
@@ -291,11 +292,11 @@ float CodeGenerator::populate_possible_expansions(vector<string>& possible_expan
   }
 
   // Let statement.
-  // if (recursive_depth < max_recursion_depth && expression_count < max_expression_count) {
-  //   normalization_factor += expression_map["let"];
-  //   possible_expansions.push_back("let");
-  //   probability_cutoffs.push_back(expression_map["let"]);
-  // }
+  if (recursive_depth < max_recursion_depth && expression_count < max_expression_count) {
+    normalization_factor += expression_map["let"];
+    possible_expansions.push_back("let");
+    probability_cutoffs.push_back(expression_map["let"]);
+  }
 
   return normalization_factor;
 }

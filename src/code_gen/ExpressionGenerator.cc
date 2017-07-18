@@ -7,6 +7,7 @@
 #include <vector>
 #include "util.h"
 #include "CodeGenerator.h"
+#include "NameGenerator.h"
 
 using namespace std;
 
@@ -685,10 +686,121 @@ void CodeGenerator::generate_let(string type) {
   // Choose number of definitions.
   int num_defines = (rand() % (max_let_defines - 1)) + 1;
 
+  // Enter scope.
+  identifiers.enter_scope();
+
   // For each definition, generate:
   //  - A name for the variable.
   //  - A type for the variable.
+  //  - An initialization for the variable (NULL if not initialized).
+  vector<pair<string, pair<string, string> > > let_defines = vector<pair<string, pair<string, string> > >();
   for (int i = 0; i < num_defines; i++) {
-    //TODO.
+
+    // No illegal names for let variables.
+    vector<string> illegal_names = vector<string>();
+    string var_name = name_generator.generate(variable, illegal_names);
+    string var_type = tree.class_names[rand() % tree.class_names.size()];
+
+    // Choose initialization type.
+    double cutoff = ((double) rand() / (RAND_MAX));
+    string init_type = "";
+    if (cutoff <= probability_initialized) {
+      set<string> descendants = tree.class_descendants[var_type];
+      descendants.insert(var_type);
+      set<string>::iterator it = descendants.begin();
+      advance(it, rand() % descendants.size());
+      init_type = *it;
+    }
+
+    // Update data structures.
+    pair<string, string> types = pair<string, string>(var_type, init_type);
+    let_defines.push_back(pair<string, pair<string, string> >(var_name, types));
   }
+
+  // Choose body type.
+  set<string> type_descendants = tree.class_descendants[type];
+  type_descendants.insert(type);
+  set<string>::iterator it = type_descendants.begin();
+  advance(it, rand() % type_descendants.size());
+  string body_type = *it;
+
+  // Case 1: Pretty printing without space.
+  if (current_line_length >= max_line_length || num_defines > 2) {
+
+    // Print let on new line by itself.
+    writer << endl;
+    indentation_tabs++;
+    print_tabs();
+    writer << "let " << endl;
+    indentation_tabs++;
+
+    // Print statements.
+    for (int i = 0; i < let_defines.size(); i++) {
+      print_tabs();
+      pair<string, pair<string, string> > let_define = let_defines[i];
+      writer << let_define.first << " : " << let_define.second.first;
+
+      // Initialization.
+      if (let_define.second.second.length() > 0) {
+        writer << " <- ";
+        current_line_length += let_define.first.length() + let_define.second.first.length() + 7;
+        generate_expression(let_define.second.second);
+      }
+
+      // No comma on last iteration.
+      if (i != let_defines.size() - 1) {
+        writer << ',';
+      }
+      writer << endl;
+
+      identifiers.add_id(let_define.first, let_define.second.first);
+    }
+
+    indentation_tabs--;
+    print_tabs();
+
+    // Print body
+    writer << "in" << endl;
+    indentation_tabs++;
+    print_tabs();
+    generate_expression(body_type);
+    writer << endl;
+    indentation_tabs -= 2;
+    print_tabs();
+
+  } else {
+
+    // Print let.
+    writer << "let ";
+
+    // Print defines.
+    for (int i = 0; i < let_defines.size(); i++) {
+      pair<string, pair<string, string> > let_define = let_defines[i];
+      writer << let_define.first << " : " << let_define.second.first;
+      current_line_length += let_define.first.length() + let_define.second.first.length() + 3;
+
+      // Initialization.
+      if (let_define.second.second.length() > 0) {
+        writer << " <- ";
+        current_line_length += 4;
+        generate_expression(let_define.second.second);
+      }
+
+      // No comma on last iteration.
+      if (i != let_defines.size() - 1) {
+        writer << ", ";
+        current_line_length += 2;
+      }
+
+      identifiers.add_id(let_define.first, let_define.second.first);
+    }
+
+    // Print body.
+    writer << " in ";
+    current_line_length += 4;
+    generate_expression(body_type);
+  }
+
+  // Exit scope.
+  identifiers.exit_scope();
 }

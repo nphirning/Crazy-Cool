@@ -15,7 +15,7 @@
 // need to generate in COOL code. These are the names
 // of classes, class attributes, class methods, and
 // class method arguments.
-enum NameType { className, attribute, method, methodArgument };
+enum NameType { className, attribute, method, methodArgument, variable};
 
 
 // CLASS NameGenerator
@@ -80,7 +80,8 @@ public:
                 int class_name_length,
                 int attribute_name_length,
                 int method_name_length,
-                int method_arg_name_length);
+                int method_arg_name_length,
+                int variable_name_length);
 
   // FUNCTION generate.
   // ------------------
@@ -131,6 +132,7 @@ private:
   int attribute_name_length;
   int method_name_length;
   int method_arg_name_length;
+  int variable_name_length;
 };
 
 #endif

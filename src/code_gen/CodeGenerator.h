@@ -11,7 +11,7 @@
 #include "NameGenerator.h"
 
 // Total number of expression types in COOL.
-#define NUM_EXPRESSION_TYPES 17
+#define NUM_EXPRESSION_TYPES 18
 
 // CLASS CodeGenerator
 // -------------------
@@ -52,7 +52,7 @@ private:
   std::vector<std::string> expression_keys = {"new", "bool", "string", "int",
     "identifier", "assignment", "dispatch", "static_dispatch", "self_dispatch",
     "conditional", "loop", "block", "isvoid", "arithmetic", "comparison",
-    "int_complement", "bool_complement"};
+    "int_complement", "bool_complement", "let"};
 
   // Internal functions for generate_code();
   void generate_expression(std::string type);
@@ -101,6 +101,7 @@ private:
   int class_attribute_length;
   int class_method_length;
   int class_method_arg_length;
+  int class_variable_length;
   NameGenerator name_generator;
 
   // ClassTree configuration.

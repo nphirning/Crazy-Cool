@@ -39,7 +39,8 @@ NameGenerator::NameGenerator( string corpus_path,
                               int class_name_length,
                               int attribute_name_length,
                               int method_name_length,
-                              int method_arg_name_length) {
+                              int method_arg_name_length,
+                              int variable_name_length) {
 
   // If we are supplied a corpus, parse
   // the absolute path and cache it.
@@ -63,6 +64,7 @@ NameGenerator::NameGenerator( string corpus_path,
   this->attribute_name_length = attribute_name_length;
   this->method_name_length = method_name_length;
   this->method_arg_name_length = method_arg_name_length;
+  this->variable_name_length = variable_name_length;
 }
 
 // FUNCTION: Generates a random alphanumeric string.
@@ -93,6 +95,8 @@ string NameGenerator::generate(NameType type, vector<string> illegal_names) cons
     return generate_random_feature_name(attribute_name_length, illegal_names);
   } else if (type == method) {
     return generate_random_feature_name(method_name_length, illegal_names);
+  } else if (type == variable) {
+    return generate_random_feature_name(variable_name_length, illegal_names);
   }
   return generate_random_feature_name(method_arg_name_length, illegal_names);
 }
