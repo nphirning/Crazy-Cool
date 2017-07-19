@@ -11,7 +11,7 @@
 #include "NameGenerator.h"
 
 // Total number of expression types in COOL.
-#define NUM_EXPRESSION_TYPES 18
+#define NUM_EXPRESSION_TYPES 19
 
 // CLASS CodeGenerator
 // -------------------
@@ -52,7 +52,7 @@ private:
   std::vector<std::string> expression_keys = {"new", "bool", "string", "int",
     "identifier", "assignment", "dispatch", "static_dispatch", "self_dispatch",
     "conditional", "loop", "block", "isvoid", "arithmetic", "comparison",
-    "int_complement", "bool_complement", "let"};
+    "int_complement", "bool_complement", "let", "case"};
 
   // Internal functions for generate_code();
   void generate_expression(std::string type);
@@ -82,6 +82,7 @@ private:
   void generate_bool_complement();
   void generate_int_complement();
   void generate_let(std::string type);
+  void generate_case(std::string type);
 
   // These values can be configured but
   // are currently constants that are
@@ -90,6 +91,7 @@ private:
   int max_recursion_depth;
   int max_block_length;
   int max_let_defines;
+  int max_case_branches;
   int max_line_length;
   int max_expression_count;
   float probability_initialized; // This applies to let statements as well.

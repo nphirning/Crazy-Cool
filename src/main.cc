@@ -52,6 +52,8 @@ int main(int argc, char* argv[]) {
 
   } catch (string e) {
     cout << "Error: " << e << endl;
+  } catch (const char* e) {
+    cout << "Error: " << e << endl;
   }
 
 }

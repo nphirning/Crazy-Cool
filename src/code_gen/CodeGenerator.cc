@@ -38,6 +38,7 @@ CodeGenerator::CodeGenerator(int num_classes, string word_corpus)
   this->probability_initialized = 0.75;
   this->max_block_length = 5;
   this->max_let_defines = 4;
+  this->max_case_branches = 7;
   this->max_line_length = 80;
   this->current_line_length = 0;
   this->max_expression_count = 10000;
@@ -101,6 +102,8 @@ void CodeGenerator::generate_expansion(string expansion, string expression_type)
     generate_bool_complement();
   } else if (expansion == "let") {
     generate_let(expression_type);
+  } else if (expansion == "case") {
+    generate_case(expression_type);
   } else {
     throw "Internal error: chosen expression type not a possible expansion.";
   }
@@ -298,6 +301,13 @@ float CodeGenerator::populate_possible_expansions(vector<string>& possible_expan
     probability_cutoffs.push_back(expression_map["let"]);
   }
 
+  // Case.
+  if (recursive_depth < max_recursion_depth && expression_count < max_expression_count) {
+    normalization_factor += expression_map["case"];
+    possible_expansions.push_back("case");
+    probability_cutoffs.push_back(expression_map["case"]);
+  }
+
   return normalization_factor;
 }
 
@@ -467,7 +477,6 @@ void CodeGenerator::print_class(string class_name) {
   // Reset identifiers vector.
   identifiers.exit_scope();
 }
-
 
 // FUNCTION: Main function that generates the output code file.
 void CodeGenerator::generate_code() {

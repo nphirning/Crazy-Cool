@@ -679,8 +679,6 @@ void CodeGenerator::generate_int_complement() {
 }
 
 // EXPRESSION: Let.
-// NOTES: - When generating variable names,
-//          we use
 void CodeGenerator::generate_let(string type) {
 
   // Choose number of definitions.
@@ -803,4 +801,61 @@ void CodeGenerator::generate_let(string type) {
 
   // Exit scope.
   identifiers.exit_scope();
+}
+
+// EXPRESSION: Case.
+void CodeGenerator::generate_case(string type) {
+
+  // Choose the case expression type.
+  string case_expr_type = tree.class_names[rand() % tree.class_names.size()];
+
+  // Choose number of branches.
+  int num_branches = (rand() % (max_case_branches - 1)) + 1;
+
+  // Choose branch signatures ((id name, id type), branch type).
+  vector<pair<pair<string, string>, string> > branch_signatures = vector<pair<pair<string, string>, string> >();
+  for (int i = 0; i < num_branches; i++) {
+    // No illegal names.
+    vector<string> illegal_names = vector<string>();
+    string name = name_generator.generate(variable, illegal_names);
+    string id_type = tree.class_names[rand() % tree.class_names.size()];
+    pair<string, string> id_signature = pair<string, string>(name, id_type);
+
+    // Choose branch type. Must be a child of type.
+    set<string> descendants = tree.class_descendants[type];
+    descendants.insert(type);
+    set<string>::iterator it = descendants.begin();
+    advance(it, rand() % descendants.size());
+    string branch_type = *it;
+
+    // Update data structure.
+    branch_signatures.push_back(pair<pair<string, string>, string>(id_signature, branch_type));
+  }
+
+  // Print out case header.
+  writer << "case ";
+  current_line_length += 5;
+  generate_expression(case_expr_type);
+  writer << " of" << endl;
+  indentation_tabs++;
+
+  // Print out branches.
+  for (int i = 0; i < num_branches; i++) {
+    print_tabs();
+    string id_name = branch_signatures[i].first.first;
+    string id_type = branch_signatures[i].first.second;
+    writer << id_name << " : ";
+    writer << id_type << " => ";
+    current_line_length += id_name.length() + 7 + id_type.length();
+    identifiers.enter_scope();
+    identifiers.add_id(id_name, id_type);
+    generate_expression(branch_signatures[i].second);
+    identifiers.exit_scope();
+    writer << ";" << endl;
+  }
+
+  indentation_tabs--;
+  print_tabs();
+  writer << "esac";
+  current_line_length += 4;
 }
