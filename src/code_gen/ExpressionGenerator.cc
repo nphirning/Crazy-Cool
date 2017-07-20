@@ -8,6 +8,9 @@
 #include "util.h"
 #include "CodeGenerator.h"
 #include "NameGenerator.h"
+#include <algorithm>
+#include <random>
+#include <chrono>
 
 using namespace std;
 
@@ -681,6 +684,7 @@ void CodeGenerator::generate_int_complement() {
 // EXPRESSION: Let.
 void CodeGenerator::generate_let(string type) {
 
+
   // Choose number of definitions.
   int num_defines = (rand() % (max_let_defines - 1)) + 1;
 
@@ -697,17 +701,28 @@ void CodeGenerator::generate_let(string type) {
     // No illegal names for let variables.
     vector<string> illegal_names = vector<string>();
     string var_name = name_generator.generate(variable, illegal_names);
-    string var_type = tree.class_names[rand() % tree.class_names.size()];
+    vector<string> possible_types = tree.class_names;
+    possible_types.push_back("SELF_TYPE");
+    string var_type = possible_types[rand() % possible_types.size()];
 
     // Choose initialization type.
     double cutoff = ((double) rand() / (RAND_MAX));
     string init_type = "";
     if (cutoff <= probability_initialized) {
-      set<string> descendants = tree.class_descendants[var_type];
-      descendants.insert(var_type);
-      set<string>::iterator it = descendants.begin();
-      advance(it, rand() % descendants.size());
-      init_type = *it;
+
+      // The only way to init a SELF_TYPE is with a SELF_TYPE.
+      if (var_type == "SELF_TYPE") {
+        init_type = "SELF_TYPE";
+      } else {
+        set<string> descendants = tree.class_descendants[var_type];
+        descendants.insert(var_type);
+        if (tree.is_child_of(current_class, var_type)) {
+          descendants.insert("SELF_TYPE");
+        }
+        set<string>::iterator it = descendants.begin();
+        advance(it, rand() % descendants.size());
+        init_type = *it;
+      }
     }
 
     // Update data structures.
@@ -716,11 +731,19 @@ void CodeGenerator::generate_let(string type) {
   }
 
   // Choose body type.
-  set<string> type_descendants = tree.class_descendants[type];
-  type_descendants.insert(type);
-  set<string>::iterator it = type_descendants.begin();
-  advance(it, rand() % type_descendants.size());
-  string body_type = *it;
+  string body_type;
+  if (type == "SELF_TYPE") {
+    body_type = "SELF_TYPE";
+  } else {
+    set<string> possible_body_types = tree.class_descendants[type];
+    possible_body_types.insert(type);
+    if (tree.is_child_of(current_class, type)) {
+      possible_body_types.insert("SELF_TYPE");
+    }
+    set<string>::iterator it = possible_body_types.begin();
+    advance(it, rand() % possible_body_types.size());
+    body_type = *it;
+  }
 
   // Case 1: Pretty printing without space.
   if (current_line_length >= max_line_length || num_defines > 2) {
@@ -809,12 +832,23 @@ void CodeGenerator::generate_case(string type) {
   // Choose the case expression type.
   string case_expr_type = tree.class_names[rand() % tree.class_names.size()];
 
-  // Choose number of branches.
-  int num_branches = (rand() % (max_case_branches - 1)) + 1;
+  // Choose number of branches. Don't duplicate types.
+  cout << "EYO" << endl;
+  set<string> descendants = tree.class_descendants[type];
+  descendants.insert(type);
+  int max_branches = descendants.size() < max_case_branches ? descendants.size() : max_case_branches;
+  int num_branches = (rand() % (max_branches - 1)) + 1;
+
+  // Permute descendants randomly so we can choose the ith type for branch i.
+  vector<string> descendants_ordered = vector<string>(descendants.begin(), descendants.end());
+  cout << descendants_ordered.size() << endl;
+  cout << num_branches << endl;
+  random_shuffle(descendants_ordered.begin(), descendants_ordered.end());
 
   // Choose branch signatures ((id name, id type), branch type).
   vector<pair<pair<string, string>, string> > branch_signatures = vector<pair<pair<string, string>, string> >();
   for (int i = 0; i < num_branches; i++) {
+
     // No illegal names.
     vector<string> illegal_names = vector<string>();
     string name = name_generator.generate(variable, illegal_names);
@@ -822,11 +856,7 @@ void CodeGenerator::generate_case(string type) {
     pair<string, string> id_signature = pair<string, string>(name, id_type);
 
     // Choose branch type. Must be a child of type.
-    set<string> descendants = tree.class_descendants[type];
-    descendants.insert(type);
-    set<string>::iterator it = descendants.begin();
-    advance(it, rand() % descendants.size());
-    string branch_type = *it;
+    string branch_type = descendants_ordered[i];
 
     // Update data structure.
     branch_signatures.push_back(pair<pair<string, string>, string>(id_signature, branch_type));
