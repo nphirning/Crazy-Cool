@@ -41,7 +41,7 @@ CodeGenerator::CodeGenerator(int num_classes, string word_corpus)
   this->max_case_branches = 7;
   this->max_line_length = 80;
   this->current_line_length = 0;
-  this->max_expression_count = 10000;
+  this->max_expression_count = 1000000000; // 1 billion.
 
   // Initialization of internal state.
   this->indentation_tabs = 0;
