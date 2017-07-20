@@ -302,11 +302,11 @@ float CodeGenerator::populate_possible_expansions(vector<string>& possible_expan
   }
 
   // Case.
-  // if (recursive_depth < max_recursion_depth && expression_count < max_expression_count) {
-  //   normalization_factor += expression_map["case"];
-  //   possible_expansions.push_back("case");
-  //   probability_cutoffs.push_back(expression_map["case"]);
-  // }
+  if (recursive_depth < max_recursion_depth && expression_count < max_expression_count) {
+    normalization_factor += expression_map["case"];
+    possible_expansions.push_back("case");
+    probability_cutoffs.push_back(expression_map["case"]);
+  }
 
   return normalization_factor;
 }

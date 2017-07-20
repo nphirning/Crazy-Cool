@@ -830,20 +830,32 @@ void CodeGenerator::generate_let(string type) {
 void CodeGenerator::generate_case(string type) {
 
   // Choose the case expression type.
-  string case_expr_type = tree.class_names[rand() % tree.class_names.size()];
+  vector<string> possible_case_expr_types = tree.class_names;
+  possible_case_expr_types.push_back("SELF_TYPE");
+  string case_expr_type = possible_case_expr_types[rand() % possible_case_expr_types.size()];
 
-  // Choose number of branches. Don't duplicate types.
-  cout << "EYO" << endl;
-  set<string> descendants = tree.class_descendants[type];
-  descendants.insert(type);
-  int max_branches = descendants.size() < max_case_branches ? descendants.size() : max_case_branches;
+  // Choose branch types.
+  // Expanding to SELF_TYPE means every branch type must be SELF_TYPE.
+  vector<string> branch_types = vector<string>();
+  if (type == "SELF_TYPE") {
+    branch_types.push_back("SELF_TYPE");
+  } else {
+    set<string> descendants = tree.class_descendants[type];
+    branch_types = vector<string>(descendants.begin(), descendants.end());
+    branch_types.push_back(type);
+    if (tree.is_child_of(current_class, type)) {
+      branch_types.push_back("SELF_TYPE");
+    }
+  }
+
+  vector<string> branch_id_types = tree.class_names;
+  branch_id_types.push_back("SELF_TYPE");
+
+  int max_branches = branch_id_types.size() < max_case_branches ? branch_id_types.size() : max_case_branches;
   int num_branches = (rand() % (max_branches - 1)) + 1;
 
-  // Permute descendants randomly so we can choose the ith type for branch i.
-  vector<string> descendants_ordered = vector<string>(descendants.begin(), descendants.end());
-  cout << descendants_ordered.size() << endl;
-  cout << num_branches << endl;
-  random_shuffle(descendants_ordered.begin(), descendants_ordered.end());
+  // Permute branch_id_types randomly so we can choose the ith type for branch i.
+  random_shuffle(branch_id_types.begin(), branch_id_types.end());
 
   // Choose branch signatures ((id name, id type), branch type).
   vector<pair<pair<string, string>, string> > branch_signatures = vector<pair<pair<string, string>, string> >();
@@ -852,11 +864,11 @@ void CodeGenerator::generate_case(string type) {
     // No illegal names.
     vector<string> illegal_names = vector<string>();
     string name = name_generator.generate(variable, illegal_names);
-    string id_type = tree.class_names[rand() % tree.class_names.size()];
+    string id_type = branch_id_types[i];
     pair<string, string> id_signature = pair<string, string>(name, id_type);
 
     // Choose branch type. Must be a child of type.
-    string branch_type = descendants_ordered[i];
+    string branch_type = branch_types[rand() % branch_types.size()];
 
     // Update data structure.
     branch_signatures.push_back(pair<pair<string, string>, string>(id_signature, branch_type));
