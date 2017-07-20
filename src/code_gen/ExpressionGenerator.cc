@@ -848,8 +848,8 @@ void CodeGenerator::generate_case(string type) {
     }
   }
 
+  // SELF_TYPE is not allowed as a branch identifier type.
   vector<string> branch_id_types = tree.class_names;
-  branch_id_types.push_back("SELF_TYPE");
 
   int max_branches = branch_id_types.size() < max_case_branches ? branch_id_types.size() : max_case_branches;
   int num_branches = (rand() % (max_branches - 1)) + 1;
