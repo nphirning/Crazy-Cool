@@ -7,7 +7,7 @@
 > This is the ***best*** COOL code generator on the market.
 
 **Final Note:**
-> This code generator follows the [COOL manual](https://theory.stanford.edu/~aiken/software/cool/cool-manual.pdf) for instructions on how to generate correct COOL code. The code should all compile normally (though it very well may crash at runtime). If you find any examples of incorrect code being produced, please report to "nphirning@gmail.com". You may be rewarded. 
+> This code generator follows the [COOL manual](https://theory.stanford.edu/~aiken/software/cool/cool-manual.pdf) for instructions on how to generate correct COOL code. The code should all compile normally (though it very well may crash at runtime). If you find any examples of incorrect code being produced, please report to "nphirning@gmail.com". You may be rewarded.
 
 ## Setup Instructions
 
@@ -26,9 +26,6 @@ This currently supports the following optional input flags.
 
 ## Things to Do
 
-* Add support for let, case.
-* Add try-catch blocks for NameGenerator inside ClassTree.cc.
-* Consider making things static (?)
 * Oh. Switch things to enums.
 * Benchmark the different expression types to figure out what takes the most time in generation (my suspicion: dispatch).
 * Add support for configuration via input flags.

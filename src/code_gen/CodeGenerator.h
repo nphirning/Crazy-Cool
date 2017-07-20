@@ -13,6 +13,13 @@
 // Total number of expression types in COOL.
 #define NUM_EXPRESSION_TYPES 19
 
+// ENUM ExpressionType
+// -------------------
+// Enumerates all the possible expression types we can generate.
+enum ExpansionType {New, Bool, String, Int, Identifier, Assignment, Dispatch,
+  StaticDispatch, SelfDispatch, Conditional, Loop, Block, IsVoid, Arithmetic,
+  Comparison, IntComplement, BoolComplement, Let, Case};
+
 // CLASS CodeGenerator
 // -------------------
 // This is the standalone class that generates
@@ -48,12 +55,6 @@ public:
 
 private:
 
-  // Constant values used for expression generation.
-  std::vector<std::string> expression_keys = {"new", "bool", "string", "int",
-    "identifier", "assignment", "dispatch", "static_dispatch", "self_dispatch",
-    "conditional", "loop", "block", "isvoid", "arithmetic", "comparison",
-    "int_complement", "bool_complement", "let", "case"};
-
   // Internal functions for generate_code();
   void generate_expression(std::string type);
   void print_class(std::string class_name);
@@ -62,8 +63,8 @@ private:
   void print_tabs();
 
   // Expression generation.
-  void generate_expansion(std::string expansion, std::string expression_type);
-  float populate_possible_expansions(std::vector<std::string>& possible_expansions,
+  void generate_expansion(ExpansionType expansion, std::string expression_type);
+  float populate_possible_expansions(std::vector<ExpansionType>& possible_expansions,
     std::vector<float>& probability_cutoffs, std::string expression_type);
   void generate_new(std::string type);
   void generate_bool();
@@ -118,7 +119,7 @@ private:
 
   // Variables used internally.
   std::ofstream writer;
-  std::map<std::string, float> expression_map;
+  std::map<ExpansionType, float> expression_map;
   SymbolTable identifiers;
   std::string current_class;
   int current_line_length; // Currently only updated for expression generation.

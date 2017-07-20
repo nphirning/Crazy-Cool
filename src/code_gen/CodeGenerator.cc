@@ -54,9 +54,9 @@ CodeGenerator::CodeGenerator(int num_classes, string word_corpus)
 
   // Create map from expansion name -> expansion weight.
   vector<float> expression_weights = vector<float>(NUM_EXPRESSION_TYPES, 1.0);
-  this->expression_map = map<string, float>();
-  for (int i = 0; i < expression_keys.size(); i++) {
-    this->expression_map[expression_keys[i]] = expression_weights[i];
+  this->expression_map = map<ExpansionType, float>();
+  for (int i = ExpansionType::New; i < NUM_EXPRESSION_TYPES; i++) {
+    this->expression_map[static_cast<ExpansionType>(i)] = expression_weights[i];
   }
 }
 
@@ -65,44 +65,44 @@ CodeGenerator::CodeGenerator(int num_classes, string word_corpus)
 //  to this function is a type of expression expansion. For
 //  example, "dispatch" is a type of expansion, and it may
 //  evaluate to an expression of type "Int".
-void CodeGenerator::generate_expansion(string expansion, string expression_type) {
-  if (expansion == "new") {
+void CodeGenerator::generate_expansion(ExpansionType expansion, string expression_type) {
+  if (expansion == New) {
     generate_new(expression_type);
-  } else if (expansion == "bool") {
+  } else if (expansion == Bool) {
     generate_bool();
-  } else if (expansion == "string") {
+  } else if (expansion == String) {
     generate_string();
-  } else if (expansion == "int") {
+  } else if (expansion == Int) {
     generate_int();
-  } else if (expansion == "identifier") {
+  } else if (expansion == Identifier) {
     generate_identifier(expression_type, false);
-  } else if (expansion == "assignment") {
+  } else if (expansion == Assignment) {
     generate_assignment(expression_type, false);
-  } else if (expansion == "self_dispatch") {
+  } else if (expansion == SelfDispatch) {
     write_dispatch("self");
-  } else if (expansion == "static_dispatch") {
+  } else if (expansion == StaticDispatch) {
     write_dispatch("static");
-  } else if (expansion == "dispatch") {
+  } else if (expansion == Dispatch) {
     write_dispatch("regular");
-  } else if (expansion == "conditional") {
+  } else if (expansion == Conditional) {
     generate_conditional(expression_type);
-  } else if (expansion == "loop") {
+  } else if (expansion == Loop) {
     generate_loop();
-  } else if (expansion == "block") {
+  } else if (expansion == Block) {
     generate_block(expression_type);
-  } else if (expansion == "isvoid") {
+  } else if (expansion == IsVoid) {
     generate_isvoid();
-  } else if (expansion == "arithmetic") {
+  } else if (expansion == Arithmetic) {
     generate_arithmetic();
-  } else if (expansion == "comparison") {
+  } else if (expansion == Comparison) {
     generate_comparison();
-  } else if (expansion == "int_complement") {
+  } else if (expansion == IntComplement) {
     generate_int_complement();
-  } else if (expansion == "bool_complement") {
+  } else if (expansion == BoolComplement) {
     generate_bool_complement();
-  } else if (expansion == "let") {
+  } else if (expansion == Let) {
     generate_let(expression_type);
-  } else if (expansion == "case") {
+  } else if (expansion == Case) {
     generate_case(expression_type);
   } else {
     throw "Internal error: chosen expression type not a possible expansion.";
@@ -147,165 +147,144 @@ void CodeGenerator::generate_expansion(string expansion, string expression_type)
 //        possible_expansions = ["new", "assign", "constant"]
 //        probability_cutoffs = [1.5, 1.2, 0.5]
 //        return value        = 3.2
-float CodeGenerator::populate_possible_expansions(vector<string>& possible_expansions,
+float CodeGenerator::populate_possible_expansions(vector<ExpansionType>& possible_expansions,
       vector<float>& probability_cutoffs, string expression_type) {
 
-  // POSSIBLE EXPANSION TYPES.
-  // 1. New.
-  // 2. Bool constants.
-  // 3. String constants.
-  // 4. Int constants.
-  // 5. Identifiers.
-  // 6. Assignment.
-  // 7. Dispatch.
-  // 8. Static dispatch.
-  // 9. Self dispatch.
-  // 10. Conditional.
-  // 11. Loop.
-  // 12. Block.
-  // 13. isVoid.
-  // 14. Arithmetic.
-  // 15. Comparison.
-  // 16. Integer complement.
-  // 17. Boolean complement.
-  // 18. Let.
-  // 19. Case.
-
   // New.
-  float normalization_factor = expression_map["new"];
-  possible_expansions.push_back("new");
-  probability_cutoffs.push_back(expression_map["new"]);
+  float normalization_factor = expression_map[New];
+  possible_expansions.push_back(New);
+  probability_cutoffs.push_back(expression_map[New]);
 
   // Bool constants.
   if (tree.is_child_of("Bool", expression_type)) {
-    normalization_factor += expression_map["bool"];
-    possible_expansions.push_back("bool");
-    probability_cutoffs.push_back(expression_map["bool"]);
+    normalization_factor += expression_map[Bool];
+    possible_expansions.push_back(Bool);
+    probability_cutoffs.push_back(expression_map[Bool]);
   }
 
   // String constants.
   if (tree.is_child_of("String", expression_type)) {
-    normalization_factor += expression_map["string"];
-    possible_expansions.push_back("string");
-    probability_cutoffs.push_back(expression_map["string"]);
+    normalization_factor += expression_map[String];
+    possible_expansions.push_back(String);
+    probability_cutoffs.push_back(expression_map[String]);
   }
 
   // Int constants.
   if (tree.is_child_of("Int", expression_type)) {
-    normalization_factor += expression_map["int"];
-    possible_expansions.push_back("int");
-    probability_cutoffs.push_back(expression_map["int"]);
+    normalization_factor += expression_map[Int];
+    possible_expansions.push_back(Int);
+    probability_cutoffs.push_back(expression_map[Int]);
   }
 
   // Identifiers.
   if (generate_identifier(expression_type, true)) {
-    normalization_factor += expression_map["identifier"];
-    possible_expansions.push_back("identifier");
-    probability_cutoffs.push_back(expression_map["identifier"]);
+    normalization_factor += expression_map[Identifier];
+    possible_expansions.push_back(Identifier);
+    probability_cutoffs.push_back(expression_map[Identifier]);
   }
 
   // Assignment.
   if (generate_assignment(expression_type, true) && recursive_depth < max_recursion_depth
                                                   && expression_count < max_expression_count) {
-    normalization_factor += expression_map["assignment"];
-    possible_expansions.push_back("assignment");
-    probability_cutoffs.push_back(expression_map["assignment"]);
+    normalization_factor += expression_map[Assignment];
+    possible_expansions.push_back(Assignment);
+    probability_cutoffs.push_back(expression_map[Assignment]);
   }
 
   // Dispatch.
   generate_dispatch_structures(expression_type);
   if (recursive_depth < max_recursion_depth && expression_count < max_expression_count) {
     if (self_dispatches.size() != 0) {
-      normalization_factor += expression_map["self_dispatch"];
-      possible_expansions.push_back("self_dispatch");
-      probability_cutoffs.push_back(expression_map["self_dispatch"]);
+      normalization_factor += expression_map[SelfDispatch];
+      possible_expansions.push_back(SelfDispatch);
+      probability_cutoffs.push_back(expression_map[SelfDispatch]);
     }
     if (static_dispatches.size() != 0) {
-      normalization_factor += expression_map["static_dispatch"];
-      possible_expansions.push_back("static_dispatch");
-      probability_cutoffs.push_back(expression_map["static_dispatch"]);
+      normalization_factor += expression_map[StaticDispatch];
+      possible_expansions.push_back(StaticDispatch);
+      probability_cutoffs.push_back(expression_map[StaticDispatch]);
     }
     if (dispatches.size() != 0) {
-      normalization_factor += expression_map["dispatch"];
-      possible_expansions.push_back("dispatch");
-      probability_cutoffs.push_back(expression_map["dispatch"]);
+      normalization_factor += expression_map[Dispatch];
+      possible_expansions.push_back(Dispatch);
+      probability_cutoffs.push_back(expression_map[Dispatch]);
     }
   }
 
   // Conditional.
   if (recursive_depth < max_recursion_depth && expression_count < max_expression_count) {
-    normalization_factor += expression_map["conditional"];
-    possible_expansions.push_back("conditional");
-    probability_cutoffs.push_back(expression_map["conditional"]);
+    normalization_factor += expression_map[Conditional];
+    possible_expansions.push_back(Conditional);
+    probability_cutoffs.push_back(expression_map[Conditional]);
   }
 
   // Loop.
   if (expression_type == "Object" && recursive_depth < max_recursion_depth
                                     && expression_count < max_expression_count) {
-    normalization_factor += expression_map["loop"];
-    possible_expansions.push_back("loop");
-    probability_cutoffs.push_back(expression_map["loop"]);
+    normalization_factor += expression_map[Loop];
+    possible_expansions.push_back(Loop);
+    probability_cutoffs.push_back(expression_map[Loop]);
   }
 
   // Block.
   if (recursive_depth < max_recursion_depth && expression_count < max_expression_count) {
-    normalization_factor += expression_map["block"];
-    possible_expansions.push_back("block");
-    probability_cutoffs.push_back(expression_map["block"]);
+    normalization_factor += expression_map[Block];
+    possible_expansions.push_back(Block);
+    probability_cutoffs.push_back(expression_map[Block]);
   }
 
   // isVoid.
   if (tree.is_child_of("Bool", expression_type) && recursive_depth < max_recursion_depth
                                             && expression_count < max_expression_count) {
-    normalization_factor += expression_map["isvoid"];
-    possible_expansions.push_back("isvoid");
-    probability_cutoffs.push_back(expression_map["isvoid"]);
+    normalization_factor += expression_map[IsVoid];
+    possible_expansions.push_back(IsVoid);
+    probability_cutoffs.push_back(expression_map[IsVoid]);
   }
 
   // Arithmetic.
   if (tree.is_child_of("Int", expression_type) && recursive_depth < max_recursion_depth
                                             && expression_count < max_expression_count) {
-    normalization_factor += expression_map["arithmetic"];
-    possible_expansions.push_back("arithmetic");
-    probability_cutoffs.push_back(expression_map["arithmetic"]);
+    normalization_factor += expression_map[Arithmetic];
+    possible_expansions.push_back(Arithmetic);
+    probability_cutoffs.push_back(expression_map[Arithmetic]);
   }
 
   // Comparison.
   if (tree.is_child_of("Bool", expression_type) && recursive_depth < max_recursion_depth
                                             && expression_count < max_expression_count) {
-    normalization_factor += expression_map["comparison"];
-    possible_expansions.push_back("comparison");
-    probability_cutoffs.push_back(expression_map["comparison"]);
+    normalization_factor += expression_map[Comparison];
+    possible_expansions.push_back(Comparison);
+    probability_cutoffs.push_back(expression_map[Comparison]);
   }
 
   // Integer complement.
   if (tree.is_child_of("Int", expression_type) && recursive_depth < max_recursion_depth
                                             && expression_count < max_expression_count) {
-    normalization_factor += expression_map["int_complement"];
-    possible_expansions.push_back("int_complement");
-    probability_cutoffs.push_back(expression_map["int_complement"]);
+    normalization_factor += expression_map[IntComplement];
+    possible_expansions.push_back(IntComplement);
+    probability_cutoffs.push_back(expression_map[IntComplement]);
   }
 
   // Boolean complement.
   if (tree.is_child_of("Bool", expression_type) && recursive_depth < max_recursion_depth
                                             && expression_count < max_expression_count) {
-    normalization_factor += expression_map["bool_complement"];
-    possible_expansions.push_back("bool_complement");
-    probability_cutoffs.push_back(expression_map["bool_complement"]);
+    normalization_factor += expression_map[BoolComplement];
+    possible_expansions.push_back(BoolComplement);
+    probability_cutoffs.push_back(expression_map[BoolComplement]);
   }
 
   // Let statement.
   if (recursive_depth < max_recursion_depth && expression_count < max_expression_count) {
-    normalization_factor += expression_map["let"];
-    possible_expansions.push_back("let");
-    probability_cutoffs.push_back(expression_map["let"]);
+    normalization_factor += expression_map[Let];
+    possible_expansions.push_back(Let);
+    probability_cutoffs.push_back(expression_map[Let]);
   }
 
   // Case.
   if (recursive_depth < max_recursion_depth && expression_count < max_expression_count) {
-    normalization_factor += expression_map["case"];
-    possible_expansions.push_back("case");
-    probability_cutoffs.push_back(expression_map["case"]);
+    normalization_factor += expression_map[Case];
+    possible_expansions.push_back(Case);
+    probability_cutoffs.push_back(expression_map[Case]);
   }
 
   return normalization_factor;
@@ -321,7 +300,7 @@ void CodeGenerator::generate_expression(string expression_type) {
   expression_count++;
 
   // Compute possible expansions and keep track of weights.
-  vector<string> possible_expansions = vector<string>();
+  vector<ExpansionType> possible_expansions = vector<ExpansionType>();
   vector<float> probability_cutoffs = vector<float>();
   float normalization_factor = populate_possible_expansions(possible_expansions,
                                                             probability_cutoffs,
@@ -340,7 +319,7 @@ void CodeGenerator::generate_expression(string expression_type) {
   for (; expansion_index < probability_cutoffs.size(); expansion_index++) {
     if (probability_cutoff < probability_cutoffs[expansion_index]) break;
   }
-  string expansion = possible_expansions[expansion_index];
+  ExpansionType expansion = possible_expansions[expansion_index];
 
   // Generate code corresponding to chosen expansion.
   generate_expansion(expansion, expression_type);
