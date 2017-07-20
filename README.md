@@ -26,4 +26,4 @@ This currently supports the following optional input flags.
 
 ## Sample
 
-I've provided a sample of the output in the top-level file called (surprise!) `sample.cl`. This is 200 classes of COOL code. Enjoy!
+I've provided a sample of the output in the file `sample.cl`. This contains 500 classes and over 100k lines of COOL code, with words drawn from Google's 10k word corpus. Enjoy!
