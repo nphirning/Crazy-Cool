@@ -4,7 +4,7 @@
 > Code generation for the Classroom Object-Oriented Language (COOL) implemented in C++.
 
 **Note**
-> This code generator follows the [COOL manual](https://theory.stanford.edu/~aiken/software/cool/cool-manual.pdf) for instructions on how to generate correct COOL code. The code should all compile normally (though it probably will crash at runtime). If you find any examples of incorrect code being produced, report them to me at "nphirning@gmail.com" for cash prizes.
+> This code generator follows the [COOL manual](https://theory.stanford.edu/~aiken/software/cool/cool-manual.pdf) for instructions on how to generate correct COOL code. The code should all compile normally (though it probably will crash at runtime). If you find any examples of incorrect code being produced, report them to me at "nphirning@gmail.com".
 
 ## Sample
 
